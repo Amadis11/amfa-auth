@@ -49,7 +49,6 @@ from privacyidea.lib.policies.actions import PolicyAction, PasskeyLoginButtonOpt
 from privacyidea.lib.policy import PolicyClass, SCOPE, Match, REMOTE_USER
 from privacyidea.lib.queue import has_job_queue
 from privacyidea.lib.realm import get_realms
-from privacyidea.lib.subscriptions import subscription_status
 from privacyidea.lib.utils import get_client_ip, get_version_number, get_plugin_info_from_useragent
 
 log = logging.getLogger(__name__)
@@ -294,23 +293,17 @@ def get_render_context():
         hsm_ready = False
 
     # Use policies to determine the customization of menu and baseline, the login text and the privacy statement link.
-    # With the subscription states 1 and 2, the defaults apply.
-    sub_state = subscription_status()
     customization_menu_file = _start_page_action_value(PolicyAction.CUSTOM_MENU, allow_white_space_in_action=True)
-    if not customization_menu_file or sub_state in [1, 2]:
+    if not customization_menu_file:
         customization_menu_file = "templates/menu.html"
     customization_baseline_file = _start_page_action_value(PolicyAction.CUSTOM_BASELINE,
                                                            allow_white_space_in_action=True)
-    if not customization_baseline_file or sub_state in [1, 2]:
+    if not customization_baseline_file:
         customization_baseline_file = "templates/baseline.html"
 
     login_text = _start_page_action_value(PolicyAction.LOGIN_TEXT, allow_white_space_in_action=True)
-    if sub_state in [1, 2]:
-        login_text = ""
 
     gdpr_link = _start_page_action_value(PolicyAction.GDPR_LINK, allow_white_space_in_action=True)
-    if sub_state in [1, 2]:
-        gdpr_link = ""
 
     passkey_login = _start_page_action_value(PolicyAction.PASSKEY_LOGIN) or PasskeyLoginButtonOptions.SHOW
 
