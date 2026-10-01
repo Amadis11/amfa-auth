@@ -186,7 +186,7 @@ def get_render_context():
     # Read the UI translation warning
     translation_warning = current_app.config.get("PI_TRANSLATION_WARNING", False)
     # Get the logo file
-    logo = current_app.config.get("PI_LOGO", "privacyIDEA1.png")
+    logo = current_app.config.get("PI_LOGO", "amfa.svg")
     browser_lang = get_accepted_language()
     # The page title can be configured in pi.cfg
     page_title = current_app.config.get("PI_PAGE_TITLE", "AMFA")
