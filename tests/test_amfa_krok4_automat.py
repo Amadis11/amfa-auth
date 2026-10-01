@@ -43,3 +43,14 @@ def test_automat_buduje_takze_panel() -> None:
     workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
     assert "setup-node" in workflow, "workflow nie przygotowuje srodowiska Node"
 
+
+def test_automat_zachowuje_zbudowany_panel() -> None:
+    """Wdrozenie ma brac gotowy plik: pakiet privacyIDEA zawiera tylko zbudowany panel,
+    a zrodla wyrzuca, wiec bez zachowania wyniku nasze zmiany bylyby niewidoczne."""
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    assert "def spakuj_panel(" in skrypt, "automat nie pakuje zbudowanego panelu"
+    assert "amfa-panel-" in skrypt, "brak nazwy pliku z panelem"
+
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
+    assert "dist-amfa" in workflow, "workflow nie zalacza zbudowanego panelu jako wyniku"
+
