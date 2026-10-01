@@ -43,3 +43,4 @@ dist/
 
 # Local development environment variables (use .env.example as template)
 .env
+dist-amfa/
