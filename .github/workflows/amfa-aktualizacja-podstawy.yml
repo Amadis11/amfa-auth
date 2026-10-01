@@ -62,7 +62,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: raport-aktualizacji
-          path: raport.txt
+          path: |
+            raport.txt
+            dist-amfa/*
+          if-no-files-found: ignore
 
       - name: Wydanie — galaz i pull request
         if: steps.nalozenie.outcome == 'success'
