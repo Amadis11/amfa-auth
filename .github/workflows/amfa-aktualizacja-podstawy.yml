@@ -29,6 +29,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Wpiecie podstawy
         run: |
           git remote add upstream https://github.com/privacyidea/privacyidea.git
