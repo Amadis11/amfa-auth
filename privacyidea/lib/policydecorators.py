@@ -568,7 +568,19 @@ def auth_otppin(wrapped_function, *args, **kwds):
                     return False
 
             if list(otppin_dict)[0] == ACTIONVALUE.USERSTORE:
-                authenticated_user = user.check_password(pin)
+                # Import lokalny, zeby warstwa polityk nie ciagnela resolwera przy starcie.
+                from privacyidea.lib.resolvers.LDAPIdResolver import DirectoryPasswordState
+                try:
+                    authenticated_user = user.check_password(pin)
+                except DirectoryPasswordState as stan:
+                    # Katalog rozpoznal stan konta: to nie jest zwykly blad poswiadczen.
+                    # Przekazujemy go w szczegolach uwierzytelnienia, zeby dotarl do odpowiedzi
+                    # i zeby dostawca poswiadczen mogl pokazac ekran zmiany poswiadczen.
+                    if token:
+                        token.auth_details["password_change_required"] = True
+                        token.auth_details["directory_password_state"] = stan.state
+                    log.info(f"Katalog rozpoznal stan konta {stan.state!r} dla {user!r}.")
+                    return False
 
                 if token:
                     if authenticated_user is None:
