@@ -557,6 +557,9 @@ class User:
         # the duration of the request.
         password_hash = hashlib.sha3_512(password.encode("utf-8")).hexdigest()
 
+        # Import lokalny: warstwa uzytkownika nie moze ciagnac resolwera LDAP przy starcie.
+        from privacyidea.lib.resolvers.LDAPIdResolver import DirectoryPasswordState
+
         try:
             log.info(f"User {self.login} from realm {self.realm} tries to authenticate")
             # If the password was already checked, return the known result
@@ -587,6 +590,10 @@ class User:
 
             elif not res:
                 log.error(f"The user {self!r} exists in NO resolver.")
+        except DirectoryPasswordState:
+            # Stan konta rozpoznany przez katalog musi dojsc do wywolujacego: dostawca
+            # poswiadczen buduje z niego ekran zmiany poswiadczen.
+            raise
         except UserError as e:  # pragma: no cover
             log.error(f"Error while trying to verify the username: {e}")
         except Exception as e:  # pragma: no cover
