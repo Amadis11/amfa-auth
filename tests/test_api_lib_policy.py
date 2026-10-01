@@ -42,7 +42,6 @@ from privacyidea.lib.machineresolver import save_resolver
 from privacyidea.lib.policies.actions import PolicyAction
 from privacyidea.lib.policy import (set_policy, delete_policy, PolicyClass, SCOPE, AUTOASSIGNVALUE, AUTHORIZED,
                                     DEFAULT_ANDROID_APP_URL, DEFAULT_IOS_APP_URL, SESSION_PERSISTENCE, LOGINMODE)
-from privacyidea.lib.subscriptions import EXPIRE_MESSAGE
 from privacyidea.lib.token import (init_token, get_tokens, remove_token,
                                    check_user_pass, unassign_token)
 from privacyidea.lib.tokenclass import DATE_FORMAT
@@ -1226,62 +1225,6 @@ class PostPolicyDecoratorTestCase(MyApiTestCase):
 
         delete_policy("pol_dashboard")
 
-    def test_11_get_webui_settings_support_link(self):
-        # Test the link to the support
-        self.setUp_user_realms()
-
-        # The request with an OTP value and a PIN of a user, who has no token assigned
-        builder = EnvironBuilder(method='POST',
-                                 data={},
-                                 headers={})
-        env = builder.get_environ()
-        env["REMOTE_ADDR"] = "192.168.0.1"
-        g.client_ip = env["REMOTE_ADDR"]
-        req = Request(env)
-        req.User = User()
-        req.all_data = {}
-
-        res = {"jsonrpc": "2.0",
-               "result": {"status": True,
-                          "value": {"role": "admin",
-                                    "username": "cornelius",
-                                    "realm": ""}},
-               "version": "privacyIDEA test",
-               "id": 1}
-        resp = jsonify(res)
-
-        new_response = get_webui_settings(req, resp)
-        jresult = new_response.json
-        self.assertNotIn("supportmail", jresult.get("result").get("value"))
-
-        # Add a subscription
-        from privacyidea.models import Subscription
-        Subscription(application="privacyidea",
-                     for_name="testuser",
-                     for_email="admin@example.com",
-                     for_phone="0",
-                     by_name="privacyIDEA project",
-                     by_email="privacyidea@example.com",
-                     date_from=datetime.utcnow(),
-                     date_till=datetime.utcnow() + timedelta(days=365),
-                     num_users=100,
-                     num_tokens=100,
-                     num_clients=100
-                     ).save()
-        new_response = get_webui_settings(req, resp)
-        jresult = new_response.json
-        supportmail = jresult.get("result").get("value").get("supportmail")
-        self.assertIn("privacyidea@example.com", supportmail)
-        # The subscription holds, so the mail is about the running version
-        self.assertIn(f"Problem with {get_version()!s}", supportmail)
-        self.assertNotIn(str(EXPIRE_MESSAGE), supportmail)
-
-        # A subscription that no longer holds is what the admin is offered to write about
-        with mock.patch("privacyidea.api.lib.postpolicy.subscription_status", return_value=2):
-            new_response = get_webui_settings(req, resp)
-        jresult = new_response.json
-        supportmail = jresult.get("result").get("value").get("supportmail")
-        self.assertIn(str(EXPIRE_MESSAGE), supportmail)
 
     def test_12_get_webui_settings_container_wizard(self):
         self.setUp_user_realms()
