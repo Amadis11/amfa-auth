@@ -1,0 +1,83 @@
+name: AMFA — aktualizacja podstawy
+
+# Sprawdza, czy privacyIDEA wydala nowa wersje, naklada nasze zmiany na nowa podstawe,
+# uruchamia testy (nasze strazniki pierwsze), buduje pakiet i zglasza wynik:
+#  - udalo sie  -> galaz + pull request do linii amfa (do przegladu i scalenia),
+#  - konflikt   -> zgloszenie z lista plikow, ktore sie zderzyly,
+#  - testy padly-> zgloszenie z raportem, bez wydania.
+# Logika jest w amfa/aktualizacja-podstawy.py, zeby dalo sie ja uruchomic i sprawdzic lokalnie.
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  aktualizacja:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Wpiecie podstawy
+        run: |
+          git remote add upstream https://github.com/privacyidea/privacyidea.git
+          git config user.name "AMFA automat"
+          git config user.email "automat@amitronic.local"
+
+      - name: Zaleznosci
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e ".[test]" || true
+          pip install -r tests/requirements.txt || true
+
+      - name: Sprawdzenie stanu
+        id: sprawdzenie
+        run: |
+          python amfa/aktualizacja-podstawy.py --sprawdz | tee raport.txt
+          echo "---" >> raport.txt
+
+      - name: Nalozenie naszych zmian na nowa podstawe
+        id: nalozenie
+        continue-on-error: true
+        run: |
+          python amfa/aktualizacja-podstawy.py --przygotuj 2>&1 | tee -a raport.txt
+          echo "kod=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Wyslanie raportu
+        uses: actions/upload-artifact@v4
+        with:
+          name: raport-aktualizacji
+          path: raport.txt
+
+      - name: Wydanie — galaz i pull request
+        if: steps.nalozenie.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ZNACZNIK=$(awk '/^tag /{print $2}' amfa/PODSTAWA)
+          GALAZ="amfa-aktualizacja-${ZNACZNIK:-nowa}"
+          git checkout -b "$GALAZ"
+          git push -u origin "$GALAZ"
+          gh pr create --base amfa --head "$GALAZ" \
+            --title "AMFA: aktualizacja podstawy do ${ZNACZNIK:-nowego wydania}" \
+            --body-file raport.txt
+
+      - name: Konflikt — zgloszenie z lista plikow
+        if: steps.nalozenie.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "AMFA: nie udalo sie nalozyc naszych zmian na nowe wydanie podstawy" \
+            --body-file raport.txt
