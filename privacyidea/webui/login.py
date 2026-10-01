@@ -182,14 +182,14 @@ def get_render_context():
     #    PI_CUSTOMIZATION/views/includes/token.enroll.post.top.html
     #    PI_CUSTOMIZATION/views/includes/token.enroll.post.bottom.html
     # Get the hidden external links
-    external_links = current_app.config.get("PI_EXTERNAL_LINKS", True)
+    external_links = current_app.config.get("PI_EXTERNAL_LINKS", False)
     # Read the UI translation warning
     translation_warning = current_app.config.get("PI_TRANSLATION_WARNING", False)
     # Get the logo file
     logo = current_app.config.get("PI_LOGO", "privacyIDEA1.png")
     browser_lang = get_accepted_language()
     # The page title can be configured in pi.cfg
-    page_title = current_app.config.get("PI_PAGE_TITLE", "privacyIDEA Authentication System")
+    page_title = current_app.config.get("PI_PAGE_TITLE", "AMFA")
     # check if login with REMOTE_USER is allowed.
     remote_user = ""
     force_remote_user = False
