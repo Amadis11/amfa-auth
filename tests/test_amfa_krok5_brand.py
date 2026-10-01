@@ -41,13 +41,21 @@ def test_wystawca_kodow_otp_jest_nasz() -> None:
 
 
 def test_okna_licencyjne_nie_wrocily() -> None:
-    """Okna powitalne i wygasniecia subskrypcji usuniete — nie moga wrocic z nowa podstawa."""
+    """Okna powitalne i wygasniecia subskrypcji usuniete — nie moga wrocic z nowa podstawa.
+
+    Uwaga: usluga subskrypcji (subscription.service) zostaje — korzysta z niej pulpit konsoli
+    i panel uzytkownika. Usuniete sa okna, nie cala obsluga subskrypcji; szerokie usuniecie
+    katalogu uslug wysypalo build panelu.
+    """
     for wzgledna in ("privacyidea/static/src/app/components/shared/welcome-dialog",
                      "privacyidea/static/src/app/components/shared/subscription-expiry-dialog",
-                     "privacyidea/static/src/app/services/subscription"):
+                     "privacyidea/static/src/app/services/welcome"):
         assert not (KORZEN / wzgledna).exists(), f"wrocilo {wzgledna}"
-    zrodla = (KORZEN / "privacyidea" / "static" / "src" / "app").rglob("*.ts")
-    for plik in zrodla:
+    # Definicje uslug moga zostac w katalogu services/subscription (korzysta z nich pulpit),
+    # ale zaden inny plik nie moze ich wolac.
+    for plik in (KORZEN / "privacyidea" / "static" / "src" / "app").rglob("*.ts"):
+        if "services/subscription" in str(plik) or "services/welcome" in str(plik):
+            continue
         tresc = plik.read_text(encoding="utf-8")
         assert "WelcomeDialogService" not in tresc, f"wrocilo odwolanie w {plik}"
         assert "SubscriptionExpiryService" not in tresc, f"wrocilo odwolanie w {plik}"
