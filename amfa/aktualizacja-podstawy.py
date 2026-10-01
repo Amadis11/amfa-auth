@@ -131,7 +131,37 @@ def zbuduj_panel() -> tuple[bool, str]:
     if budowa.returncode != 0:
         ogon = (budowa.stdout + budowa.stderr).strip().split("\n")
         return False, "build panelu padl: " + (ogon[-1] if ogon else "")
-    return True, "panel zbudowany"
+    return spakuj_panel(katalog)
+
+
+def spakuj_panel(katalog: pathlib.Path) -> tuple[bool, str]:
+    """Zachowuje zbudowany panel jako gotowy plik.
+
+    Wdrozenie ma brac gotowy wynik, a nie budowac panel na serwerze: pakiet privacyIDEA zawiera
+    tylko zbudowany panel i wyrzuca zrodla (patrz MANIFEST.in), wiec nasze zmiany w zrodlach bylyby
+    niewidoczne, gdyby panelu nie zbudowac z naszego repozytorium.
+    """
+    zbudowany = katalog / "dist" / "privacyidea-webui" / "browser"
+    if not zbudowany.is_dir():
+        return False, f"brak zbudowanego panelu w {zbudowany}"
+    cel = KORZEN / "dist-amfa"
+    cel.mkdir(exist_ok=True)
+    nazwa = cel / f"amfa-panel-{podstawa_w_pliku()}.tar.gz"
+    pakowanie = subprocess.run(["tar", "czf", str(nazwa), "-C", str(zbudowany), "."],
+                               capture_output=True, text=True)
+    if pakowanie.returncode != 0:
+        return False, "nie udalo sie spakowac panelu: " + pakowanie.stderr.strip()
+    return True, f"panel zbudowany i zapisany jako {nazwa.name}"
+
+
+def podstawa_w_pliku() -> str:
+    """Znacznik podstawy do nazwy pliku; gdy brak, uzywamy krotkiego commitu."""
+    try:
+        dane = czytaj_podstawe()
+        znacznik = dane.get("tag", "")
+        return znacznik.lstrip("v") if znacznik and znacznik != "—" else dane.get("commit", "nieznana")[:12]
+    except RuntimeError:
+        return "nieznana"
 
 
 def zbuduj() -> tuple[bool, str]:
