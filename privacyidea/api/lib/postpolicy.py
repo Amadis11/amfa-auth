@@ -73,9 +73,6 @@ from privacyidea.lib.policy import (DEFAULT_ANDROID_APP_URL, DEFAULT_IOS_APP_URL
                                     SCOPE, AUTOASSIGNVALUE, AUTHORIZED, SESSION_PERSISTENCE, Match)
 from privacyidea.lib.remembered_device import (CookieAction, apply_cookie_action, count_user_devices,
                                                create_remembered_device, remove_idle_devices, user_identity)
-from privacyidea.lib.subscriptions import (subscription_status,
-                                           get_subscription,
-                                           EXPIRE_MESSAGE)
 from privacyidea.lib.token import get_tokens, assign_token, get_one_token, init_token, remove_token, enable_token
 from privacyidea.lib.tokenclass import ChallengeSession, TokenClass
 from privacyidea.lib.tokenrolloutstate import RolloutState
@@ -102,15 +99,6 @@ DEFAULT_CONTAINER_TYPE = "generic"
 DEFAULT_TIMEOUT_ACTION = "lockscreen"
 DEFAULT_SESSION_PERSISTENCE = SESSION_PERSISTENCE.TAB
 DEFAULT_POLICY_TEMPLATE_URL = "/static/policy-templates/"
-BODY_TEMPLATE = lazy_gettext("""
-<--- Please describe your Problem in detail --->
-
-<--- Please provide as much additional information as possible --->
-
-privacyIDEA Version: {version}
-Subscriber: {subscriber_name}
-Subscriptions: {subscriptions}
-""")
 
 
 class postpolicy:
@@ -971,8 +959,6 @@ def get_webui_settings(request, response):
         content["result"]["value"]["deletion_confirmation"] = deletion_confirmation
         content["result"]["value"]["show_seed"] = show_seed
         content["result"]["value"]["show_node"] = get_privacyidea_node() if show_node else ""
-        subscription_state = subscription_status()
-        content["result"]["value"]["subscription_status"] = subscription_state
         content["result"]["value"]["qr_image_android"] = qr_image_android
         content["result"]["value"]["qr_image_ios"] = qr_image_ios
         content["result"]["value"]["qr_image_custom"] = qr_image_custom
@@ -982,34 +968,6 @@ def get_webui_settings(request, response):
         content["result"]["value"]["rss_age"] = request.all_data.get("rss_age", FETCH_DAYS)
         content["result"]["value"]["container_wizard"] = container_wizard
 
-        if role == ROLE.ADMIN:
-            # Any subscription, also one of a plugin or one that expired, means that the system has support. The
-            # WebUI then addresses the email with the system documentation to the support.
-            content["result"]["value"]["has_subscription"] = len(get_subscription()) > 0
-            # Add a support mailto, for administrators with systemwrite rights.
-            subscriptions = get_subscription("privacyidea")
-            if len(subscriptions) == 1:
-                subscription = subscriptions[0]
-                version = get_version()
-                # State 2 is what subscription_status() reports when the subscription no
-                # longer holds, so the support mail is addressed at that. It was checked
-                # above already; checking again would run the user count a second time.
-                subject = EXPIRE_MESSAGE if subscription_state == 2 else f"Problem with {version!s}"
-                # Check policy, if the admin is allowed to save config. This is a genuine
-                # permission check: an admin on a system without admin policies effectively
-                # has systemwrite rights, so the fail-open allowed() is intended here.
-                action_allowed = Match.generic(g, scope=role,
-                                               action=PolicyAction.SYSTEMWRITE,
-                                               adminuser=username,
-                                               adminrealm=realm).allowed()
-                if action_allowed:
-                    body = str(BODY_TEMPLATE).format(subscriptions=subscriptions,
-                                                     version=version,
-                                                     subscriber_name=subscription.get("for_name"))
-
-                    body = quote(body)
-                    content["result"]["value"]["supportmail"] = (f"mailto:{subscription.get('by_email')}?subject="
-                                                                 f"{subject}&body={body}")
         response.set_data(json.dumps(content))
     return response
 

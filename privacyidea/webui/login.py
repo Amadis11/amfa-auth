@@ -49,7 +49,6 @@ from privacyidea.lib.policies.actions import PolicyAction, PasskeyLoginButtonOpt
 from privacyidea.lib.policy import PolicyClass, SCOPE, Match, REMOTE_USER
 from privacyidea.lib.queue import has_job_queue
 from privacyidea.lib.realm import get_realms
-from privacyidea.lib.subscriptions import subscription_status
 from privacyidea.lib.utils import get_client_ip, get_version_number, get_plugin_info_from_useragent
 
 log = logging.getLogger(__name__)
@@ -293,23 +292,35 @@ def get_render_context():
     except HSMException:
         hsm_ready = False
 
-    # Use policies to determine the customization of menu and baseline, the login text and the privacy statement link.
-    # With the subscription states 1 and 2, the defaults apply.
-    sub_state = subscription_status()
-    customization_menu_file = _start_page_action_value(PolicyAction.CUSTOM_MENU, allow_white_space_in_action=True)
-    if not customization_menu_file or sub_state in [1, 2]:
+    # Use policies to determine the customization of menu
+    # and baseline. get_action_values returns an array!
+    customization_menu_file = Match.action_only(g, action=PolicyAction.CUSTOM_MENU,
+                                                scope=SCOPE.WEBUI) \
+        .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
+    if len(customization_menu_file) and list(customization_menu_file)[0] :
+        customization_menu_file = list(customization_menu_file)[0]
+    else:
         customization_menu_file = "templates/menu.html"
-    customization_baseline_file = _start_page_action_value(PolicyAction.CUSTOM_BASELINE,
-                                                           allow_white_space_in_action=True)
-    if not customization_baseline_file or sub_state in [1, 2]:
+    customization_baseline_file = Match.action_only(g, action=PolicyAction.CUSTOM_BASELINE,
+                                                    scope=SCOPE.WEBUI) \
+        .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
+    if len(customization_baseline_file) and list(customization_baseline_file)[0] :
+        customization_baseline_file = list(customization_baseline_file)[0]
+    else:
         customization_baseline_file = "templates/baseline.html"
 
-    login_text = _start_page_action_value(PolicyAction.LOGIN_TEXT, allow_white_space_in_action=True)
-    if sub_state in [1, 2]:
+    login_text = Match.action_only(g, action=PolicyAction.LOGIN_TEXT, scope=SCOPE.WEBUI) \
+        .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
+    if len(login_text) and list(login_text)[0]:
+        login_text = list(login_text)[0]
+    else:
         login_text = ""
 
-    gdpr_link = _start_page_action_value(PolicyAction.GDPR_LINK, allow_white_space_in_action=True)
-    if sub_state in [1, 2]:
+    gdpr_link = Match.action_only(g, action=PolicyAction.GDPR_LINK, scope=SCOPE.WEBUI) \
+        .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
+    if len(gdpr_link) and list(gdpr_link)[0]:
+        gdpr_link = list(gdpr_link)[0]
+    else:
         gdpr_link = ""
 
     passkey_login = _start_page_action_value(PolicyAction.PASSKEY_LOGIN) or PasskeyLoginButtonOptions.SHOW

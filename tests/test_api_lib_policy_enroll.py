@@ -72,8 +72,7 @@ from privacyidea.lib.policy import (set_policy, delete_policy, enable_policy,
                                     get_static_policy_definitions)
 from privacyidea.lib.realm import delete_realm
 from privacyidea.lib.realm import set_realm as create_realm
-from privacyidea.lib.subscriptions import EXPIRE_MESSAGE
-from privacyidea.lib.token import (get_dynamic_policy_definitions, init_token, get_tokens, remove_token,
+from privacyidea.lib.token import (init_token, get_tokens, remove_token,
                                    set_realms, check_user_pass, unassign_token,
                                    enable_token)
 from privacyidea.lib.tokenclass import DATE_FORMAT
