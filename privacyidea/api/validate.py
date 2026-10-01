@@ -133,7 +133,6 @@ from privacyidea.lib.machine import list_machine_tokens, get_auth_items, attach_
 from privacyidea.lib.policy import Match
 from privacyidea.lib.policy import SCOPE
 from privacyidea.lib.policydecorators import reset_all_user_tokens_active, reset_token_failcounters
-from privacyidea.lib.subscriptions import CheckSubscription
 from privacyidea.lib.token import (check_user_pass, check_serial_pass,
                                    check_otp, create_challenges_from_tokens, get_one_token)
 from privacyidea.lib.token import get_tokens
@@ -404,7 +403,6 @@ def _challenge_owner(challenge) -> User:
 @prepolicy(load_challenge_text, request=request)
 @prepolicy(fido2_auth, request=request)
 @check_user_serial_or_cred_id_in_request(request)
-@CheckSubscription(request)
 @prepolicy(api_key_required, request=request)
 @event("validate_check", request, g)
 def check():
@@ -1544,7 +1542,6 @@ def trigger_challenge():
 @validate_blueprint.route('/polltransaction', methods=['GET'])
 @validate_blueprint.route('/polltransaction/<transaction_id>', methods=['GET'])
 @prepolicy(mangle, request=request)
-@CheckSubscription(request)
 @prepolicy(api_key_required, request=request)
 @event("validate_poll_transaction", request, g)
 def poll_transaction(transaction_id=None):

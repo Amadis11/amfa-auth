@@ -74,7 +74,6 @@ from .register import register_blueprint
 from .event import eventhandling_blueprint
 from .smsgateway import smsgateway_blueprint
 from .clienttype import client_blueprint
-from .subscriptions import subscriptions_blueprint
 from .monitoring import monitoring_blueprint
 from .tokengroup import tokengroup_blueprint
 from .serviceid import serviceid_blueprint
@@ -315,7 +314,6 @@ def before_userendpoint_request():
 @caconnector_blueprint.before_request
 @privacyideaserver_blueprint.before_request
 @client_blueprint.before_request
-@subscriptions_blueprint.before_request
 @monitoring_blueprint.before_request
 @tokengroup_blueprint.before_request
 @clients_blueprint.before_request
@@ -575,7 +573,6 @@ def before_request():
 @periodictask_blueprint.after_request
 @privacyideaserver_blueprint.after_request
 @client_blueprint.after_request
-@subscriptions_blueprint.after_request
 @monitoring_blueprint.after_request
 @ttype_blueprint.after_request
 @validate_blueprint.after_request
@@ -717,7 +714,6 @@ def shape_radius_response(request, response):
 @application_blueprint.app_errorhandler(AuthError)
 @smtpserver_blueprint.app_errorhandler(AuthError)
 @eventhandling_blueprint.app_errorhandler(AuthError)
-@subscriptions_blueprint.app_errorhandler(AuthError)
 @monitoring_blueprint.app_errorhandler(AuthError)
 @tokengroup_blueprint.app_errorhandler(AuthError)
 @serviceid_blueprint.app_errorhandler(AuthError)
@@ -765,7 +761,6 @@ def auth_error(error):
 @eventhandling_blueprint.app_errorhandler(PolicyError)
 @register_blueprint.app_errorhandler(PolicyError)
 @recover_blueprint.app_errorhandler(PolicyError)
-@subscriptions_blueprint.app_errorhandler(PolicyError)
 @monitoring_blueprint.app_errorhandler(PolicyError)
 @ttype_blueprint.app_errorhandler(PolicyError)
 @tokengroup_blueprint.app_errorhandler(PolicyError)
@@ -791,7 +786,6 @@ def policy_error(error):
 @eventhandling_blueprint.app_errorhandler(ResourceNotFoundError)
 @register_blueprint.app_errorhandler(ResourceNotFoundError)
 @recover_blueprint.app_errorhandler(ResourceNotFoundError)
-@subscriptions_blueprint.app_errorhandler(ResourceNotFoundError)
 @ttype_blueprint.app_errorhandler(ResourceNotFoundError)
 @tokengroup_blueprint.errorhandler(ResourceNotFoundError)
 @serviceid_blueprint.errorhandler(ResourceNotFoundError)
@@ -820,7 +814,6 @@ def resource_not_found_error(error):
 @eventhandling_blueprint.app_errorhandler(PrivacyIDEAError)
 @register_blueprint.app_errorhandler(PrivacyIDEAError)
 @recover_blueprint.app_errorhandler(PrivacyIDEAError)
-@subscriptions_blueprint.app_errorhandler(PrivacyIDEAError)
 @monitoring_blueprint.app_errorhandler(PrivacyIDEAError)
 @ttype_blueprint.app_errorhandler(PrivacyIDEAError)
 @tokengroup_blueprint.app_errorhandler(PrivacyIDEAError)
@@ -850,7 +843,6 @@ def privacyidea_error(error):
 @eventhandling_blueprint.app_errorhandler(NotImplementedError)
 @register_blueprint.app_errorhandler(NotImplementedError)
 @recover_blueprint.app_errorhandler(NotImplementedError)
-@subscriptions_blueprint.app_errorhandler(NotImplementedError)
 @monitoring_blueprint.app_errorhandler(NotImplementedError)
 @ttype_blueprint.app_errorhandler(NotImplementedError)
 @tokengroup_blueprint.app_errorhandler(NotImplementedError)
@@ -880,7 +872,6 @@ def not_implemented_error(error):
 @eventhandling_blueprint.app_errorhandler(500)
 @register_blueprint.app_errorhandler(500)
 @recover_blueprint.app_errorhandler(500)
-@subscriptions_blueprint.app_errorhandler(500)
 @monitoring_blueprint.app_errorhandler(500)
 @ttype_blueprint.app_errorhandler(500)
 @tokengroup_blueprint.app_errorhandler(500)

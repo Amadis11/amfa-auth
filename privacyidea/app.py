@@ -77,7 +77,6 @@ from privacyidea.api.serviceid import serviceid_blueprint
 from privacyidea.api.clients import clients_blueprint
 from privacyidea.api.smsgateway import smsgateway_blueprint
 from privacyidea.api.smtpserver import smtpserver_blueprint
-from privacyidea.api.subscriptions import subscriptions_blueprint
 from privacyidea.api.system import system_blueprint
 from privacyidea.api.token import token_blueprint
 from privacyidea.api.tokengroup import tokengroup_blueprint
@@ -213,7 +212,6 @@ def _register_blueprints(app):
     app.register_blueprint(eventhandling_blueprint, url_prefix='/event')
     app.register_blueprint(smsgateway_blueprint, url_prefix='/smsgateway')
     app.register_blueprint(client_blueprint, url_prefix='/client')
-    app.register_blueprint(subscriptions_blueprint, url_prefix='/subscriptions')
     app.register_blueprint(monitoring_blueprint, url_prefix='/monitoring')
     app.register_blueprint(tokengroup_blueprint, url_prefix='/tokengroup')
     app.register_blueprint(serviceid_blueprint, url_prefix='/serviceid')
