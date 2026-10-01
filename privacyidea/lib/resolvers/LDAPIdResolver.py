@@ -313,6 +313,51 @@ class AUTHTYPE:
     SASL_KERBEROS = "SASL Kerberos"
 
 
+# Kody Active Directory w komunikacie katalogu (szesnastkowe, jak je zwraca AD).
+# Rozroznienie jest konieczne, bo sam kod LDAP to 49 (invalidCredentials) zarowno przy zlym
+# hasle, jak i przy hasle wygaslym, wymagajacym zmiany czy zablokowanym koncie.
+AD_KODY_STANU_HASLA = {
+    "525": "user_not_found",
+    "52e": "invalid_credentials",
+    "530": "logon_time_restriction",
+    "531": "logon_restriction",
+    "532": "password_expired",
+    "533": "account_disabled",
+    "701": "account_expired",
+    "773": "password_change_required",
+    "775": "account_locked",
+}
+
+
+class DirectoryPasswordState(ResolverError):
+    """Katalog rozpoznal stan konta lub hasla, ktory nie jest zwyklym bledem poswiadczen.
+
+    Sygnalu nie wolno polykac: dostawca poswiadczen buduje z niego ekran zmiany poswiadczen,
+    tak jak robi to system Windows.
+    """
+
+    def __init__(self, state: str, message: str, result: dict = None):
+        super().__init__(message)
+        self.state = state
+        self.result = result or {}
+
+
+def stan_hasla_z_odpowiedzi_katalogu(result: dict):
+    """Zwraca nazwe stanu konta z odpowiedzi katalogu albo None.
+
+    Active Directory podaje rozroznienie w komunikacie jako ``data <kod>``.
+    """
+    if not result:
+        return None
+    tekst = " ".join(str(result.get(k, "")) for k in ("message", "description", "result"))
+    znacznik = "data "
+    pozycja = tekst.lower().find(znacznik)
+    if pozycja < 0:
+        return None
+    kod = tekst[pozycja + len(znacznik):].split()[0].rstrip(",;").lower()
+    return AD_KODY_STANU_HASLA.get(kod)
+
+
 class IdResolver(UserIdResolver):
     # If the resolver could be configured editable
     updateable = True
@@ -423,6 +468,13 @@ class IdResolver(UserIdResolver):
                                                 auto_referrals=not self.noreferrals,
                                                 start_tls=self.start_tls)
             if not connection.bind():
+                # Stan konta z katalogu ma pierwszenstwo przed ogolnym bledem poswiadczen:
+                # bez tego informacja ginie i wszystkie przypadki wygladaja tak samo.
+                stan = stan_hasla_z_odpowiedzi_katalogu(connection.result)
+                if stan and stan != "invalid_credentials":
+                    log.info(f"Katalog rozpoznal stan konta {stan!r} dla {uid!r}.")
+                    raise DirectoryPasswordState(stan, f"Directory reported {stan}",
+                                                 connection.result)
                 raise ResolverError(f"Bind failed with: {connection.result.get('description')} "
                                     f"({connection.result.get('result')})")
             log.debug(f"LDAP bind operation took {connection.usage.elapsed_time}")

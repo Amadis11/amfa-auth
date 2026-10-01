@@ -724,6 +724,14 @@ def check_token_list(token_object_list: list[TokenClass], passw: str, user: User
         # not even the PIN.
         # Depending on IncFailCountOnFalsePin, we increase the failcounter.
         reply_dict["message"] = _("wrong otp pin")
+        # Katalog mogl rozpoznac stan konta (haslo wygasle, wymagana zmiana, konto zablokowane).
+        # Przekazujemy to jako pole rozpoznawalne maszynowo, zeby dostawca poswiadczen mial
+        # z czego zbudowac ekran zmiany poswiadczen. Nazwa pola jest wspolna z nasza brama.
+        stany_katalogu = {t.auth_details.get("directory_password_state")
+                          for t in invalid_token_list if t.auth_details.get("password_change_required")}
+        if stany_katalogu:
+            reply_dict["password_change_required"] = True
+            reply_dict["directory_password_state"] = sorted(s for s in stany_katalogu if s)
         if get_inc_fail_count_on_false_pin():
             for token_object in invalid_token_list:
                 token_object.inc_failcount()
