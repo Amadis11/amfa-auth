@@ -117,6 +117,23 @@ def testy() -> tuple[bool, str]:
     return True, "\n".join(raport)
 
 
+def zbuduj_panel() -> tuple[bool, str]:
+    """Buduje panel konsoli. Tu siedza nasze zmiany brandowe, wiec zepsuty panel musi zatrzymac
+    wydanie tak samo jak padniety test — inaczej przeszedlby niezauwazony."""
+    katalog = KORZEN / "privacyidea" / "static"
+    if not (katalog / "package.json").is_file():
+        return True, "brak zrodel panelu w tej wersji podstawy — pomijam"
+    instalacja = subprocess.run(["npm", "ci", "--silent"], cwd=katalog, capture_output=True, text=True)
+    if instalacja.returncode != 0:
+        return False, "nie udalo sie zainstalowac zaleznosci panelu: " + \
+            (instalacja.stderr.strip().split("\n")[-1] if instalacja.stderr.strip() else "")
+    budowa = subprocess.run(["npm", "run", "build"], cwd=katalog, capture_output=True, text=True)
+    if budowa.returncode != 0:
+        ogon = (budowa.stdout + budowa.stderr).strip().split("\n")
+        return False, "build panelu padl: " + (ogon[-1] if ogon else "")
+    return True, "panel zbudowany"
+
+
 def zbuduj() -> tuple[bool, str]:
     wynik = uruchom(sys.executable, "-m", "build", "--outdir", "dist-amfa", sprawdz_kod=False)
     if wynik.returncode != 0:
@@ -172,8 +189,14 @@ def main() -> int:
         return 3
 
     ok, opis = zbuduj()
-    print(f"Budowanie: {'OK' if ok else 'PADLO'} — {opis}")
+    print(f"Budowanie pakietu: {'OK' if ok else 'PADLO'} — {opis}")
     if not ok:
+        return 3
+
+    ok, opis = zbuduj_panel()
+    print(f"Budowanie panelu: {'OK' if ok else 'PADLO'} — {opis}")
+    if not ok:
+        print("PANEL SIE NIE BUDUJE — nie wydajemy.", file=sys.stderr)
         return 3
 
     zapisz_podstawe(commit, znacznik)

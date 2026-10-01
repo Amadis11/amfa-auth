@@ -28,3 +28,18 @@ def test_automat_aktualizacji_jest_na_miejscu() -> None:
 
     podstawa = (KORZEN / "amfa" / "PODSTAWA").read_text(encoding="utf-8")
     assert "commit " in podstawa, "brak zapisu podstawy — automat nie wie, na czym stoi"
+
+
+def test_automat_buduje_takze_panel() -> None:
+    """W panelu sa nasze zmiany brandowe, wiec zepsuty panel musi zatrzymac wydanie.
+
+    Bez tego wydanie przeszloby z panelem, ktory sie nie buduje.
+    """
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    assert "def zbuduj_panel(" in skrypt, "automat nie buduje panelu"
+    assert '"npm", "run", "build"' in skrypt, "automat nie uruchamia buildu panelu"
+    assert 'zbuduj_panel()' in skrypt, "build panelu nie jest dolaczony do przebiegu"
+
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
+    assert "setup-node" in workflow, "workflow nie przygotowuje srodowiska Node"
+
