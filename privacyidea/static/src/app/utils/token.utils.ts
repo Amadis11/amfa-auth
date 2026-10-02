@@ -65,7 +65,7 @@ export const tokenTypes: TokenType[] = [
     key: "remote",
     name: "Remote",
     info: "",
-    text: $localize`:@@token.remoteTokenForwards:The remote token forwards the authentication request to another privacyIDEA server.`,
+    text: $localize`:@@token.remoteTokenForwards:The remote token forwards the authentication request to another AMFA server.`,
     rollover: false
   } as TokenType,
   {
@@ -128,7 +128,7 @@ export const tokenTypes: TokenType[] = [
     key: "indexedsecret",
     name: "Indexed Secret",
     info: "",
-    text: $localize`:@@token.indexedSecret:The indexed secret Token is based on a shared secret between privacyIDEA and the user. During authentication, the user is asked for characters at random positions of this known secret.`,
+    text: $localize`:@@token.indexedSecret:The indexed secret Token is based on a shared secret between AMFA and the user. During authentication, the user is asked for characters at random positions of this known secret.`,
     rollover: true
   } as TokenType,
   {

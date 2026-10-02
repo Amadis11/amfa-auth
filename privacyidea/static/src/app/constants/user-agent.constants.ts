@@ -18,7 +18,7 @@
  **/
 
 /**
- * A known privacyIDEA client user agent: a friendly `displayName` shown in the UI, plus the `identifier` that
+ * A known AMFA client user agent: a friendly `displayName` shown in the UI, plus the `identifier` that
  * actually prefixes the user-agent string the plugin sends (typically the prefix before "/" in the User-Agent header).
  */
 export interface UserAgentPreset {
@@ -28,18 +28,18 @@ export interface UserAgentPreset {
 
 export const USER_AGENT_PRESETS: readonly UserAgentPreset[] = [
   { displayName: "Credential Provider", identifier: "privacyidea-cp" },
-  { displayName: "Keycloak", identifier: "privacyIDEA-Keycloak" },
+  { displayName: "Keycloak", identifier: "AMFA-Keycloak" },
   { displayName: "EntraID via Keycloak", identifier: "entraid-via-keycloak" },
   { displayName: "AD FS", identifier: "PrivacyIDEA-ADFS" },
   { displayName: "SimpleSAMLphp", identifier: "simpleSAMLphp" },
   { displayName: "PAM OTP & Push", identifier: "PAM" },
   { displayName: "PAM Passkey", identifier: "pam-passkey" },
-  { displayName: "Shibboleth", identifier: "privacyIDEA-Shibboleth" },
+  { displayName: "Shibboleth", identifier: "AMFA-Shibboleth" },
   { displayName: "Nextcloud", identifier: "privacyidea-nextcloud" },
   { displayName: "FreeRADIUS", identifier: "FreeRADIUS" },
-  { displayName: "LDAP Proxy", identifier: "privacyIDEA-LDAP-Proxy" },
+  { displayName: "LDAP Proxy", identifier: "AMFA-LDAP-Proxy" },
   { displayName: "privacyIDEA Authenticator", identifier: "privacyIDEA-App" },
-  { displayName: "privacyIDEA WebUI", identifier: "privacyIDEA-WebUI" }
+  { displayName: "AMFA WebUI", identifier: "AMFA-WebUI" }
 ];
 
 // Resolves a user-agent identifier to its friendly display name, falling back to the raw identifier if unknown.

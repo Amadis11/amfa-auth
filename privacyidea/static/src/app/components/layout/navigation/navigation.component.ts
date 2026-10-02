@@ -18,7 +18,7 @@
  **/
 import { NgClass, NgOptimizedImage, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, ElementRef, inject, OnDestroy, signal, ViewChild } from "@angular/core";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatIcon, MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatToolbar } from "@angular/material/toolbar";
@@ -73,7 +73,6 @@ export interface SubNavSection {
   host: { "[class.has-custom-logo]": "customLogo()" },
   imports: [
     MatToolbar,
-    MatIconButton,
     MatIconModule,
     NgOptimizedImage,
     MatIcon,
@@ -164,7 +163,7 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   });
   versionPrefix = computed(() => {
     if (this.customLogo()) {
-      return "privacyIDEA ";
+      return "AMFA ";
     }
     return "";
   });
@@ -246,10 +245,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   protected cancelDashboard(): void {
     this.dashboardLayoutService.cancelEdit();
     this.pendingChanges.clearAllRegistrations();
-  }
-
-  openSupport(): void {
-    window.open("https://netknights.it/support_link_admin", "_blank");
   }
 
   openExternalLink(url: string): void {

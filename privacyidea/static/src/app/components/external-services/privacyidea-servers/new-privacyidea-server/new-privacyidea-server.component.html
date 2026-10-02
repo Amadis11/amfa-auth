@@ -25,13 +25,13 @@
       <h3
         class="margin-8"
         i18n="@@piServer.editPrivacyidea"
-        >Edit privacyIDEA Server</h3
+        >Edit AMFA Server</h3
       >
     } @else {
       <h3
         class="margin-8"
         i18n="@@piServer.createPrivacyidea"
-        >Create privacyIDEA Server</h3
+        >Create AMFA Server</h3
       >
     }
 
@@ -92,14 +92,14 @@
             <mat-error i18n="@@common.cannotBeNamed">Cannot be named "{{ privacyideaForm.identifier().value() }}".</mat-error>
           }
           <mat-hint i18n="@@piServer.uniqueIdentifying"
-            >This is the unique identifying name of the privacyIDEA server definition.</mat-hint
+            >This is the unique identifying name of the AMFA server definition.</mat-hint
           >
         </mat-form-field>
 
         <mat-form-field
           appearance="fill"
           class="input-width-l">
-          <mat-label i18n="@@piServer.urlPrivacyidea">URL of the privacyIDEA Server</mat-label>
+          <mat-label i18n="@@piServer.urlPrivacyidea">URL of the AMFA Server</mat-label>
           <app-clearable-input
             (clearButtonClick)="privacyideaModel.update(m => ({...m, url: ''}))"
             [showClearButton]="!!privacyideaModel().url">
@@ -110,10 +110,10 @@
           </app-clearable-input>
           @if (privacyideaForm.url().errors().some(e => e.kind === 'required')) {
             <mat-error i18n="@@piServer.urlPrivacyideaServer"
-              >URL of the privacyIDEA Server is <strong>required</strong></mat-error
+              >URL of the AMFA Server is <strong>required</strong></mat-error
             >
           }
-          <mat-hint i18n="@@piServer.pleaseProvide">Please provide the base URL of the privacyIDEA server.</mat-hint>
+          <mat-hint i18n="@@piServer.pleaseProvide">Please provide the base URL of the AMFA server.</mat-hint>
         </mat-form-field>
       </div>
 

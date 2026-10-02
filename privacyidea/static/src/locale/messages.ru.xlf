@@ -508,7 +508,7 @@
       </trans-unit>
       <trans-unit id="audit.privacyideaServer" datatype="html">
         <source>PrivacyIDEA Server</source>
-        <target>Сервер privacyIDEA</target>
+        <target>Сервер AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.ts</context>
           <context context-type="linenumber">116</context>
@@ -2755,8 +2755,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.remoteTokenForwards" datatype="html">
-        <source>The Remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Токен Remote перенаправляет запрос аутентификации на другой сервер privacyIDEA.</target>
+        <source>The Remote token forwards the authentication request to another AMFA server.</source>
+        <target>Токен Remote перенаправляет запрос аутентификации на другой сервер AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/remote-config/remote-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2871,8 +2871,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.registrationServer" datatype="html">
-        <source>The Registration Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>Сервер регистрации — это данный сервер privacyIDEA. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Обратите внимание, что сервер privacyIDEA должен быть доступен со смартфона пользователя.</target>
+        <source>The Registration Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>Сервер регистрации — это данный сервер AMFA. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Обратите внимание, что сервер AMFA должен быть доступен со смартфона пользователя.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">47</context>
@@ -2887,8 +2887,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationServer" datatype="html">
-        <source>The Authentication Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>Сервер аутентификации — это данный сервер privacyIDEA. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Обратите внимание, что сервер privacyIDEA должен быть доступен со смартфона пользователя.</target>
+        <source>The Authentication Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>Сервер аутентификации — это данный сервер AMFA. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Обратите внимание, что сервер AMFA должен быть доступен со смартфона пользователя.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">64</context>
@@ -3055,8 +3055,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.youNeedSetCorrect" datatype="html">
-        <source>You need to set the correct appId, which in fact is the URL of your privacyIDEA installation.</source>
-        <target>Вам нужно задать правильный appId, который по сути является URL вашей установки privacyIDEA.</target>
+        <source>You need to set the correct appId, which in fact is the URL of your AMFA installation.</source>
+        <target>Вам нужно задать правильный appId, который по сути является URL вашей установки AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">28</context>
@@ -3079,8 +3079,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.urlYourPrivacyidea" datatype="html">
-        <source>The URL of your privacyIDEA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
-        <target>URL вашей установки privacyIDEA.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Это должен быть действительный FQDN с действительным доменом верхнего уровня — иначе вы можете получить ошибку U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
+        <source>The URL of your AMFA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
+        <target>URL вашей установки AMFA.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Это должен быть действительный FQDN с действительным доменом верхнего уровня — иначе вы можете получить ошибку U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">52</context>
@@ -3147,8 +3147,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.shouldPathLocal" datatype="html">
-        <source>This should be a path to a local directory on the server, that privacyIDEA has read access to.</source>
-        <target>Это должен быть путь к локальному каталогу на сервере, к которому privacyIDEA имеет доступ для чтения.</target>
+        <source>This should be a path to a local directory on the server, that AMFA has read access to.</source>
+        <target>Это должен быть путь к локальному каталогу на сервере, к которому AMFA имеет доступ для чтения.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">49</context>
@@ -3171,8 +3171,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.doesNotNeedSet" datatype="html">
-        <source>This does not need to be set for WebAuthn to work, however without this, privacyIDEA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
-        <target>Это не требуется для работы WebAuthn, однако без этого privacyIDEA не может проверить, действительно ли сертификат аттестации является доверенным (он всё равно будет проверен на действительность).</target>
+        <source>This does not need to be set for WebAuthn to work, however without this, AMFA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
+        <target>Это не требуется для работы WebAuthn, однако без этого AMFA не может проверить, действительно ли сертификат аттестации является доверенным (он всё равно будет проверен на действительность).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">56</context>
@@ -3319,8 +3319,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.yubikeyYubico" datatype="html">
-        <source>This is a Yubikey in the Yubico Mode authenticated against privacyIDEA.</source>
-        <target>Это Yubikey в режиме Yubico, аутентифицируемый через privacyIDEA.</target>
+        <source>This is a Yubikey in the Yubico Mode authenticated against AMFA.</source>
+        <target>Это Yubikey в режиме Yubico, аутентифицируемый через AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3335,8 +3335,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationRequestHandled" datatype="html">
-        <source>The authentication request can be handled by the default privacyIDEA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> but can also be handled by the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>Yubico Validation Protocol. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Запрос аутентификации может обрабатываться стандартным <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> privacyIDEA, но также может обрабатываться <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>протоколом проверки Yubico. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>The authentication request can be handled by the default AMFA validate API but can also be handled by the Yubico Validation Protocol.</source>
+        <target>Запрос аутентификации может обрабатываться стандартным validate API AMFA, но также может обрабатываться протоколом проверки Yubico. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">29</context>
@@ -5551,16 +5551,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.editPrivacyidea" datatype="html">
-        <source>Edit privacyIDEA Server</source>
-        <target>Редактировать сервер privacyIDEA</target>
+        <source>Edit AMFA Server</source>
+        <target>Редактировать сервер AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyidea" datatype="html">
-        <source>Create privacyIDEA Server</source>
-        <target>Создать сервер privacyIDEA</target>
+        <source>Create AMFA Server</source>
+        <target>Создать сервер AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">34</context>
@@ -5647,32 +5647,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.uniqueIdentifying" datatype="html">
-        <source>This is the unique identifying name of the privacyIDEA server definition.</source>
-        <target>Это уникальное идентифицирующее имя определения сервера privacyIDEA.</target>
+        <source>This is the unique identifying name of the AMFA server definition.</source>
+        <target>Это уникальное идентифицирующее имя определения сервера AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyidea" datatype="html">
-        <source>URL of the privacyIDEA Server</source>
-        <target>URL сервера privacyIDEA</target>
+        <source>URL of the AMFA Server</source>
+        <target>URL сервера AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyideaServer" datatype="html">
-        <source>URL of the privacyIDEA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
-        <target>URL сервера privacyIDEA <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>обязателен<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
+        <source>URL of the AMFA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
+        <target>URL сервера AMFA <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>обязателен<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.pleaseProvide" datatype="html">
-        <source>Please provide the base URL of the privacyIDEA server.</source>
-        <target>Укажите базовый URL сервера privacyIDEA.</target>
+        <source>Please provide the base URL of the AMFA server.</source>
+        <target>Укажите базовый URL сервера AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">116</context>
@@ -5739,8 +5739,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.filterPrivacyidea" datatype="html">
-        <source>Filter privacyIDEA Servers...</source>
-        <target>Фильтровать серверы privacyIDEA...</target>
+        <source>Filter AMFA Servers...</source>
+        <target>Фильтровать серверы AMFA...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5903,8 +5903,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServers" datatype="html">
-        <source>Delete privacyIDEA Servers</source>
-        <target state="new">Удалить сервер privacyIDEA</target>
+        <source>Delete AMFA Servers</source>
+        <target state="new">Удалить сервер AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.ts</context>
           <context context-type="linenumber">140</context>
@@ -6671,59 +6671,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.openSourceProject" datatype="html">
-        <source>An open-source project <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>maintained by NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Проект с открытым исходным кодом <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>, поддерживаемый NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>AMFA — authentication system by AMITRONIC</source>
+        <target>AMFA — authentication system by AMITRONIC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.collaborationCommunity" datatype="html">
-        <source>in collaboration with <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>community contributors <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>в сотрудничестве с <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>участниками сообщества <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>AMITRONIC · Amadeusz Kusz</source>
+        <target>AMITRONIC · Amadeusz Kusz</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">119</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.netknights" datatype="html">
-        <source>NetKnights</source>
-        <target>NetKnights</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.maintainedByNetknights" datatype="html">
-        <source>Maintained by NetKnights</source>
-        <target>Поддерживается NetKnights</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">134</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.github" datatype="html">
-        <source>GitHub</source>
-        <target>GitHub</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">141</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.communityContributors" datatype="html">
-        <source>Community contributors on GitHub</source>
-        <target>Участники сообщества на GitHub</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.support" datatype="html">
-        <source>Support</source>
-        <target>Поддержка</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.documentation" datatype="html">
@@ -7283,8 +7243,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="login.youAuthenticated" datatype="html">
-        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to privacyIDEA without any further credentials.</source>
-        <target>Вы аутентифицированы веб-сервером как пользователь <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. Вы можете войти в privacyIDEA как этот пользователь без каких-либо дополнительных учётных данных.</target>
+        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to AMFA without any further credentials.</source>
+        <target>Вы аутентифицированы веб-сервером как пользователь <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. Вы можете войти в AMFA как этот пользователь без каких-либо дополнительных учётных данных.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">63</context>
@@ -8580,14 +8540,6 @@
           <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="welcome.firstWeWouldLike" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>First, we would like to give you some background information on privacyIDEA.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA is an <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Enterprise Level<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Multi Factor Authentication System. It is open source. The core developers are employed at NetKnights GmbH, Germany. NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target state="new"><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Сначала мы хотели бы дать вам некоторую справочную информацию о privacyIDEA.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA — это <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>система многофакторной аутентификации корпоративного уровня<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Это открытое программное обеспечение. Основные разработчики работают в NetKnights GmbH, Германия. NetKnights предоставляет <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, включая <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>поддержку и соглашения об уровне обслуживания<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Кроме того, NetKnights предоставляет услуги, консультации и платную разработку новых функций. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="welcome.valueOpenSource" datatype="html">
         <source>The value of open source</source>
         <target>Ценность открытого исходного кода</target>
@@ -8597,27 +8549,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.youReadingBooks" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software privacyIDEA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Вы читаете книги, которые вам больше не принадлежат. Ваша электронная книга предоставляет их только на время чтения. Вы используете программное обеспечение как услугу и не имеете никакого контроля над тем, когда программное обеспечение будет обновлено, какие функции будут добавлены или удалены, или будет ли вообще остановлена услуга. Вы получаете только юридическое право ограниченного по времени использования. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Вы могли бы установить проприетарное программное обеспечение на собственный сервер, но и в отношении этой установки у вас тоже ограниченные права. Вам не разрешено изменять или передавать это проприетарное программное обеспечение. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Открытое программное обеспечение privacyIDEA теперь является <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>вашей собственностью<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! Никто не может отнять у вас это программное обеспечение или эту установку. Согласно лицензии AGPLv3 вы можете изменять или распространять это программное обеспечение. Вам не нужно беспокоиться об окончании срока службы. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Использование открытого исходного кода — это не про то, чтобы не тратить деньги, а про полный контроль над собственной системой! Навсегда!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software AMFA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Вы читаете книги, которые вам больше не принадлежат. Ваша электронная книга предоставляет их только на время чтения. Вы используете программное обеспечение как услугу и не имеете никакого контроля над тем, когда программное обеспечение будет обновлено, какие функции будут добавлены или удалены, или будет ли вообще остановлена услуга. Вы получаете только юридическое право ограниченного по времени использования. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Вы могли бы установить проприетарное программное обеспечение на собственный сервер, но и в отношении этой установки у вас тоже ограниченные права. Вам не разрешено изменять или передавать это проприетарное программное обеспечение. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Открытое программное обеспечение AMFA теперь является <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>вашей собственностью<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! Никто не может отнять у вас это программное обеспечение или эту установку. Согласно лицензии AGPLv3 вы можете изменять или распространять это программное обеспечение. Вам не нужно беспокоиться об окончании срока службы. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Использование открытого исходного кода — это не про то, чтобы не тратить деньги, а про полный контроль над собственной системой! Навсегда!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.addedValuePrivacyidea" datatype="html">
-        <source>The added value of privacyIDEA Enterprise Edition</source>
-        <target>Дополнительная ценность privacyIDEA Enterprise Edition</target>
+        <source>The added value of AMFA Enterprise Edition</source>
+        <target>Дополнительная ценность AMFA Enterprise Edition</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
           <context context-type="linenumber">46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.accordingAgplv3" datatype="html">
-        <source>According to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target state="new">Согласно <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.softwareComes" datatype="html">
@@ -8626,30 +8570,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.addedValuesPrivacyidea" datatype="html">
-        <source>The added values of the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> are:</source>
-        <target state="new">Дополнительные преимущества <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">69</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.supportService" datatype="html">
-        <source><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Support and <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>Service Level Agreements by NetKnights<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>, Germany. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Stable enterprise packages for Ubuntu and RHEL allow for an easy update and secure operations.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> An exclusive <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Appliance<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>-Tool, which allows easy setup of RADIUS clients, MySQL replications, backup and restore... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Exclusive timely news and bug reports.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Depending on the support level you get help with updates and yearly consultancy.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> By buying the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> you ensure that professional developers can work full time on privacyIDEA, add new features and fix bugs in a timely manner. In addition, you allow for external services like code audits. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></source>
-        <target state="new"><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Поддержка и <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>соглашения об уровне обслуживания от NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, Германия. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Стабильные корпоративные пакеты для Ubuntu и RHEL обеспечивают простое обновление и безопасную эксплуатацию.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Эксклюзивный инструмент <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Appliance<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>, который позволяет легко настраивать клиентов RADIUS, репликации MySQL, резервное копирование и восстановление... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Эксклюзивные своевременные новости и отчёты об ошибках.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>В зависимости от уровня поддержки вы получаете помощь с обновлениями и ежегодные консультации.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Приобретая <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, вы гарантируете, что профессиональные разработчики смогут работать над privacyIDEA полный рабочий день, добавлять новые функции и своевременно исправлять ошибки. Кроме того, вы делаете возможными внешние услуги, такие как аудит кода. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.askPrivacyidea" datatype="html">
-        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>Ask for the privacyIDEA Enterprise Edition, now!<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target state="new"><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>Запросите privacyIDEA Enterprise Edition прямо сейчас! <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.thankYouImproving" datatype="html">
@@ -8661,19 +8581,11 @@
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.thankYouUsing" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using privacyIDEA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using privacyIDEA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Спасибо за использование privacyIDEA и за то, что делаете вашу сеть и, следовательно, этот мир более безопасным местом!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Приятного использования privacyIDEA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using AMFA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using AMFA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Спасибо за использование AMFA и за то, что делаете вашу сеть и, следовательно, этот мир более безопасным местом!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Приятного использования AMFA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">118</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.youUsingPrivacyidea" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>You are using privacyIDEA with more than 50 users.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for your trust!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> For the productive enterprise use, we recommend the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target state="new"><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Вы используете privacyIDEA с более чем 50 пользователями.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Спасибо за ваше доверие!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Для продуктивного корпоративного использования мы рекомендуем <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights предоставляет <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, включая <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>поддержку и соглашения об уровне обслуживания<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Кроме того, NetKnights предоставляет услуги, консультации и платную разработку новых функций. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.assignTokenSelf" datatype="html">
@@ -10581,8 +10493,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.vascoSerialRead" datatype="html">
-        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within privacyIDEA, activate the checkbox. Otherwise, privacyIDEA will create a new unique serial number.</source>
-        <target>Серийный номер VASCO считывается из blob VASCO. Если вы хотите использовать этот серийный номер VASCO в privacyIDEA, установите флажок. В противном случае privacyIDEA создаст новый уникальный серийный номер.</target>
+        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within AMFA, activate the checkbox. Otherwise, AMFA will create a new unique serial number.</source>
+        <target>Серийный номер VASCO считывается из blob VASCO. Если вы хотите использовать этот серийный номер VASCO в AMFA, установите флажок. В противном случае AMFA создаст новый уникальный серийный номер.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-vasco/enroll-vasco.component.html</context>
           <context context-type="linenumber">51</context>
@@ -12715,16 +12627,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.privacyideaUser" datatype="html">
-        <source>privacyIDEA User Groups Key</source>
-        <target>Ключ групп пользователей privacyIDEA</target>
+        <source>AMFA User Groups Key</source>
+        <target>Ключ групп пользователей AMFA</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.keyStoreGroups" datatype="html">
-        <source>Key to store the groups of the user in privacyIDEA.</source>
-        <target>Ключ для хранения групп пользователя в privacyIDEA.</target>
+        <source>Key to store the groups of the user in AMFA.</source>
+        <target>Ключ для хранения групп пользователя в AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">38</context>
@@ -12791,8 +12703,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userGroupsReceived" datatype="html">
-        <source>User groups are received in a separate request and stored under the privacyIDEA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
-        <target>Группы пользователей получаются в отдельном запросе и сохраняются под атрибутом privacyIDEA <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</target>
+        <source>User groups are received in a separate request and stored under the AMFA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
+        <target>Группы пользователей получаются в отдельном запросе и сохраняются под атрибутом AMFA <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">110</context>
@@ -13015,8 +12927,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.leftColumnDefines" datatype="html">
-        <source>The left column defines the user attributes used in privacyIDEA and the right column the equivalent attribute in the user store.</source>
-        <target>Левый столбец определяет атрибуты пользователя, используемые в privacyIDEA, а правый — эквивалентный атрибут в хранилище пользователей.</target>
+        <source>The left column defines the user attributes used in AMFA and the right column the equivalent attribute in the user store.</source>
+        <target>Левый столбец определяет атрибуты пользователя, используемые в AMFA, а правый — эквивалентный атрибут в хранилище пользователей.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">306</context>
@@ -13043,16 +12955,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataUserStore" datatype="html">
-        <source>The user data in this user store can be modified from within privacyIDEA.</source>
-        <target>Данные пользователей в этом хранилище можно изменять из privacyIDEA.</target>
+        <source>The user data in this user store can be modified from within AMFA.</source>
+        <target>Данные пользователей в этом хранилище можно изменять из AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">337</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.timeSecondsPrivacyidea" datatype="html">
-        <source>Time in seconds privacyIDEA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
-        <target>Время в секундах, в течение которого privacyIDEA пытается <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> связаться с сервером хранилища пользователей.</target>
+        <source>Time in seconds AMFA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
+        <target>Время в секундах, в течение которого AMFA пытается <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> связаться с сервером хранилища пользователей.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">353</context>
@@ -13091,8 +13003,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllowsConfigure" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
-        <target>Этот раздел позволяет настроить конечную точку, на которой сервер privacyIDEA должен аутентифицироваться, чтобы получить токен доступа. Затем этот токен можно использовать для доступа к API хранилища пользователей. Большинство этих настроек можно найти в регистрации приложения в Entra Admin Center, либо вам также нужно добавить их там.</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
+        <target>Этот раздел позволяет настроить конечную точку, на которой сервер AMFA должен аутентифицироваться, чтобы получить токен доступа. Затем этот токен можно использовать для доступа к API хранилища пользователей. Большинство этих настроек можно найти в регистрации приложения в Entra Admin Center, либо вам также нужно добавить их там.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">398</context>
@@ -13179,8 +13091,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllows" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
-        <target>Этот раздел позволяет настроить конечную точку, на которой сервер privacyIDEA должен аутентифицироваться, чтобы получить токен доступа. Затем этот токен можно использовать для доступа к API хранилища пользователей.</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
+        <target>Этот раздел позволяет настроить конечную точку, на которой сервер AMFA должен аутентифицироваться, чтобы получить токен доступа. Затем этот токен можно использовать для доступа к API хранилища пользователей.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">541</context>
@@ -13459,8 +13371,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataDatabase" datatype="html">
-        <source>The user data in this database can be modified from within privacyIDEA.</source>
-        <target>Данные пользователей в этой базе данных можно изменять из privacyIDEA.</target>
+        <source>The user data in this database can be modified from within AMFA.</source>
+        <target>Данные пользователей в этой базе данных можно изменять из AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">269</context>
@@ -14871,32 +14783,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullySaved" datatype="html">
-        <source>Successfully saved privacyIDEA server.</source>
-        <target>Сервер privacyIDEA успешно сохранён.</target>
+        <source>Successfully saved AMFA server.</source>
+        <target>Сервер AMFA успешно сохранён.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedSavePrivacyidea" datatype="html">
-        <source>Failed to save privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target state="new">Не удалось сохранить сервер privacyIDEA.</target>
+        <source>Failed to save AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target state="new">Не удалось сохранить сервер AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullyDeleted" datatype="html">
-        <source>Successfully deleted privacyIDEA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
-        <target state="new">Сервер privacyIDEA успешно удалён: <x id="IDENTIFIER" equiv-text="identifier"/>.</target>
+        <source>Successfully deleted AMFA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
+        <target state="new">Сервер AMFA успешно удалён: <x id="IDENTIFIER" equiv-text="identifier"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedDeletePrivacyidea" datatype="html">
-        <source>Failed to delete privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target state="new">Не удалось удалить сервер privacyIDEA.</target>
+        <source>Failed to delete AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target state="new">Не удалось удалить сервер AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">142</context>
@@ -15535,8 +15447,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.remoteTokenForwards" datatype="html">
-        <source>The remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Токен Remote перенаправляет запрос аутентификации на другой сервер privacyIDEA.</target>
+        <source>The remote token forwards the authentication request to another AMFA server.</source>
+        <target>Токен Remote перенаправляет запрос аутентификации на другой сервер AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">68</context>
@@ -15599,8 +15511,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.indexedSecret" datatype="html">
-        <source>The indexed secret Token is based on a shared secret between privacyIDEA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
-        <target>Токен Indexed Secret основан на общем секрете между privacyIDEA и пользователем. Во время аутентификации у пользователя запрашиваются символы в случайных позициях этого известного секрета.</target>
+        <source>The indexed secret Token is based on a shared secret between AMFA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
+        <target>Токен Indexed Secret основан на общем секрете между AMFA и пользователем. Во время аутентификации у пользователя запрашиваются символы в случайных позициях этого известного секрета.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">131</context>
@@ -15684,42 +15596,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">201</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslate" datatype="html">
-        <source>Help translate</source>
-        <target>Помочь с переводом</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">195</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslateInterface" datatype="html">
-        <source>Help translate this interface on Weblate</source>
-        <target>Помогите перевести этот интерфейс на Weblate</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">197</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.getEnterprise" datatype="html">
-        <source>Get enterprise support</source>
-        <target>Получить корпоративную поддержку</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">155</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">157</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">166</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.answersRequired" datatype="html">
@@ -16279,16 +16155,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunning" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
+        <target state="new">AMFA is running in DEBUG mode. You can change the debug level in pi.cfg.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebug" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
+        <target state="new">AMFA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">32</context>
@@ -16311,8 +16187,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebugMode" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</target>
+        <source>AMFA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
+        <target state="new">AMFA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">45</context>
@@ -16943,8 +16819,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="policy.condition.piNodes" datatype="html">
-        <source>privacyIDEA Nodes</source>
-        <target state="new">privacyIDEA Nodes</target>
+        <source>AMFA Nodes</source>
+        <target state="new">AMFA Nodes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/policies-table/view-conditions-column/view-conditions-column.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -17919,8 +17795,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="audit.everyActionPerformed" datatype="html">
-        <source>Every action performed in privacyIDEA is recorded in the audit log.</source>
-        <target state="new">Every action performed in privacyIDEA is recorded in the audit log.</target>
+        <source>Every action performed in AMFA is recorded in the audit log.</source>
+        <target state="new">Every action performed in AMFA is recorded in the audit log.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.html</context>
           <context context-type="linenumber">209</context>
@@ -17967,8 +17843,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="periodicTask.createPeriodicTask" datatype="html">
-        <source>Create a periodic task to run recurring jobs on your privacyIDEA nodes.</source>
-        <target state="new">Create a periodic task to run recurring jobs on your privacyIDEA nodes.</target>
+        <source>Create a periodic task to run recurring jobs on your AMFA nodes.</source>
+        <target state="new">Create a periodic task to run recurring jobs on your AMFA nodes.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/periodic-task/periodic-task.component.html</context>
           <context context-type="linenumber">258</context>
@@ -18303,8 +18179,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.inUseThisIsThe" datatype="html">
-        <source>In use: this is the privacyIDEA server itself.</source>
-        <target state="new">In use: this is the privacyIDEA server itself.</target>
+        <source>In use: this is the AMFA server itself.</source>
+        <target state="new">In use: this is the AMFA server itself.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
           <context context-type="linenumber">274</context>
@@ -18463,24 +18339,24 @@
         </context-group>
       </trans-unit>
       <trans-unit id="caConnector.createCAConnector" datatype="html">
-        <source>Create a CA connector to issue and manage certificates from privacyIDEA.</source>
-        <target state="new">Create a CA connector to issue and manage certificates from privacyIDEA.</target>
+        <source>Create a CA connector to issue and manage certificates from AMFA.</source>
+        <target state="new">Create a CA connector to issue and manage certificates from AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/ca-connectors/ca-connectors.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.noPrivacyIDEAServers" datatype="html">
-        <source>No privacyIDEA servers yet</source>
-        <target state="new">No privacyIDEA servers yet</target>
+        <source>No AMFA servers yet</source>
+        <target state="new">No AMFA servers yet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyIDEAServer" datatype="html">
-        <source>Create a privacyIDEA server to forward authentication requests to another instance.</source>
-        <target state="new">Create a privacyIDEA server to forward authentication requests to another instance.</target>
+        <source>Create an AMFA server to forward authentication requests to another instance.</source>
+        <target state="new">Create an AMFA server to forward authentication requests to another instance.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">199</context>
@@ -18715,8 +18591,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="common.theRequestFailedCheckThe" datatype="html">
-        <source>The request failed. Check the connection to the privacyIDEA server and try again.</source>
-        <target state="new">The request failed. Check the connection to the privacyIDEA server and try again.</target>
+        <source>The request failed. Check the connection to the AMFA server and try again.</source>
+        <target state="new">The request failed. Check the connection to the AMFA server and try again.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/table-state/table-state.component.html</context>
           <context context-type="linenumber">94</context>
@@ -19543,8 +19419,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="apiClient.apiClientsIntro" datatype="html">
-        <source>API clients authenticate against privacyIDEA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
-        <target state="new">API clients authenticate against privacyIDEA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</target>
+        <source>API clients authenticate against AMFA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
+        <target state="new">API clients authenticate against AMFA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/api-clients/api-clients.component.html</context>
           <context context-type="linenumber">78</context>
@@ -22903,8 +22779,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="authLog.addressPrivacyideaSawConnection" datatype="html">
-        <source>The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
-        <target state="new">The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.</target>
+        <source>The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
+        <target state="new">The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.ts</context>
           <context context-type="linenumber">33</context>
@@ -24143,16 +24019,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServer" datatype="html">
-        <source>Delete privacyIDEA Server</source>
-        <target state="new">Delete privacyIDEA Server</target>
+        <source>Delete AMFA Server</source>
+        <target state="new">Delete AMFA Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.privacyideaServer" datatype="html">
-        <source>privacyIDEA server</source>
-        <target state="new">privacyIDEA server</target>
+        <source>AMFA server</source>
+        <target state="new">AMFA server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">194</context>

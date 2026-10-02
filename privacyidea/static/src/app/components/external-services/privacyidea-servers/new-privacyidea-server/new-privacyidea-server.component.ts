@@ -189,9 +189,9 @@ export class NewPrivacyideaServerComponent implements OnDestroy {
       return;
     }
     const confirmed = await this.dialogService.confirmDelete({
-      title: $localize`:@@piServer.deletePrivacyideaServer:Delete privacyIDEA Server`,
+      title: $localize`:@@piServer.deletePrivacyideaServer:Delete AMFA Server`,
       items: [identifier],
-      itemType: $localize`:@@piServer.privacyideaServer:privacyIDEA server`
+      itemType: $localize`:@@piServer.privacyideaServer:AMFA server`
     });
     if (!confirmed) {
       return;
