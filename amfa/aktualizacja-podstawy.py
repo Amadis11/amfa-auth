@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -51,13 +52,29 @@ LISTA_KONTROLNA_WYDANIA = (
 
 # Testy uruchamiane po nalozeniu na nowa podstawe. Nasze strazniki ida zawsze pierwsze,
 # bo one mowia wprost, czy nasze zmiany nadal sa na miejscu.
-NASZE_TESTY = ["tests/test_amfa_zmiany.py"]
+#
+# Wzorzec, nie lista: kazdy krok ma wlasny plik straznikow (`tests/test_amfa_krok*.py`), a bramka
+# wydania ma uruchamiac **wszystkie**. Wpisany tu po nazwie plik latwo zostawic poza bramka — tak
+# wlasnie zginal straznik brandu (krok 5), gdy powstal po kroku 4.
+NASZE_STRAZNICY_WZORZEC = "tests/test_amfa_krok*.py"
 TESTY_PODSTAWY = [
     "tests/test_api_validate.py",
     "tests/test_app.py",
     "tests/test_api_lib_policy.py",
     "tests/test_api_periodictask.py",
 ]
+
+
+def nasze_strazniki(wzorzec: str = NASZE_STRAZNICY_WZORZEC) -> list[str]:
+    """Pliki naszych straznikow. Brak chocby jednego zatrzymuje wydanie.
+
+    Straznik, ktorego nie ma w drzewie, nie moze byc po cichu pominety: wtedy wydanie szloby dalej
+    bez sprawdzenia tego kroku (pominiecie widac tylko jako linijke w raporcie).
+    """
+    znalezione = sorted(str(plik.relative_to(KORZEN)) for plik in KORZEN.glob(wzorzec))
+    if not znalezione:
+        raise RuntimeError(f"brak naszych straznikow ({wzorzec}) — nie wydajemy bez nich")
+    return znalezione
 
 
 def uruchom(*argumenty: str, sprawdz_kod: bool = True) -> subprocess.CompletedProcess:
@@ -135,11 +152,17 @@ def nalozy(podstawa_commit: str, nowy_commit: str) -> tuple[bool, list[str]]:
 
 
 def testy() -> tuple[bool, str]:
-    """Nasze strazniki i testy podstawy. Zwraca (ok, raport)."""
+    """Nasze strazniki i testy podstawy. Zwraca (ok, raport).
+
+    Kolejnosc i twardosc sa celowe: nasze strazniki musza istniec (brak pliku = nie wydajemy),
+    a test podstawy, ktorego w tej wersji nie ma, tylko notujemy — nazwy testow podstawy zmieniaja
+    sie miedzy wydaniami i to nie jest nasza strata.
+    """
     python = sys.executable
     raport = []
-    for plik in NASZE_TESTY + TESTY_PODSTAWY:
-        if not (KORZEN / plik).is_file():
+    nasze = nasze_strazniki()
+    for plik in nasze + TESTY_PODSTAWY:
+        if plik not in nasze and not (KORZEN / plik).is_file():
             raport.append(f"  pominieto {plik} (nie ma go w tej wersji podstawy)")
             continue
         wynik = uruchom(python, "-m", "pytest", plik, "-q", "--tb=line", sprawdz_kod=False)
@@ -198,11 +221,38 @@ def podstawa_w_pliku() -> str:
         return "nieznana"
 
 
+def wyczysc_smieci_pakowania() -> None:
+    """Usuwa to, co potrafi wniesc do pakietu **stary** panel.
+
+    Setuptools zbiera drzewo do `build/lib/` i nigdy go nie czysci, a `ng build` za kazdym razem
+    tworzy bundle o nowych nazwach — stare zostaja i przy pakowaniu w tym samym drzewie wchodza do
+    srodka razem z nowymi. Objaw: pakiet ma 138 MB zamiast ~96 i zawiera panel sprzed zmian
+    (widoczna nazwa podstawy), choc drzewo zrodel jest juz przebrandowane.
+    """
+    shutil.rmtree(KORZEN / "build", ignore_errors=True)
+    for stary in (KORZEN / "dist-amfa").glob("*.whl"):
+        stary.unlink()
+
+
 def zbuduj() -> tuple[bool, str]:
-    wynik = uruchom(sys.executable, "-m", "build", "--outdir", "dist-amfa", sprawdz_kod=False)
-    if wynik.returncode != 0:
-        return False, (wynik.stdout + wynik.stderr).strip().split("\n")[-1] if (wynik.stdout + wynik.stderr).strip() else "build niedostepny"
-    return True, "pakiet zbudowany do dist-amfa"
+    """Buduje pakiet z zbudowanym panelem.
+
+    Kolejnosc jest czescia wyniku: panel musi byc gotowy **przed** pakowaniem (pakiet zawiera tylko
+    jego wynik, zrodla panelu sa z niego wyrzucane), a stare drzewo `build/` musi zniknac przed
+    pakowaniem, inaczej do srodka wejda bundle z poprzednich buildow.
+    """
+    wyczysc_smieci_pakowania()
+    polecenia = (
+        ("builder `build`", (sys.executable, "-m", "build", "--outdir", "dist-amfa", "--wheel")),
+        ("builder `pip wheel`", (sys.executable, "-m", "pip", "wheel", "--no-deps", "-w", "dist-amfa", ".")),
+    )
+    ostatni = ""
+    for nazwa, polecenie in polecenia:
+        wynik = uruchom(*polecenie, sprawdz_kod=False)
+        if wynik.returncode == 0:
+            return True, f"pakiet zbudowany do dist-amfa ({nazwa})"
+        ostatni = (wynik.stdout + wynik.stderr).strip().split("\n")[-1] if (wynik.stdout + wynik.stderr).strip() else "brak wyniku"
+    return False, ostatni
 
 
 def main() -> int:
@@ -255,15 +305,18 @@ def main() -> int:
         print("TESTY PADLY — nie wydajemy.", file=sys.stderr)
         return 3
 
-    ok, opis = zbuduj()
-    print(f"Budowanie pakietu: {'OK' if ok else 'PADLO'} — {opis}")
-    if not ok:
-        return 3
-
+    # Panel PRZED pakietem: pakiet zawiera tylko wynik buildu panelu (zrodla panelu sa z niego
+    # wyrzucane), wiec kolejnosc decyduje o tym, czy do srodka wejdzie nasza warstwa widoczna, czy ta
+    # sprzed zmiany.
     ok, opis = zbuduj_panel()
     print(f"Budowanie panelu: {'OK' if ok else 'PADLO'} — {opis}")
     if not ok:
         print("PANEL SIE NIE BUDUJE — nie wydajemy.", file=sys.stderr)
+        return 3
+
+    ok, opis = zbuduj()
+    print(f"Budowanie pakietu: {'OK' if ok else 'PADLO'} — {opis}")
+    if not ok:
         return 3
 
     zapisz_podstawe(commit, znacznik)
