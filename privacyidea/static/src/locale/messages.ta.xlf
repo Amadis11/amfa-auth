@@ -15527,8 +15527,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.pushTokenWorks" datatype="html">
-        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach privacyIDEA for this token to work.</source>
-        <target>PUSH டோக்கன் privacyIDEA Authenticator செயலியுடன் இயங்குகிறது. இது செயலிக்கு ஒரு அங்கீகார கோரிக்கையை அனுப்புகிறது, அதை ஒரு பொத்தானைத் தொடுவதன் மூலம் ஏற்கலாம். விருப்பத்தேர்வாக, ஏற்றுக்கொள்ள பயனர்கள் தங்கள் ஸ்மார்ட்போனில் கட்டமைக்கப்பட்ட திறப்பு முறையை (PIN/பயோமெட்ரிக்) பயன்படுத்த வேண்டும் என்று கோரலாம். இந்த டோக்கன் இயங்க, ஸ்மார்ட்போன் privacyIDEA-ஐ அணுக முடிய வேண்டும்.</target>
+        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach AMFA for this token to work.</source>
+        <target>PUSH டோக்கன் privacyIDEA Authenticator செயலியுடன் இயங்குகிறது. இது செயலிக்கு ஒரு அங்கீகார கோரிக்கையை அனுப்புகிறது, அதை ஒரு பொத்தானைத் தொடுவதன் மூலம் ஏற்கலாம். விருப்பத்தேர்வாக, ஏற்றுக்கொள்ள பயனர்கள் தங்கள் ஸ்மார்ட்போனில் கட்டமைக்கப்பட்ட திறப்பு முறையை (PIN/பயோமெட்ரிக்) பயன்படுத்த வேண்டும் என்று கோரலாம். இந்த டோக்கன் இயங்க, ஸ்மார்ட்போன் AMFA-ஐ அணுக முடிய வேண்டும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">145</context>
