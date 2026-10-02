@@ -165,3 +165,20 @@ def test_ikona_karty_jest_nasza() -> None:
     skrot = hashlib.sha256(ikona.read_bytes()).hexdigest()
     assert skrot == "c6873772fa2775445676bfc9503200edff4f9d1ceef80f2473bd4b8170043320", \
         "ikona karty nie jest nasza (podstawa przyniosla wlasna?)"
+
+
+if __name__ == "__main__":
+    # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
+    import sys as _sys
+
+    _bledy = 0
+    for _nazwa, _funkcja in sorted(globals().items()):
+        if _nazwa.startswith("test_") and callable(_funkcja):
+            try:
+                _funkcja()
+                print(f"OK   {_nazwa}")
+            except AssertionError as _blad:
+                _bledy += 1
+                print(f"FAIL {_nazwa}: {_blad}")
+    _sys.exit(1 if _bledy else 0)
+
