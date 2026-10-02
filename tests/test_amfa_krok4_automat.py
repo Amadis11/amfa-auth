@@ -98,6 +98,44 @@ def test_automat_nie_wymaga_decyzji_o_liscie_wydan() -> None:
     assert any("requirements.txt" in punkt for punkt in lista), "lista kontrolna bez aktualizacji zaleznosci"
 
 
+def test_automat_uruchamia_wszystkie_nasze_strazniki() -> None:
+    """Bramka wydania uruchamia wszystkie nasze strazniki, a nie liste wpisana raz na zawsze.
+
+    Straznik brandu (krok 5) powstal po kroku 4 i przy liscie wpisanej po nazwie pliku zostal poza
+    bramka — wydanie moglo przejsc z nazwa podstawy w widocznej warstwie konsoli.
+    """
+    automat = _automat()
+    straznicy = automat.nasze_strazniki()
+    assert "tests/test_amfa_krok4_automat.py" in straznicy, "bramka nie uruchamia straznika kroku 4"
+    assert "tests/test_amfa_krok5_brand.py" in straznicy, "bramka nie uruchamia straznika brandu"
+
+    try:
+        automat.nasze_strazniki("tests/test_amfa_nie-ma-takich*.py")
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("brak naszych straznikow nie zatrzymuje wydania")
+
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    assert "NASZE_STRAZNICY_WZORZEC" in skrypt, "bramka wrocila do wpisanej po nazwie listy testow"
+
+
+def test_automat_buduje_panel_przed_pakietem() -> None:
+    """Panel musi powstac przed pakietem, a stare drzewo pakowania zniknac.
+
+    Pakiet zawiera tylko wynik buildu panelu (zrodla panelu sa z niego wyrzucane), wiec odwrotna
+    kolejnosc dawala pakiet z panelem sprzed zmiany; drzewo `build/` setuptoolsa wnosilo dodatkowo
+    bundle z poprzednich buildow (widoczna nazwa podstawy w srodku pakietu).
+    """
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    assert "def wyczysc_smieci_pakowania(" in skrypt, "automat nie czysci drzewa pakowania"
+    czesc_pakowania = skrypt.split("def zbuduj(")[1]
+    assert "wyczysc_smieci_pakowania()" in czesc_pakowania, "czyszczenie nie jest wolane przy pakowaniu"
+
+    ogon = skrypt.split("def main(")[1]
+    assert ogon.index("zbuduj_panel()") < ogon.index("zbuduj()"), "pakiet buduje sie przed panelem"
+
+
 def test_lista_kontrolna_mowi_o_testach_a_nie_o_decyzji() -> None:
     """Dokument i workflow mowia to samo, co automat: wydajemy po testach."""
     lista = (KORZEN / "amfa" / "lista-kontrolna-wydania.md").read_text(encoding="utf-8")
@@ -110,4 +148,21 @@ def test_lista_kontrolna_mowi_o_testach_a_nie_o_decyzji() -> None:
     assert "kod == '5'" not in workflow, "workflow wciaz rozpoznaje kod recznej decyzji"
     assert "wymaga decyzji o zgodnosci z brama" not in workflow, "workflow wciaz zglasza decyzje o liscie wydan"
     assert "PIPESTATUS[0]" in workflow, "kod wyjscia musi byc brany ze skryptu, nie z tee"
+
+
+if __name__ == "__main__":
+    # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
+    import sys as _sys
+
+    _bledy = 0
+    for _nazwa, _funkcja in sorted(globals().items()):
+        if _nazwa.startswith("test_") and callable(_funkcja):
+            try:
+                _funkcja()
+                print(f"OK   {_nazwa}")
+            except AssertionError as _blad:
+                _bledy += 1
+                print(f"FAIL {_nazwa}: {_blad}")
+    _sys.exit(1 if _bledy else 0)
+
 
