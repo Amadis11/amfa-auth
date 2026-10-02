@@ -142,7 +142,7 @@ export const tokenTypes: TokenType[] = [
     key: "push",
     name: "PUSH",
     info: "",
-    text: $localize`:@@token.pushTokenWorks:The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach privacyIDEA for this token to work.`,
+    text: $localize`:@@token.pushTokenWorks:The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach AMFA for this token to work.`,
     rollover: true
   } as TokenType,
   {

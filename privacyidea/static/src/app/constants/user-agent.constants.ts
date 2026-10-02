@@ -34,10 +34,10 @@ export const USER_AGENT_PRESETS: readonly UserAgentPreset[] = [
   { displayName: "SimpleSAMLphp", identifier: "simpleSAMLphp" },
   { displayName: "PAM OTP & Push", identifier: "PAM" },
   { displayName: "PAM Passkey", identifier: "pam-passkey" },
-  { displayName: "Shibboleth", identifier: "AMFA-Shibboleth" },
+  { displayName: "Shibboleth", identifier: "privacyIDEA-Shibboleth" },
   { displayName: "Nextcloud", identifier: "privacyidea-nextcloud" },
   { displayName: "FreeRADIUS", identifier: "FreeRADIUS" },
-  { displayName: "LDAP Proxy", identifier: "AMFA-LDAP-Proxy" },
+  { displayName: "LDAP Proxy", identifier: "privacyIDEA-LDAP-Proxy" },
   { displayName: "privacyIDEA Authenticator", identifier: "privacyIDEA-App" },
   { displayName: "AMFA WebUI", identifier: "AMFA-WebUI" }
 ];

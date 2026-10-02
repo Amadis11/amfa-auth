@@ -19,7 +19,13 @@ PANEL = KORZEN / "privacyidea" / "static"
 #    czegos, czego nie ma,
 #  - `privacyIDEA1.png` to nazwa pliku zasobu podstawy,
 #  - naglowki licencyjne (AGPL) zostaja nietkniete.
-DOPUSZCZALNE_FRAGMENTY = ("privacyIDEA Authenticator", "privacyIDEA1.png")
+DOPUSZCZALNE_FRAGMENTY = (
+    "privacyIDEA Authenticator",   # nazwa cudzej aplikacji mobilnej
+    "privacyIDEA1.png",            # nazwa pliku zasobu podstawy
+    # Klucze protokolow (identyfikatory klientow w naglowku User-Agent) — niewidoczne dla czlowieka,
+    # a musza zostac takie, jakie naprawde wysylaja klienci; inaczej mapa nazw przestaje dzialac.
+    "privacyIDEA-App", "privacyIDEA-Shibboleth", "privacyIDEA-LDAP-Proxy",
+)
 DOPUSZCZALNE_LINIE = (
     "(c) NetKnights", "SPDX-License", "This code is free software", "GNU AFFERO GENERAL PUBLIC LICENSE",
     "version 3 of the License", "WITHOUT ANY WARRANTY", "You should have received",
@@ -53,9 +59,10 @@ def _naruszajace(warunek) -> list[str]:
         for numer, linia in enumerate(plik.read_text(encoding="utf-8").splitlines(), start=1):
             if any(fragment in linia for fragment in DOPUSZCZALNE_LINIE):
                 continue
-            if any(fragment in linia for fragment in DOPUSZCZALNE_FRAGMENTY):
-                continue
-            if warunek(linia):
+            linia_bez_dozwolonych = linia
+            for fragment in DOPUSZCZALNE_FRAGMENTY:
+                linia_bez_dozwolonych = linia_bez_dozwolonych.replace(fragment, "")
+            if warunek(linia_bez_dozwolonych):
                 znalezione.append(f"{plik.relative_to(KORZEN)}:{numer}: {linia.strip()[:120]}")
     return znalezione
 

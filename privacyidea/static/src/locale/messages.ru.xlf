@@ -15527,8 +15527,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.pushTokenWorks" datatype="html">
-        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach privacyIDEA for this token to work.</source>
-        <target>Токен PUSH работает с приложением privacyIDEA Authenticator. Он отправляет запрос аутентификации в приложение, который можно принять простым нажатием кнопки. При необходимости можно требовать, чтобы для подтверждения пользователи использовали настроенный механизм разблокировки (PIN/биометрия) на смартфоне. Чтобы этот токен работал, смартфон должен иметь возможность связаться с privacyIDEA.</target>
+        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach AMFA for this token to work.</source>
+        <target>Токен PUSH работает с приложением privacyIDEA Authenticator. Он отправляет запрос аутентификации в приложение, который можно принять простым нажатием кнопки. При необходимости можно требовать, чтобы для подтверждения пользователи использовали настроенный механизм разблокировки (PIN/биометрия) на смартфоне. Чтобы этот токен работал, смартфон должен иметь возможность связаться с AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">145</context>
