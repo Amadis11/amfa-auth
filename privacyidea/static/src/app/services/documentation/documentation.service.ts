@@ -50,10 +50,16 @@ export interface DocumentationServiceInterface {
 
 @Injectable()
 export class DocumentationService implements DocumentationServiceInterface {
-  private readonly _versioningService = inject(VersioningService);
-  private _baseUrl = "https://privacyidea.readthedocs.io/en/"; //TODO translation
+  private _versioningService = inject(VersioningService);
+  // Nasz produkt nie odsyla do instrukcji dostawcy podstawy, wiec adres jest pusty: przyciski pomocy
+  // nic nie otwieraja, a podpowiedzi w edytorze polityk sie nie pokazuja. Gdy bedziemy mieli wlasna
+  // dokumentacje, tu wchodzi jej adres (docelowo podawany przez serwer, jak logo i tytul strony).
+  private _baseUrl = "";
 
   openDocumentation(page: string) {
+    if (!this._baseUrl) {
+      return Promise.resolve();
+    }
     let pageUrl;
     if (page.startsWith(ROUTE_PATHS.TOKENS_DETAILS)) {
       pageUrl = "webui/token_details.html";
@@ -112,12 +118,18 @@ export class DocumentationService implements DocumentationServiceInterface {
   }
 
   getVersionUrl(pageUrl: string): string {
+    if (!this._baseUrl) {
+      return "";
+    }
     pageUrl = pageUrl.replace(/^\/+/, ""); // Remove leading slashes
     const version = this._versioningService.version();
     return `${this._baseUrl}v${version}/${pageUrl}`;
   }
 
   getFallbackUrl(pageUrl: string): string {
+    if (!this._baseUrl) {
+      return "";
+    }
     pageUrl = pageUrl.replace(/^\/+/, ""); // Remove leading slashes
     return `${this._baseUrl}stable/${pageUrl}`;
   }
@@ -128,6 +140,9 @@ export class DocumentationService implements DocumentationServiceInterface {
    * * @returns A promise that resolves to true if the page exists, false otherwise.
    */
   async checkFullUrl(url: string): Promise<boolean> {
+    if (!url) {
+      return false;
+    }
     try {
       const response = await fetch(url);
       const html = await response.text();
@@ -168,6 +183,9 @@ export class DocumentationService implements DocumentationServiceInterface {
   }
 
   async openDocumentationPage(page: string): Promise<boolean> {
+    if (!this._baseUrl) {
+      return false;
+    }
     // First check the page and when found open it
     return new Promise(() => {
       const versionUrl = this.getVersionUrl(page);

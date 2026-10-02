@@ -43,7 +43,7 @@ export interface WebAuthnEnrollmentData extends TokenEnrollmentData {
 }
 
 // Interface for the finalization data of the WebAuthn enrollment (final step)
-// This is the data sent to privacyIDEA after the user has interacted with the browser to create a credential.
+// This is the data sent to AMFA after the user has interacted with the browser to create a credential.
 export interface WebauthnFinalizeData extends WebAuthnEnrollmentData {
   transaction_id: string;
   serial: string;

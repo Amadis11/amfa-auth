@@ -25,13 +25,13 @@
       <h3
         class="margin-8"
         i18n="@@piServer.editPrivacyidea"
-        >Edit privacyIDEA Server</h3
+        >Edit AMFA Server</h3
       >
     } @else {
       <h3
         class="margin-8"
         i18n="@@piServer.createPrivacyidea"
-        >Create privacyIDEA Server</h3
+        >Create AMFA Server</h3
       >
     }
 
@@ -68,55 +68,59 @@
     <div class="privacyidea-server-form">
       <div class="flex-row gap-16 margin-bottom-16">
         <mat-form-field
+          appearance="fill"
           class="input-width-l">
           <mat-label i18n="@@common.identifier">Identifier</mat-label>
           <app-clearable-input
-            (clearButtonClick)="clearField(privacyideaForm.identifier, '')"
+            (clearButtonClick)="privacyideaModel.update(m => ({...m, identifier: ''}))"
             [showClearButton]="!isEditMode() && !!privacyideaModel().identifier">
             <input
               [formField]="privacyideaForm.identifier"
               matInput
               placeholder="myRemotePrivacyIDEAServer" />
           </app-clearable-input>
-          @if (hasError(privacyideaForm.identifier, ERR.required)) {
-            <mat-error i18n="@@common.identifierRequired">Identifier is <strong>required</strong>.</mat-error>
+          @if (privacyideaForm.identifier().errors().some(e => e.kind === 'required')) {
+            <mat-error i18n="@@common.identifierRequired">Identifier is <strong>required</strong></mat-error>
           }
-          @if (hasError(privacyideaForm.identifier, ERR.pattern)) {
+          @if (privacyideaForm.identifier().errors().some(e => e.kind === 'pattern')) {
             <mat-error i18n="@@common.identifierContains"
               >Identifier contains <strong>invalid characters</strong>. Only alphanumeric characters, dots, underscores
               and hyphens are allowed.</mat-error
             >
           }
-          @if (hasError(privacyideaForm.identifier, ERR.reservedName)) {
+          @if (privacyideaForm.identifier().errors().some(e => e.kind === 'reservedName')) {
             <mat-error i18n="@@common.cannotBeNamed">Cannot be named "{{ privacyideaForm.identifier().value() }}".</mat-error>
           }
           <mat-hint i18n="@@piServer.uniqueIdentifying"
-            >This is the unique identifying name of the privacyIDEA server definition.</mat-hint
+            >This is the unique identifying name of the AMFA server definition.</mat-hint
           >
         </mat-form-field>
 
         <mat-form-field
+          appearance="fill"
           class="input-width-l">
-          <mat-label i18n="@@piServer.urlPrivacyidea">URL of the privacyIDEA Server</mat-label>
+          <mat-label i18n="@@piServer.urlPrivacyidea">URL of the AMFA Server</mat-label>
           <app-clearable-input
-            (clearButtonClick)="clearField(privacyideaForm.url, '')"
+            (clearButtonClick)="privacyideaModel.update(m => ({...m, url: ''}))"
             [showClearButton]="!!privacyideaModel().url">
             <input
               [formField]="privacyideaForm.url"
               matInput
               placeholder="https://pi17.example.com/" />
           </app-clearable-input>
-          @if (hasError(privacyideaForm.url, ERR.required)) {
+          @if (privacyideaForm.url().errors().some(e => e.kind === 'required')) {
             <mat-error i18n="@@piServer.urlPrivacyideaServer"
-              >URL of the privacyIDEA Server is <strong>required</strong>.</mat-error
+              >URL of the AMFA Server is <strong>required</strong></mat-error
             >
           }
-          <mat-hint i18n="@@piServer.pleaseProvide">Please provide the base URL of the privacyIDEA server.</mat-hint>
+          <mat-hint i18n="@@piServer.pleaseProvide">Please provide the base URL of the AMFA server.</mat-hint>
         </mat-form-field>
       </div>
 
       <div class="margin-top-16">
-        <mat-checkbox [formField]="privacyideaForm.tls">
+        <mat-checkbox
+          [checked]="privacyideaModel().tls"
+          (change)="privacyideaModel.update(m => ({...m, tls: $event.checked}))">
           <span i18n="@@piServer.verifyCertificate">Verify the Certificate</span>
         </mat-checkbox>
         <p
@@ -128,10 +132,11 @@
       </div>
 
       <mat-form-field
+        appearance="fill"
         class="input-width-xl margin-top-16">
         <mat-label i18n="@@common.description">Description</mat-label>
         <app-clearable-input
-          (clearButtonClick)="clearField(privacyideaForm.description, '')"
+          (clearButtonClick)="privacyideaModel.update(m => ({...m, description: ''}))"
           [showClearButton]="!!privacyideaModel().description">
           <textarea
             [formField]="privacyideaForm.description"
@@ -143,10 +148,11 @@
       <div class="flex-row ali-center gap-16 margin-bottom-16">
         <div class="flex-column">
           <mat-form-field
+            appearance="fill"
             class="input-width-l">
             <mat-label i18n="@@common.user">User</mat-label>
             <app-clearable-input
-              (clearButtonClick)="clearField(privacyideaForm.username, '')"
+              (clearButtonClick)="privacyideaModel.update(m => ({...m, username: ''}))"
               [showClearButton]="!!privacyideaModel().username">
               <input
                 [formField]="privacyideaForm.username"
@@ -155,10 +161,11 @@
           </mat-form-field>
 
           <mat-form-field
+            appearance="fill"
             class="input-width-l">
             <mat-label i18n="@@common.password">Password</mat-label>
             <app-clearable-input
-              (clearButtonClick)="clearField(privacyideaForm.password, '')"
+              (clearButtonClick)="privacyideaModel.update(m => ({...m, password: ''}))"
               [showClearButton]="!!privacyideaModel().password">
               <input
                 autocomplete="new-password"

@@ -18,7 +18,7 @@
  **/
 import { NgClass, NgOptimizedImage, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, ElementRef, inject, OnDestroy, signal, ViewChild } from "@angular/core";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatIcon, MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatToolbar } from "@angular/material/toolbar";
@@ -49,7 +49,6 @@ import { UiPreferencesService, UiPreferencesServiceInterface } from "@services/u
 import { ROUTE_PATHS } from "@app/route_paths";
 import { LANDING_PAGE_ROUTES } from "@core/landing-page";
 import { OverflowNavDirective } from "../../shared/directives/overflow-nav/overflow-nav.directive";
-import { TooltipAriaLabelDirective } from "@components/shared/directives/tooltip-aria-label.directive";
 
 export interface NavItem {
   icon: string;
@@ -73,9 +72,7 @@ export interface SubNavSection {
   selector: "app-navigation",
   host: { "[class.has-custom-logo]": "customLogo()" },
   imports: [
-    TooltipAriaLabelDirective,
     MatToolbar,
-    MatIconButton,
     MatIconModule,
     NgOptimizedImage,
     MatIcon,
@@ -111,10 +108,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   protected readonly router = inject(Router);
   protected readonly ROUTE_PATHS = ROUTE_PATHS;
   private itemWidths = new Map<string, number>();
-  private moreButtonWidth = 110;
-  private lastNavWidth = -1;
-  // Extra pixels needed to show another item (or all of them) compared with keeping the current count.
-  private readonly unfoldHysteresis = 16;
   private resizeObserver: ResizeObserver | null = null;
   @ViewChild("mainNavRef", { static: false }) mainNavRef!: ElementRef<HTMLElement>;
   // .version-text's own margin has to shrink in the same instant this panel hides the
@@ -124,21 +117,21 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   primaryNavItems: NavItem[] = [
     {
       icon: "dashboard",
-      label: $localize`:@@common.dashboard:Dashboard`,
+      label: $localize`:@@nav.dashboard:Dashboard`,
       route: ROUTE_PATHS.DASHBOARD,
       section: "dashboard"
     },
     { icon: "shield", label: $localize`:@@common.token:Token`, route: ROUTE_PATHS.TOKENS, section: "token" },
     {
       icon: "supervised_user_circle",
-      label: $localize`:@@common.users:Users`,
+      label: $localize`:@@nav.users:Users`,
       route: ROUTE_PATHS.USERS,
       section: "users"
     },
     { icon: "gavel", label: $localize`:@@common.policies:Policies`, route: ROUTE_PATHS.POLICIES, section: "policies" },
     {
       icon: "event_repeat",
-      label: $localize`:@@common.subscription:Subscription`,
+      label: $localize`:@@nav.subscription:Subscription`,
       route: ROUTE_PATHS.SUBSCRIPTION,
       section: "subscription"
     },
@@ -170,7 +163,7 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   });
   versionPrefix = computed(() => {
     if (this.customLogo()) {
-      return "privacyIDEA ";
+      return "AMFA ";
     }
     return "";
   });
@@ -254,15 +247,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     this.pendingChanges.clearAllRegistrations();
   }
 
-  openSupport(): void {
-    const supportMail = this.authService.supportMail();
-    if (supportMail) {
-      window.open(supportMail, "_self");
-    } else {
-      window.open("https://netknights.it/support_link_admin", "_blank");
-    }
-  }
-
   openExternalLink(url: string): void {
     window.open(url, "_blank");
   }
@@ -313,11 +297,7 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     if (!this.mainNavRef) return;
     const navEl = this.mainNavRef.nativeElement;
 
-    this.resizeObserver = new ResizeObserver((entries) => {
-      // A size change of the bar that does not move its width is ignored; a size change of an
-      // item or of the More button (a label or locale change) always re-measures.
-      const itemResized = entries.some((entry) => entry.target !== navEl);
-      if (!itemResized && navEl.clientWidth === this.lastNavWidth) return;
+    this.resizeObserver = new ResizeObserver(() => {
       this.calculateVisibleItems(navEl);
     });
     this.resizeObserver.observe(navEl);
@@ -330,65 +310,55 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     const activeSection = this.activeSection();
     const activeIdx = filteredItems.findIndex((item) => item.section === activeSection);
 
-    // A hovered item is mid-transition, so its width is not its resting width: it only provides a
-    // width while none is stored. Its next size change re-measures it through the observer.
-    for (const item of Array.from(navEl.querySelectorAll<HTMLElement>(".nav-item[data-section]"))) {
+    const currentNavItems = Array.from(navEl.querySelectorAll<HTMLElement>(".nav-item[data-section]"));
+
+    for (const item of currentNavItems) {
       const section = item.getAttribute("data-section");
-      this.resizeObserver?.observe(item);
-      if (section && (!item.matches(":hover") || !this.itemWidths.has(section))) {
+      if (section) {
         this.itemWidths.set(section, item.offsetWidth);
       }
     }
 
-    // The More button's width is measured while it is rendered and cached, so the budget does not
-    // depend on whether the button currently exists.
-    const moreBtnContainer = navEl.querySelector<HTMLElement>(".more-button")?.closest<HTMLElement>(".nav-item");
-    if (moreBtnContainer) this.resizeObserver?.observe(moreBtnContainer);
-    if (moreBtnContainer?.offsetWidth) {
-      this.moreButtonWidth = moreBtnContainer.offsetWidth;
-    }
+    const moreBtn = navEl.querySelector<HTMLElement>(".more-button");
+    const moreBtnContainer = moreBtn?.closest(".nav-item") as HTMLElement;
+    // Increased fallback width and added more safety margin
+    const moreButtonWidth = moreBtnContainer?.offsetWidth || 180;
 
     const navWidth = navEl.clientWidth;
-    this.lastNavWidth = navWidth;
-    const gap = 8;
+    const gap = 8; // Increased gap for safety
     const safetyBuffer = 30;
-    const itemCount = filteredItems.length;
-    const current = Math.min(this.visibleNavCount(), itemCount);
 
-    const widthOf = (items: NavItem[]) =>
-      items.reduce(
-        (sum, item, idx) => sum + (this.itemWidths.get(item.section) || 200) + (idx < items.length - 1 ? gap : 0),
-        0
-      );
+    const totalWidth = filteredItems.reduce((sum, item, idx) => {
+      const itemWidth = this.itemWidths.get(item.section) || 200;
+      return sum + itemWidth + (idx < filteredItems.length - 1 ? gap : 0);
+    }, 0);
 
-    // Whether the first `c` items (the active item standing in for the last one when it is
-    // overflowed) fit. Every count, including "all items", is judged against the same budget, which
-    // always reserves the More button, so the folded and the unfolded state cannot each decide for
-    // the other. `margin` is the extra room a state must have to be entered.
-    const fits = (c: number, margin: number): boolean => {
-      const shown =
-        activeIdx !== -1 && activeIdx >= c
-          ? [...filteredItems.slice(0, c - 1), filteredItems[activeIdx]]
-          : filteredItems.slice(0, c);
-      return widthOf(shown) <= navWidth - this.moreButtonWidth - safetyBuffer - margin;
-    };
+    if (totalWidth <= navWidth - 10) {
+      this.visibleNavCount.set(filteredItems.length);
+      return;
+    }
 
     let count = 0;
-    for (let c = 1; c <= itemCount; c++) {
-      // Showing more than the current count requires the hysteresis margin; keeping or showing
-      // fewer does not.
-      if (fits(c, c > current ? this.unfoldHysteresis : 0)) {
+    const availableWidth = navWidth - moreButtonWidth - safetyBuffer;
+
+    for (let c = 1; c <= filteredItems.length; c++) {
+      let currentItems: NavItem[] = [];
+      if (activeIdx !== -1 && activeIdx >= c) {
+        currentItems = [...filteredItems.slice(0, c - 1), filteredItems[activeIdx]];
+      } else {
+        currentItems = filteredItems.slice(0, c);
+      }
+
+      const width = currentItems.reduce((sum, item, idx) => {
+        const w = this.itemWidths.get(item.section) || 200;
+        return sum + w + (idx < currentItems.length - 1 ? gap : 0);
+      }, 0);
+
+      if (width <= availableWidth) {
         count = c;
       } else {
         break;
       }
-    }
-
-    // With every item visible the More button is gone, so the whole list only has to fit the bar.
-    // The same extra room as for any unfold applies when entering that state.
-    const allFitMargin = current < itemCount ? this.unfoldHysteresis : 0;
-    if (widthOf(filteredItems) <= navWidth - safetyBuffer - allFitMargin) {
-      count = itemCount;
     }
 
     this.visibleNavCount.set(count);

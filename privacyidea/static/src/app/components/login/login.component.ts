@@ -18,6 +18,7 @@
  **/
 
 import { HttpErrorResponse } from "@angular/common/http";
+import { NgOptimizedImage } from "@angular/common";
 import {
   AfterViewInit,
   Component,
@@ -34,32 +35,25 @@ import { form, FormField, required } from "@angular/forms/signals";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatFormField, MatInput, MatLabel, MatSuffix } from "@angular/material/input";
-import { Router, RouterLink } from "@angular/router";
+import { MatOption, MatSelect } from "@angular/material/select";
+import { Router } from "@angular/router";
 import { challengesTriggered, isAuthenticationSuccessful } from "@app/app.component";
 import { resolveLandingPath$ } from "@app/guards/auth.guard";
-import { ROUTE_PATHS } from "@app/route_paths";
-import { LoginLogoComponent } from "@components/shared/login-logo/login-logo.component";
-import { parseRealms, RealmSelectComponent, realmParam } from "@components/shared/realm-select/realm-select.component";
-import {
-  AuthResponse,
-  AuthService,
-  AuthServiceInterface,
-  PasswordLoginParams,
-  WebAuthnSignRequest
-} from "@services/auth/auth.service";
+import { ClearButtonComponent } from "@components/shared/clear-button/clear-button.component";
+import { environment } from "@env/environment";
+import { AuthResponse, AuthService, AuthServiceInterface, PasswordLoginParams } from "@services/auth/auth.service";
 import { ConfigService } from "@services/config/config.service";
 import { NotificationService, NotificationServiceInterface } from "@services/notification/notification.service";
 import { SessionTimerService, SessionTimerServiceInterface } from "@services/session-timer/session-timer.service";
 import { UiPreferencesService, UiPreferencesServiceInterface } from "@services/user-settings/ui-preferences.service";
-import {
-  mergeWebAuthnSignRequests,
-  ValidateService,
-  ValidateServiceInterface
-} from "@services/validate/validate.service";
+import { ValidateService, ValidateServiceInterface, WebAuthnSignRequest } from "@services/validate/validate.service";
 import { catchError, EMPTY, filter, Subscription, switchMap, take, timeout, timer } from "rxjs";
 
 const PUSH_POLLING_INTERVAL_MS = 500;
 const PUSH_POLLING_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+// A "-" entry in the realmdropdown policy is the AMFA "no realm" sentinel:
+// it is offered as a selectable option but must not be sent as a realm parameter.
+const NO_REALM_SENTINEL = "-";
 
 @Component({
   selector: "app-login",
@@ -70,11 +64,12 @@ const PUSH_POLLING_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
     MatFormField,
     MatInput,
     MatLabel,
-    LoginLogoComponent,
-    RouterLink,
+    NgOptimizedImage,
     MatIconModule,
     MatButtonModule,
-    RealmSelectComponent,
+    MatSelect,
+    MatOption,
+    ClearButtonComponent,
     MatSuffix
   ],
   styleUrl: "./login.component.scss"
@@ -123,7 +118,12 @@ export class LoginComponent implements OnDestroy, AfterViewInit {
     return !this.username() || !this.password();
   });
 
-  realms = computed(() => parseRealms(this.configService.config()?.realms));
+  realms = computed(() => {
+    return (this.configService.config()?.realms || "")
+      .split(",")
+      .map((r: string) => r.trim())
+      .filter((r: string) => r);
+  });
 
   realm = linkedSignal({
     source: this.realms,
@@ -141,11 +141,15 @@ export class LoginComponent implements OnDestroy, AfterViewInit {
     return loginMode !== "hide";
   });
 
-  passwordResetEnabled = computed(() => !!this.configService.config()?.password_reset);
-  protected readonly passwordRecoveryPath = ROUTE_PATHS.PASSWORD_RECOVERY;
-
   // custom login text configured in the policies
   loginText = computed(() => this.configService.config()?.login_text || "");
+
+  customLogo = computed(() => {
+    if (!this.configService.config()?.logo) {
+      return null;
+    }
+    return environment.proxyUrl + "/static/public/" + this.configService.config()?.logo;
+  });
 
   remoteUser = computed(() => this.configService.config()?.remote_user);
   useRemoteLogin = linkedSignal(() => !!this.remoteUser());
@@ -253,7 +257,13 @@ export class LoginComponent implements OnDestroy, AfterViewInit {
   }
 
   private selectedRealm(): string | undefined {
-    return realmParam(this.realm());
+    const realm = this.realm();
+    return realm && realm !== NO_REALM_SENTINEL ? realm : undefined;
+  }
+
+  clearRealmSelection(event: MouseEvent) {
+    event.stopPropagation();
+    this.realm.set("");
   }
 
   private startPushPolling(): void {
@@ -325,7 +335,10 @@ export class LoginComponent implements OnDestroy, AfterViewInit {
       if (response.detail.multi_challenge?.length) {
         this.transactionId = response.detail.transaction_id || "";
         this.pushTriggered.set(response.detail.multi_challenge.some((c) => c.type === "push"));
-        this.webAuthnTriggered.set(mergeWebAuthnSignRequests(response.detail.multi_challenge));
+        const webAuthnChallenge = response.detail.multi_challenge.find((c) => c.type === "webauthn");
+        if (webAuthnChallenge?.attributes?.webAuthnSignRequest) {
+          this.webAuthnTriggered.set(webAuthnChallenge.attributes.webAuthnSignRequest); // This is now an object
+        }
         if (this.pushTriggered()) {
           this.startPushPolling();
         }
