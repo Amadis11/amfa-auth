@@ -480,6 +480,11 @@ class IdResolver(UserIdResolver):
             log.debug(f"LDAP bind operation took {connection.usage.elapsed_time}")
             connection.unbind()
             log.debug("unbind successful.")
+        except DirectoryPasswordState:
+            # Stan konta rozpoznany przez katalog musi dojsc do wolajacego: bez tego ponizszy
+            # `except Exception` zjada go jako zwykla pomylke poswiadczen (log 475 sasiadujacy z 484)
+            # i cala informacja o wygaslym hasle albo wylaczonym koncie przepada (zgloszenie #222).
+            raise
         except Exception as e:
             log.info(f"Failed to check password for {uid!r}/{bind_user!r}: {e}")
             log.debug(traceback.format_exc())
