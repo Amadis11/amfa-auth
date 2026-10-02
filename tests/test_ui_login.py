@@ -223,7 +223,7 @@ class ConfigTestCase(MyApiTestCase):
 
             self.assertEqual("static/customize", config["customization"])
             self.assertEqual("", config["custom_css"])
-            self.assertEqual("amfa.svg", config["logo"])
+            self.assertEqual("", config["logo"])
             self.assertEqual("AMFA", config["page_title"])
             self.assertEqual("", config["realms"])
             self.assertEqual("", config["show_node"])
