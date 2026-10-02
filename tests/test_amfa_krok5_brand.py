@@ -128,7 +128,14 @@ def test_testy_podstawy_o_brandzie_sa_zgodne_z_naszymi() -> None:
     tresc = plik.read_text(encoding="utf-8")
     assert '"privacyIDEA Authentication System"' not in tresc, "test podstawy oczekuje starego tytulu strony"
     assert '"AMFA"' in tresc, "test podstawy nie potwierdza naszego tytulu strony"
-    assert '"amfa.svg"' in tresc, "test podstawy nie potwierdza naszego domyslnego logo"
+
+    # Logo idzie inna droga niz tytul: endpoint konfiguracji dla panelu nie wstrzykuje znaku
+    # (`PI_LOGO` domyslnie pusty), a panel podstawia nasz zasob `assets/amfa.svg`. Sprawdzamy oba konce,
+    # bo podmiana jednego z nich cofa brand albo wstrzykuje znak podstawy do konfiguracji.
+    login = (KORZEN / "privacyidea" / "webui" / "login.py").read_text(encoding="utf-8")
+    assert 'PI_LOGO", ""' in login, "endpoint konfiguracji panelu wstrzykuje logo z konfiguracji"
+    panel_login = (PANEL / "src" / "app" / "components" / "login" / "login.component.html").read_text(encoding="utf-8")
+    assert "assets/amfa.svg" in panel_login, "ekran logowania panelu nie uzywa naszego znaku"
 
 
 def test_panel_nie_mowi_o_podstawie() -> None:
