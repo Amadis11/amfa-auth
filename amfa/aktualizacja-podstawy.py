@@ -9,26 +9,45 @@ Uruchamiany przez .github/workflows/amfa-aktualizacja-podstawy.yml, ale dziala t
 Zasady (patrz AMFA-ZMIANY.md):
   - `master` to lustro podstawy i nigdy nie commitujemy tu naszych zmian,
   - `amfa` to nasza linia; nasze commity sa nakladane na nowy znacznik wydania podstawy,
-  - konflikt konczy sie raportem z lista plikow — nigdy cichym pozostaniem na starej wersji.
+  - konflikt konczy sie raportem z lista plikow — nigdy cichym pozostaniem na starej wersji,
+  - **aktualizacja jest caloscia**: nowa linia wydania podstawy musi byc najpierw przyjeta przez brame
+    (`amfa/brama-linie.json`). Automat nie wydaje linii spoza tej listy — to swiadoma decyzja, a nie
+    awaria, wiec raportuje ja osobnym kodem wyjscia i lista kontrolna wydania.
 
 Kody wyjscia:
   0 — brak aktualizacji albo wszystko przeszlo
   2 — jest nowe wydanie, ale naszych zmian nie dalo sie nalozyc (konflikt)
   3 — nasze zmiany nalozone, ale testy albo budowanie padly
   4 — blad wywolania (brak galezi, brak znacznikow)
+  5 — nowa linia wydania, ktorej brama nie przyjmuje: najpierw decyzja o zgodnosci (amfa/brama-linie.json)
 """
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
+import re
 import subprocess
 import sys
 
 KORZEN = pathlib.Path(__file__).resolve().parents[1]
 PLIK_PODSTAWY = KORZEN / "amfa" / "PODSTAWA"
+PLIK_BRAMY = KORZEN / "amfa" / "brama-linie.json"
 NASZA_LINIA = "amfa"
 LUSTRO = "master"
 ZRODLO = "upstream"
+
+#: Co sklada sie na wydanie nowej linii podstawy. Kolejnosc jest kolejnascia wdrozenia, a nie lista zyczen:
+#: punkt o bramie jest warunkiem, bo bez niego logowanie przez brame zatrzymuje sie na `503`.
+LISTA_KONTROLNA_WYDANIA = (
+    "kod: nasze commity nalozone na nowa podstawe, wszystkie testy zielone",
+    "brama: linia wydania na liscie SANE_RELEASE_LINES (amitronic-amfa: components/gateway/core/amfa_gateway/privacyidea.py)",
+    "zaleznosci: /opt/privacyidea/bin/pip install --upgrade -r requirements.txt na kazdym wezle",
+    "schemat: pi-manage db upgrade przy zatrzymanej usludze na WSZYSTKICH wezlach (nowa wersja przenosi dane)",
+    "panel: zbudowany panel z tego pakietu (static/dist) — bez osobnego wgrywania",
+    "wzorce: components/privacyidea/ sprawdzone wobec stanu na wezlach (realm, resolver, polityki)",
+    "wdrozenie: kopie wstecz, stop, podmiana, start, weryfikacja i wpis w docs/status.md",
+)
 
 # Testy uruchamiane po nalozeniu na nowa podstawe. Nasze strazniki ida zawsze pierwsze,
 # bo one mowia wprost, czy nasze zmiany nadal sa na miejscu.
@@ -71,11 +90,79 @@ def czytaj_podstawe() -> dict:
     return dane
 
 
+def przyjmowane_linie() -> tuple[list[str], str, str]:
+    """Linie wydan privacyIDEA, ktore przyjmuje brama AMFA.
+
+    Zwraca (linie, gdzie_w_bramie, jak_dopisac). Brama trzyma te liste zamknieta celowo — nieznane
+    wydanie ma zatrzymac ruch, wiec wydanie linii spoza listy jest decyzja, a nie rutynowym krokiem.
+    Ten plik jest zadeklarowana kopia listy z bramy; test w repozytorium bramy pilnuje, ze obie
+    strony mowia to samo.
+    """
+    if not PLIK_BRAMY.is_file():
+        raise RuntimeError(f"brak pliku {PLIK_BRAMY.relative_to(KORZEN)} — nie wiem, jakie linie przyjmuje brama")
+    dane = json.loads(PLIK_BRAMY.read_text(encoding="utf-8"))
+    linie = dane.get("przyjmowane")
+    if not isinstance(linie, list) or not linie or not all(isinstance(x, str) and x.strip() for x in linie):
+        raise RuntimeError(f"{PLIK_BRAMY.name}: pole 'przyjmowane' musi byc niepusta lista linii, np. [\"3.13\", \"3.14\"]")
+    jak_dopisac = dane.get("przy_dopisaniu_linii")
+    if isinstance(jak_dopisac, list):
+        jak_dopisac = "; ".join(str(krok) for krok in jak_dopisac)
+    return sorted(x.strip() for x in linie), str(dane.get("zrodlo_w_bramie", "")), str(jak_dopisac or "")
+
+
+#: Znacznik wydania podstawy: `v3.14`, `3.14`, `v3.14.1`. Wersje rozwojowe (`v3.14dev4`) nie sa wydaniem.
+WZORZEC_WYDANIA = re.compile(r"v?(\d+\.\d+)(?:\.\d+)?")
+
+
+def czy_wydanie(znacznik: str | None) -> bool:
+    """Czy znacznik jest wydaniem podstawy (a nie wersja rozwojowa, np. `v3.14dev4`)."""
+    return WZORZEC_WYDANIA.fullmatch((znacznik or "").strip()) is not None
+
+
+def linia_wydania(znacznik: str | None) -> str | None:
+    """Linia wydania ze znacznika podstawy, np. `v3.14.1` -> `3.14`. `None`, gdy znacznik nie jest wydaniem."""
+    dopasowanie = WZORZEC_WYDANIA.fullmatch((znacznik or "").strip())
+    return dopasowanie.group(1) if dopasowanie else None
+
+
+def zgodnosc_bramy(znacznik: str | None) -> tuple[bool, str]:
+    """Czy brama przyjmuje linie tego wydania. Zwraca (ok, opis do raportu).
+
+    Opis jest gotowy do wklejenia w raport: mowi, co jest decyzja, gdzie sie ja podejmuje i co
+    pozostaje do zrobienia w calym lancuchu wydania.
+    """
+    linie, gdzie, jak_dopisac = przyjmowane_linie()
+    linia = linia_wydania(znacznik)
+    if linia is None:
+        return True, (f"linia wydania: nie odczytalem linii ze znacznika {znacznik!r} — "
+                      f"brama przyjmuje {', '.join(linie)}; sprawdz, czy znacznik jest wydaniem podstawy")
+    if linia in linie:
+        return True, f"linia wydania {linia}: brama ja przyjmuje (przyjmowane: {', '.join(linie)})"
+    opis = [
+        f"linia wydania {linia}: BRAMA JEJ NIE PRZYJMUJE (przyjmowane: {', '.join(linie)}).",
+        "  To nie jest awaria automatu, tylko decyzja do podjecia: brama ma liste linii zamknieta celowo,",
+        "  bo nieznane wydanie ma zatrzymac ruch, a nie przejsc niezauwazone. Bez dopisania linii logowanie",
+        "  przez brame zatrzyma sie na 503 (amfa_challenge_start_failure, phase=privacyidea.outcome).",
+        f"  Gdzie: {gdzie or 'brak wskazania w ' + PLIK_BRAMY.name}",
+    ]
+    if jak_dopisac:
+        opis.append(f"  Jak: {jak_dopisac}")
+    opis.append("  Lista kontrolna wydania (aktualizacja jest caloscia):")
+    opis.extend(f"    - {punkt}" for punkt in LISTA_KONTROLNA_WYDANIA)
+    return False, "\n".join(opis)
+
+
 def najnowszy_znacznik() -> tuple[str, str]:
-    """Zwraca (znacznik, commit) najnowszego wydania podstawy wedlug numeracji wersji."""
+    """Zwraca (znacznik, commit) najnowszego **wydania** podstawy wedlug numeracji wersji.
+
+    Znaczniki rozwojowe (np. `v3.14dev4`) pomijamy: wydaniem jest dopiero `v3.14`/`v3.14.1`, a tylko
+    wydanie ma linie, ktora da sie porownac z lista linii przyjmowanych przez brame.
+    """
     uruchom("git", "fetch", "--tags", "--quiet", ZRODLO)
     wynik = uruchom("git", "tag", "--sort=-v:refname", "--list", "v*")
     for znacznik in wynik.stdout.split():
+        if not czy_wydanie(znacznik):
+            continue
         commit = uruchom("git", "rev-list", "-n", "1", znacznik).stdout.strip()
         if commit:
             return znacznik, commit
@@ -195,13 +282,24 @@ def main() -> int:
         return 0
 
     print(f"Jest nowe wydanie: {znacznik}. Nasze zmiany trzeba naloyzc na nowa podstawe.")
+    # Aktualizacja jest caloscia: bez linii przyjmowanej przez brame wydanie zatrzymaloby logowanie,
+    # wiec automat tego nie wydaje — raportuje decyzje do podjecia i konczy sie kodem 5.
+    zgodne, opis_bramy = zgodnosc_bramy(znacznik)
+    print(opis_bramy)
     if argumenty.sprawdz:
         wynik = uruchom("git", "log", "--oneline", f"{podstawa['commit']}..{commit}",
                         sprawdz_kod=False)
         liczba = len([l for l in wynik.stdout.split("\n") if l.strip()])
         print(f"  podstawy zmian do przyswojenia: {liczba}")
-        print("  uruchom z --przygotuj, zeby nalozyc nasze zmiany.")
+        if zgodne:
+            print("  uruchom z --przygotuj, zeby nalozyc nasze zmiany.")
+        else:
+            print("  automat NIE naloy naszych zmian, dopoki linia nie znajdzie sie na liscie bramy.")
         return 0
+
+    if not zgodne:
+        print("WYDANIE WSTRZYMANE — to decyzja o zgodnosci z brama, nie awaria automatu.", file=sys.stderr)
+        return 5
 
     ok, konflikt = nalozy(podstawa["commit"], commit)
     if not ok:
@@ -231,6 +329,9 @@ def main() -> int:
 
     zapisz_podstawe(commit, znacznik)
     print(f"Podstawa zapisana jako {znacznik}. Nasza linia jest gotowa do wydania.")
+    print("Lista kontrolna wydania (aktualizacja jest caloscia):")
+    for punkt in LISTA_KONTROLNA_WYDANIA:
+        print(f"  - {punkt}")
     return 0
 
 

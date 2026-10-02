@@ -1,0 +1,12 @@
+{
+  "opis": "Linie wydan privacyIDEA, ktore przyjmuje brama AMFA. Brama ma te liste zamknieta celowo: nieznane wydanie ma zatrzymac ruch, a nie przejsc niezauwazone. Automat wydan czyta ten plik i NIE wydaje linii spoza listy — to decyzja, nie awaria.",
+  "zrodlo_w_bramie": "amitronic-amfa: components/gateway/core/amfa_gateway/privacyidea.py — SANE_RELEASE_LINES",
+  "pilnuje_zgodnosci": "amitronic-amfa: tests/web/gateway/test_zgodnosc_linii_bramy.py (porownuje SANE_RELEASE_LINES z tym plikiem i z linia z amfa/PODSTAWA)",
+  "przyjmowane": ["3.13", "3.14"],
+  "przy_dopisaniu_linii": [
+    "PR w amitronic-amfa: linia dopisana do SANE_RELEASE_LINES (+ test koperty dla nowej wersji)",
+    "dopisanie linii w tym pliku (amfa/brama-linie.json)",
+    "wdrozenie obrazu bramy na wezly (scripts/deploy/deploy-gateway.sh)",
+    "ponowne uruchomienie automatu — dopiero teraz wydanie nowej linii jest dozwolone"
+  ]
+}
