@@ -30,7 +30,7 @@ import { AuthenticationLogEntry } from "@services/authentication-log/authenticat
 const IP_SOURCE_META: Record<string, { label: string; tooltip: string; modifier: string }> = {
   REMOTE_ADDR: {
     label: $localize`:@@authLog.direct:direct`,
-    tooltip: $localize`:@@authLog.addressPrivacyideaSawConnection:The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.`,
+    tooltip: $localize`:@@authLog.addressPrivacyideaSawConnection:The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.`,
     modifier: "ip-source-badge--direct"
   },
   REMOTE_ADDR_UNMAPPED: {

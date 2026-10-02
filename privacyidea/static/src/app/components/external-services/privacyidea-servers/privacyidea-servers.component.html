@@ -25,7 +25,7 @@
         <mat-form-field
           class="table-filter"
           subscriptSizing="dynamic">
-          <mat-label i18n="@@piServer.filterPrivacyidea">Filter privacyIDEA Servers</mat-label>
+          <mat-label i18n="@@piServer.filterPrivacyidea">Filter AMFA Servers</mat-label>
           <app-clearable-input
             (clearButtonClick)="resetFilter()"
             [showClearButton]="filterString().length > 0">
@@ -199,7 +199,7 @@
   } @else {
     <app-table-state
       [table]="tableState"
-      heading="No privacyIDEA servers yet"
+      heading="No AMFA servers yet"
       [hint]="emptyHint()"
       i18n-heading="@@piServer.noPrivacyIDEAServers"
       icon="dns">

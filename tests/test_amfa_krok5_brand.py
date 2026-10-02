@@ -8,9 +8,56 @@ Uruchamianie w drzewie privacyIDEA:
 """
 from __future__ import annotations
 
+import hashlib
 import pathlib
 
 KORZEN = pathlib.Path(__file__).resolve().parents[1]
+PANEL = KORZEN / "privacyidea" / "static"
+
+# Co WOLNO zostawic z nazwa podstawy w widocznej warstwie i dlaczego:
+#  - `privacyIDEA Authenticator` to cudza aplikacja mobilna; przemianowanie jej kazaloby szukac
+#    czegos, czego nie ma,
+#  - `privacyIDEA1.png` to nazwa pliku zasobu podstawy,
+#  - naglowki licencyjne (AGPL) zostaja nietkniete.
+DOPUSZCZALNE_FRAGMENTY = ("privacyIDEA Authenticator", "privacyIDEA1.png")
+DOPUSZCZALNE_LINIE = (
+    "(c) NetKnights", "SPDX-License", "This code is free software", "GNU AFFERO GENERAL PUBLIC LICENSE",
+    "version 3 of the License", "WITHOUT ANY WARRANTY", "You should have received",
+    "Free Software Foundation", "distributed in the hope", "along with this program",
+)
+# Odnosniki do dostawcy podstawy: w widocznej warstwie nie ma prawa ich byc.
+ODNOSNIKI_DOSTAWCY = (
+    "netknights.it", "github.com/privacyidea", "privacyidea.readthedocs.io",
+    "hosted.weblate.org/projects/privacyidea",
+)
+PLIKI_WIDOCZNE = ("*.html", "*.ts", "*.xlf")
+
+
+def _pliki_widocznej_warstwy():
+    """Pliki, ktore trafiaja do zbudowanego panelu albo tlumacza jego teksty.
+
+    Pliki `*.spec.ts` sa pomijane: to testy, nie warstwa widoczna, i moga cytowac dane podstawy.
+    """
+    for katalog in (PANEL / "src" / "app", PANEL / "src" / "locale"):
+        for wzorzec in PLIKI_WIDOCZNE:
+            for plik in katalog.rglob(wzorzec):
+                if plik.name.endswith(".spec.ts") or "node_modules" in plik.parts:
+                    continue
+                yield plik
+    yield PANEL / "src" / "index.html"
+
+
+def _naruszajace(warunek) -> list[str]:
+    znalezione = []
+    for plik in _pliki_widocznej_warstwy():
+        for numer, linia in enumerate(plik.read_text(encoding="utf-8").splitlines(), start=1):
+            if any(fragment in linia for fragment in DOPUSZCZALNE_LINIE):
+                continue
+            if any(fragment in linia for fragment in DOPUSZCZALNE_FRAGMENTY):
+                continue
+            if warunek(linia):
+                znalezione.append(f"{plik.relative_to(KORZEN)}:{numer}: {linia.strip()[:120]}")
+    return znalezione
 
 
 def test_brand_widocznej_warstwy() -> None:
@@ -59,3 +106,55 @@ def test_okna_licencyjne_nie_wrocily() -> None:
         tresc = plik.read_text(encoding="utf-8")
         assert "WelcomeDialogService" not in tresc, f"wrocilo odwolanie w {plik}"
         assert "SubscriptionExpiryService" not in tresc, f"wrocilo odwolanie w {plik}"
+
+
+def test_panel_nie_mowi_o_podstawie() -> None:
+    """Zadna widoczna tekstowka panelu nie nazywa podstawy ani jej dostawcy.
+
+    Nowa podstawa moze wniesc nowe teksty — wtedy ten straznik ma zapalic sie w CI, a nie
+    dopiero w oku czlowieka patrzacego na konsole.
+    """
+    naruszajace = _naruszajace(lambda linia: "privacyIDEA" in linia or "NetKnights" in linia)
+    assert not naruszajace, "widoczne teksty nazywaja podstawe:\n" + "\n".join(naruszajace)
+
+
+def test_panel_nie_odsyla_do_dostawcy_podstawy() -> None:
+    """W widocznej warstwie panelu nie ma odnosnikow do stron dostawcy podstawy.
+
+    Odnosnik, ktory prowadzi do sklepu/instrukcji dostawcy, to ta sama reklama co jego nazwa.
+    """
+    naruszajace = _naruszajace(lambda linia: any(o in linia for o in ODNOSNIKI_DOSTAWCY))
+    assert not naruszajace, "widoczne odnosniki do dostawcy:\n" + "\n".join(naruszajace)
+
+
+def test_panel_uzywa_naszego_znaku_i_stopki() -> None:
+    """Nawigacja pokazuje nasz znak, a stopka mowi o AMFA/AMITRONIC.
+
+    Sprawdzamy zarowno tekst zrodlowy (`messages.xlf`), jak i tlumaczenie polskie, bo konsola
+    w labie chodzi po polsku.
+    """
+    nawigacja = (PANEL / "src" / "app" / "components" / "layout" / "navigation"
+                 / "navigation.component.html").read_text(encoding="utf-8")
+    assert "assets/amfa.svg" in nawigacja, "nawigacja nie uzywa naszego znaku"
+    assert "privacyIDEA1.png" not in nawigacja and "logo-text.png" not in nawigacja, \
+        "nawigacja wrocila do znakow podstawy"
+
+    for plik, oczekiwane in ((PANEL / "src" / "locale" / "messages.xlf", "AMFA"),
+                             (PANEL / "src" / "locale" / "messages.pl.xlf", "system uwierzytelniania AMITRONIC")):
+        tresc = plik.read_text(encoding="utf-8") if plik.is_file() else ""
+        blok = tresc.split('id="nav.openSourceProject"', 1)
+        assert len(blok) == 2, f"{plik.name}: brak wpisu stopki"
+        assert oczekiwane in blok[1][:400], f"{plik.name}: stopka nie mowi o AMFA"
+
+
+def test_ikona_karty_jest_nasza() -> None:
+    """Ikona karty przegladarki to nasz znak, nie ikona podstawy.
+
+    Nowa podstawa przynosi wlasna ikone (niebieskie kolko); straznik pilnuje, ze podmiana
+    w naszym drzewie nie zniknela i ze plik nie zostal podmieniony na cudzy.
+    """
+    ikona = PANEL / "public" / "assets" / "favicon.ico"
+    assert ikona.is_file(), "brak ikony karty w zasobach panelu"
+    skrot = hashlib.sha256(ikona.read_bytes()).hexdigest()
+    assert skrot == "c6873772fa2775445676bfc9503200edff4f9d1ceef80f2473bd4b8170043320", \
+        "ikona karty nie jest nasza (podstawa przyniosla wlasna?)"

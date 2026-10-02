@@ -52,7 +52,7 @@ export class ViewConditionsColumnComponent {
     realms: $localize`:@@common.realms:Realms`,
     resolvers: $localize`:@@common.resolvers:Resolvers`,
     users: $localize`:@@common.users:Users`,
-    piNodes: $localize`:@@policy.condition.piNodes:privacyIDEA Nodes`,
+    piNodes: $localize`:@@policy.condition.piNodes:AMFA Nodes`,
     validTime: $localize`:@@policy.validTime:Valid Time`,
     client: $localize`:@@common.client:Client`,
     userAgents: $localize`:@@policy.condition.userAgents:User Agents`

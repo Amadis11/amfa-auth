@@ -373,7 +373,7 @@ export class AuthenticationLog {
   readonly scrollableColumnKeys = ["serial", ...INFO_COLUMN_KEYS];
   // Client filter: shows the integration's label but filters by its user-agent prefix, since client_label stores
   // the full user-agent string including the version; the multi-select component appends the trailing "*". REVIEW: once
-  // selected, the shared filter input displays the raw stored value (e.g. `client_label: privacyIDEA-Keycloak*`) not
+  // selected, the shared filter input displays the raw stored value (e.g. `client_label: AMFA-Keycloak*`) not
   // the label the user picked; consider mapping it back for display.
   readonly clientLabelOptions = computed<MultiSelectFilterOption[]>(() =>
     this.integrationsService.integrations().map((integration) => ({
