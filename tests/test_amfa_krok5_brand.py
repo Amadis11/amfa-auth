@@ -115,6 +115,22 @@ def test_okna_licencyjne_nie_wrocily() -> None:
         assert "SubscriptionExpiryService" not in tresc, f"wrocilo odwolanie w {plik}"
 
 
+def test_testy_podstawy_o_brandzie_sa_zgodne_z_naszymi() -> None:
+    """Testy podstawy o widocznej warstwie musza potwierdzac nasze wartosci domyslne.
+
+    Domyslne `PI_PAGE_TITLE` i `PI_LOGO` sa nasze, wiec test podstawy, ktory oczekuje starych wartosci
+    (`privacyIDEA Authentication System`, puste logo), swieci na czerwono bez powodu — a poprawka lubi
+    sie zgubic przy nakladaniu naszych zmian na nowe wydanie.
+    """
+    plik = KORZEN / "tests" / "test_ui_login.py"
+    if not plik.is_file():
+        return
+    tresc = plik.read_text(encoding="utf-8")
+    assert '"privacyIDEA Authentication System"' not in tresc, "test podstawy oczekuje starego tytulu strony"
+    assert '"AMFA"' in tresc, "test podstawy nie potwierdza naszego tytulu strony"
+    assert '"amfa.svg"' in tresc, "test podstawy nie potwierdza naszego domyslnego logo"
+
+
 def test_panel_nie_mowi_o_podstawie() -> None:
     """Zadna widoczna tekstowka panelu nie nazywa podstawy ani jej dostawcy.
 
