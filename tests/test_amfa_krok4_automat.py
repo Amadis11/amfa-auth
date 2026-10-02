@@ -136,6 +136,23 @@ def test_automat_buduje_panel_przed_pakietem() -> None:
     assert ogon.index("zbuduj_panel()") < ogon.index("zbuduj()"), "pakiet buduje sie przed panelem"
 
 
+def test_automat_uruchamia_testy_pythonem_z_zaleznosciami() -> None:
+    """Straznicy potrzebuja zaleznosci podstawy (np. flask), wiec testy ida przez venv z repozytorium.
+
+    Bez tego automat na golej maszynie meldowalby FAIL na wlasnym braku `flask`/`pytest` zamiast
+    sprawdzic zmiany.
+    """
+    import sys as _sys
+
+    automat = _automat()
+    venv = automat.KORZEN / ".venv" / "bin" / "python"
+    wybrany = automat.python_z_testami()
+    if venv.is_file():
+        assert wybrany == str(venv), "automat nie uzywa venv z repozytorium, choc ten jest"
+    else:
+        assert wybrany == _sys.executable, "automat nie cofa sie do interpretera, ktory go uruchomil"
+
+
 def test_lista_kontrolna_mowi_o_testach_a_nie_o_decyzji() -> None:
     """Dokument i workflow mowia to samo, co automat: wydajemy po testach."""
     lista = (KORZEN / "amfa" / "lista-kontrolna-wydania.md").read_text(encoding="utf-8")
@@ -160,9 +177,9 @@ if __name__ == "__main__":
             try:
                 _funkcja()
                 print(f"OK   {_nazwa}")
-            except AssertionError as _blad:
+            except Exception as _blad:            # takze brak zaleznosci: straznik nie mogl ruszyc
                 _bledy += 1
-                print(f"FAIL {_nazwa}: {_blad}")
+                print(f"FAIL {_nazwa}: {type(_blad).__name__}: {_blad}")
     _sys.exit(1 if _bledy else 0)
 
 

@@ -151,6 +151,17 @@ def nalozy(podstawa_commit: str, nowy_commit: str) -> tuple[bool, list[str]]:
     return False, konflikt
 
 
+def python_z_testami() -> str:
+    """Python z zaleznosciami do testow.
+
+    Straznicy i testy podstawy potrzebuja jej zaleznosci (np. `flask`), ktorych na golej maszynie nie ma;
+    automat bierze wiec venv z repozytorium (`.venv`), a gdy go nie ma — ten interpreter, ktory go
+    uruchomil (w CI zaleznosci instaluje krok "Zaleznosci" workflow).
+    """
+    kandydat = KORZEN / ".venv" / "bin" / "python"
+    return str(kandydat) if kandydat.is_file() else sys.executable
+
+
 def testy() -> tuple[bool, str]:
     """Nasze strazniki i testy podstawy. Zwraca (ok, raport).
 
@@ -158,7 +169,7 @@ def testy() -> tuple[bool, str]:
     a test podstawy, ktorego w tej wersji nie ma, tylko notujemy — nazwy testow podstawy zmieniaja
     sie miedzy wydaniami i to nie jest nasza strata.
     """
-    python = sys.executable
+    python = python_z_testami()
     raport = []
     nasze = nasze_strazniki()
     for plik in nasze + TESTY_PODSTAWY:

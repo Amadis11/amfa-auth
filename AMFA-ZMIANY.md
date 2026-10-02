@@ -53,7 +53,17 @@ aktualizacja bylaby czytaniem calego diffu od nowa.
   twarda regula i wynika z nakladania na nowe wydania: w mieszanym commicie nie widac, czyja
   zmiana zderzyla sie z nowa podstawa. Liczba commitow na krok jest dowolna, byle kazdy byl
   nasz, maly i samodzielny.
-- Kazda zmiana, ktora da sie sprawdzic statycznie, dostaje straznika w `tests/test_amfa_zmiany.py`.
+- Kazda zmiana, ktora da sie sprawdzic statycznie, dostaje straznika w **wlasnym** pliku kroku:
+  `tests/test_amfa_krok<N>_<nazwa>.py` (np. `test_amfa_krok5_brand.py`). Plik nalezy do jednego kroku —
+  dzieki temu nakladanie na nowe wydanie nie konfliktuje o wspolny plik testow. Bramka wydania uruchamia
+  **wszystkie** pliki z wzorca `tests/test_amfa_krok*.py` (`NASZE_STRAZNICY_WZORZEC` w automacie), a brak
+  ktoregokolwiek z nich zatrzymuje wydanie. Wspolny plik `tests/test_amfa_zmiany.py` nie istnieje — nazwa
+  zostala po pierwszym zalozeniu i nie wolno do niej wracac.
 - Straznicy sa szybcy i nie wymagaja bazy danych — maja dzialac w automacie bez ciezkich zaleznosci.
+  Kazdy plik da sie uruchomic bez pytest: `python3 tests/test_amfa_krok<N>_<nazwa>.py` (kod wyjscia 0/1).
+  Kilku straznikom potrzebne sa zaleznosci podstawy (np. krokowi 3 — `flask`): wtedy uruchamiac je
+  pythonem z `.venv` w repozytorium (`python3 -m venv .venv && .venv/bin/pip install -e ".[test]"`),
+  ktory bierze tez automat (`python_z_testami()`). Bez zaleznosci straznik zglasza sie jako FAIL,
+  a nie pomija.
 - Wewnetrznej nazwy pakietu `privacyidea` nie zmieniamy: jest niewidoczna, a jej zmiana zerwalaby
   mozliwosc nakladania naszych zmian na nowe wydania.
