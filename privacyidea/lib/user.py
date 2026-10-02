@@ -590,9 +590,14 @@ class User:
 
             elif not res:
                 log.error(f"The user {self!r} exists in NO resolver.")
-        except DirectoryPasswordState:
+        except DirectoryPasswordState as stan:
             # Stan konta rozpoznany przez katalog musi dojsc do wywolujacego: dostawca
-            # poswiadczen buduje z niego ekran zmiany poswiadczen.
+            # poswiadczen buduje z niego ekran zmiany poswiadczen. Zapamietujemy go takze na czas
+            # zadania, bo odpowiedz /validate/check budowana jest na swiezo pobranych obiektach
+            # tokenow i adnotacja na tokenie nie dochodzi do odpowiedzi (zgloszenie #222).
+            from privacyidea.lib.amfa_stan_katalogu import zapamietaj_stan_katalogu
+
+            zapamietaj_stan_katalogu(stan.state, self.login)
             raise
         except UserError as e:  # pragma: no cover
             log.error(f"Error while trying to verify the username: {e}")
