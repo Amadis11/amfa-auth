@@ -38,3 +38,19 @@ def test_ustawienia_panelu_nadal_dzialaja_bez_subskrypcji() -> None:
     assert "def get_webui_settings(" in tresc
     assert "get_subscription" not in tresc
     assert "BODY_TEMPLATE" not in tresc
+
+if __name__ == "__main__":
+    # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
+    import sys as _sys
+
+    _bledy = 0
+    for _nazwa, _funkcja in sorted(globals().items()):
+        if _nazwa.startswith("test_") and callable(_funkcja):
+            try:
+                _funkcja()
+                print(f"OK   {_nazwa}")
+            except Exception as _blad:            # takze brak zaleznosci: straznik nie mogl ruszyc
+                _bledy += 1
+                print(f"FAIL {_nazwa}: {type(_blad).__name__}: {_blad}")
+    _sys.exit(1 if _bledy else 0)
+

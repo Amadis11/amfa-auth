@@ -36,3 +36,19 @@ def test_stan_konta_nie_jest_polykany_po_drodze() -> None:
     assert 'token.auth_details["password_change_required"] = True' in dekoratory
     odpowiedz = (KORZEN / "privacyidea" / "lib" / "token" / "auth.py").read_text(encoding="utf-8")
     assert 'reply_dict["password_change_required"] = True' in odpowiedz
+
+if __name__ == "__main__":
+    # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
+    import sys as _sys
+
+    _bledy = 0
+    for _nazwa, _funkcja in sorted(globals().items()):
+        if _nazwa.startswith("test_") and callable(_funkcja):
+            try:
+                _funkcja()
+                print(f"OK   {_nazwa}")
+            except Exception as _blad:            # takze brak zaleznosci: straznik nie mogl ruszyc
+                _bledy += 1
+                print(f"FAIL {_nazwa}: {type(_blad).__name__}: {_blad}")
+    _sys.exit(1 if _bledy else 0)
+
