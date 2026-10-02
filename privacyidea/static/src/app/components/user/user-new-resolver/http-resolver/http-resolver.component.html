@@ -307,7 +307,7 @@
     <mat-hint
       class="hint"
       i18n="@@resolver.leftColumnDefines"
-      >The left column defines the user attributes used in privacyIDEA and the right column the equivalent attribute in
+      >The left column defines the user attributes used in AMFA and the right column the equivalent attribute in
       the user store.</mat-hint
     >
 
@@ -338,7 +338,7 @@
           <span
             class="hint margin-bottom-16 margin-top-16"
             i18n="@@resolver.userDataUserStore"
-            >The user data in this user store can be modified from within privacyIDEA.</span
+            >The user data in this user store can be modified from within AMFA.</span
           >
         </div>
 
@@ -354,7 +354,7 @@
           <span
             class="hint margin-top--16"
             i18n="@@resolver.timeSecondsPrivacyidea"
-            >Time in seconds privacyIDEA tries <br />
+            >Time in seconds AMFA tries <br />
             to reach the user store server.</span
           >
         </div>
@@ -399,7 +399,7 @@
               <p
                 class="auth-description"
                 i18n="@@resolver.sectionAllowsConfigure"
-                >This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order
+                >This section allows to configure an endpoint to which the AMFA server must authenticate in order
                 to receive an access token. This token can then be used to access the user store API. You can find most
                 of these settings in the app registration in the Entra Admin Center or you also have to add them
                 there.</p
@@ -542,7 +542,7 @@
               <p
                 class="auth-description"
                 i18n="@@resolver.sectionAllows"
-                >This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order
+                >This section allows to configure an endpoint to which the AMFA server must authenticate in order
                 to receive an access token. This token can then be used to access the user store API.</p
               >
 
@@ -555,7 +555,7 @@
                     <input
                       [formField]="httpForm.username"
                       matInput
-                      placeholder="privacyIDEA" />
+                      placeholder="AMFA" />
                   </app-clearable-input>
                 </mat-form-field>
 
@@ -621,7 +621,7 @@
           <div class="auth-panel-body">
             <app-http-config
               [(model)]="configGetUserByIdModel"
-              [description]="'Configure the endpoint to retrieve a single user for the UID. For example, privacyIDEA only stores the UID of the token owner. To resolve the complete user, this endpoint is used.'"
+              [description]="'Configure the endpoint to retrieve a single user for the UID. For example, AMFA only stores the UID of the token owner. To resolve the complete user, this endpoint is used.'"
               [endpointHint]="'Possible tags: {userid}'"
               i18n-title="@@resolver.getUserById"
               title="Get User by ID" />
@@ -636,7 +636,7 @@
           <div class="auth-panel-body">
             <app-http-config
               [(model)]="configGetUserByNameModel"
-              [description]="'Configure the endpoint to retrieve a single user for the username. For example, when a user tries to authenticate against privacyIDEA, only the username is provided. To resolve the complete user and evaluate if the user exists, this endpoint is used.'"
+              [description]="'Configure the endpoint to retrieve a single user for the username. For example, when a user tries to authenticate against AMFA, only the username is provided. To resolve the complete user and evaluate if the user exists, this endpoint is used.'"
               [endpointHint]="'Possible tags: {username}'"
               i18n-title="@@resolver.getUserByName"
               title="Get User by Name" />

@@ -2755,8 +2755,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.remoteTokenForwards" datatype="html">
-        <source>The Remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Remote 權杖將驗證請求轉送至另一台 privacyIDEA 伺服器。</target>
+        <source>The Remote token forwards the authentication request to another AMFA server.</source>
+        <target>Remote 權杖將驗證請求轉送至另一台 AMFA 伺服器。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/remote-config/remote-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2871,8 +2871,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.registrationServer" datatype="html">
-        <source>The Registration Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>註冊伺服器即為此 privacyIDEA 伺服器。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 請注意，privacyIDEA 伺服器必須可從使用者的智慧型手機存取。</target>
+        <source>The Registration Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>註冊伺服器即為此 AMFA 伺服器。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 請注意，AMFA 伺服器必須可從使用者的智慧型手機存取。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">47</context>
@@ -2887,8 +2887,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationServer" datatype="html">
-        <source>The Authentication Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>驗證伺服器即為此 privacyIDEA 伺服器。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 請注意，privacyIDEA 伺服器必須可從使用者的智慧型手機存取。</target>
+        <source>The Authentication Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>驗證伺服器即為此 AMFA 伺服器。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 請注意，AMFA 伺服器必須可從使用者的智慧型手機存取。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">64</context>
@@ -3055,8 +3055,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.youNeedSetCorrect" datatype="html">
-        <source>You need to set the correct appId, which in fact is the URL of your privacyIDEA installation.</source>
-        <target>您需要設定正確的 appId，實際上就是您 privacyIDEA 安裝的 URL。</target>
+        <source>You need to set the correct appId, which in fact is the URL of your AMFA installation.</source>
+        <target>您需要設定正確的 appId，實際上就是您 AMFA 安裝的 URL。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">28</context>
@@ -3079,8 +3079,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.urlYourPrivacyidea" datatype="html">
-        <source>The URL of your privacyIDEA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
-        <target>您 privacyIDEA 安裝的 URL。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 這必須是具有有效頂級網域的有效 FQDN－否則您可能會收到 U2F 錯誤 2（錯誤的請求）。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
+        <source>The URL of your AMFA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
+        <target>您 AMFA 安裝的 URL。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> 這必須是具有有效頂級網域的有效 FQDN－否則您可能會收到 U2F 錯誤 2（錯誤的請求）。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">52</context>
@@ -3147,8 +3147,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.shouldPathLocal" datatype="html">
-        <source>This should be a path to a local directory on the server, that privacyIDEA has read access to.</source>
-        <target>這應該是伺服器上 privacyIDEA 有讀取權限的本機目錄路徑。</target>
+        <source>This should be a path to a local directory on the server, that AMFA has read access to.</source>
+        <target>這應該是伺服器上 AMFA 有讀取權限的本機目錄路徑。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">49</context>
@@ -3171,8 +3171,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.doesNotNeedSet" datatype="html">
-        <source>This does not need to be set for WebAuthn to work, however without this, privacyIDEA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
-        <target>WebAuthn 不需要設定此項即可運作，然而若沒有此項，privacyIDEA 無法檢查證明憑證是否確實受信任（仍會檢查其有效性）。</target>
+        <source>This does not need to be set for WebAuthn to work, however without this, AMFA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
+        <target>WebAuthn 不需要設定此項即可運作，然而若沒有此項，AMFA 無法檢查證明憑證是否確實受信任（仍會檢查其有效性）。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">56</context>
@@ -3319,8 +3319,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.yubikeyYubico" datatype="html">
-        <source>This is a Yubikey in the Yubico Mode authenticated against privacyIDEA.</source>
-        <target>這是一支在 Yubico 模式下對 privacyIDEA 進行驗證的 Yubikey。</target>
+        <source>This is a Yubikey in the Yubico Mode authenticated against AMFA.</source>
+        <target>這是一支在 Yubico 模式下對 AMFA 進行驗證的 Yubikey。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3335,8 +3335,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationRequestHandled" datatype="html">
-        <source>The authentication request can be handled by the default privacyIDEA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> but can also be handled by the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>Yubico Validation Protocol. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>驗證請求可由預設的 privacyIDEA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>處理，但也可由 <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>Yubico 驗證協定處理。 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>The authentication request can be handled by the default AMFA validate API but can also be handled by the Yubico Validation Protocol.</source>
+        <target>驗證請求可由預設的 AMFA validate API 處理，但也可由 Yubico 驗證協定處理。 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">29</context>
@@ -5551,16 +5551,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.editPrivacyidea" datatype="html">
-        <source>Edit privacyIDEA Server</source>
-        <target>編輯 privacyIDEA 伺服器</target>
+        <source>Edit AMFA Server</source>
+        <target>編輯 AMFA 伺服器</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyidea" datatype="html">
-        <source>Create privacyIDEA Server</source>
-        <target>建立 privacyIDEA 伺服器</target>
+        <source>Create AMFA Server</source>
+        <target>建立 AMFA 伺服器</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">34</context>
@@ -5647,32 +5647,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.uniqueIdentifying" datatype="html">
-        <source>This is the unique identifying name of the privacyIDEA server definition.</source>
-        <target>這是 privacyIDEA 伺服器定義的唯一識別名稱。</target>
+        <source>This is the unique identifying name of the AMFA server definition.</source>
+        <target>這是 AMFA 伺服器定義的唯一識別名稱。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyidea" datatype="html">
-        <source>URL of the privacyIDEA Server</source>
-        <target>privacyIDEA 伺服器的 URL</target>
+        <source>URL of the AMFA Server</source>
+        <target>AMFA 伺服器的 URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyideaServer" datatype="html">
-        <source>URL of the privacyIDEA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
-        <target>privacyIDEA 伺服器的 URL 為<x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>必填<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
+        <source>URL of the AMFA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
+        <target>AMFA 伺服器的 URL 為<x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>必填<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.pleaseProvide" datatype="html">
-        <source>Please provide the base URL of the privacyIDEA server.</source>
-        <target>請提供 privacyIDEA 伺服器的基礎 URL。</target>
+        <source>Please provide the base URL of the AMFA server.</source>
+        <target>請提供 AMFA 伺服器的基礎 URL。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">116</context>
@@ -5739,8 +5739,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.filterPrivacyidea" datatype="html">
-        <source>Filter privacyIDEA Servers...</source>
-        <target>篩選 privacyIDEA 伺服器...</target>
+        <source>Filter AMFA Servers...</source>
+        <target>篩選 AMFA 伺服器...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5903,8 +5903,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServers" datatype="html">
-        <source>Delete privacyIDEA Servers</source>
-        <target state="new">刪除 privacyIDEA 伺服器</target>
+        <source>Delete AMFA Servers</source>
+        <target state="new">刪除 AMFA 伺服器</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.ts</context>
           <context context-type="linenumber">140</context>
@@ -6671,59 +6671,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.openSourceProject" datatype="html">
-        <source>An open-source project <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>maintained by NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>一個開放原始碼專案，由<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>NetKnights 維護<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>AMFA — authentication system by AMITRONIC</source>
+        <target>AMFA — authentication system by AMITRONIC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.collaborationCommunity" datatype="html">
-        <source>in collaboration with <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>community contributors <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>與<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>社群貢獻者<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>協作</target>
+        <source>AMITRONIC · Amadeusz Kusz</source>
+        <target>AMITRONIC · Amadeusz Kusz</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">119</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.netknights" datatype="html">
-        <source>NetKnights</source>
-        <target>NetKnights</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.maintainedByNetknights" datatype="html">
-        <source>Maintained by NetKnights</source>
-        <target>由 NetKnights 維護</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">134</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.github" datatype="html">
-        <source>GitHub</source>
-        <target>GitHub</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">141</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.communityContributors" datatype="html">
-        <source>Community contributors on GitHub</source>
-        <target>GitHub 上的社群貢獻者</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.support" datatype="html">
-        <source>Support</source>
-        <target>支援</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.documentation" datatype="html">
@@ -7283,8 +7243,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="login.youAuthenticated" datatype="html">
-        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to privacyIDEA without any further credentials.</source>
-        <target>您已由 Web 伺服器驗證為使用者 <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>。您可以此使用者身分登入 privacyIDEA，無需任何其他憑證。</target>
+        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to AMFA without any further credentials.</source>
+        <target>您已由 Web 伺服器驗證為使用者 <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>。您可以此使用者身分登入 AMFA，無需任何其他憑證。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">63</context>
@@ -8580,14 +8540,6 @@
           <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="welcome.firstWeWouldLike" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>First, we would like to give you some background information on privacyIDEA.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA is an <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Enterprise Level<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Multi Factor Authentication System. It is open source. The core developers are employed at NetKnights GmbH, Germany. NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target state="new"><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>首先，我們想為您提供一些 privacyIDEA 的背景資訊。<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA 是一套<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>企業級<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>多重要素驗證系統。它是開放原始碼。核心開發人員受僱於德國 NetKnights GmbH。NetKnights 提供 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA 企業版 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>，內含<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>支援與服務等級協議<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>。此外，NetKnights 也提供服務、諮詢及新功能的付費開發。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="welcome.valueOpenSource" datatype="html">
         <source>The value of open source</source>
         <target>開放原始碼的價值</target>
@@ -8597,27 +8549,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.youReadingBooks" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software privacyIDEA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 您正在閱讀的書籍已不再屬於您。您的電子書閱讀器只在閱讀期間提供它們。您使用的是軟體即服務，您無法控制軟體何時更新、新增或移除哪些功能，甚至服務是否會被停止。您只獲得有時間限制的合法使用權。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 您可以在自己的伺服器上安裝專屬軟體，但您對此安裝也只有有限的權利。您不被允許修改或轉交此專屬軟體。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 現在開放原始碼軟體 privacyIDEA 是<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>您的財產<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>！沒有人能奪走這套軟體或此安裝。根據 AGPLv3 授權，您可以修改或散布此軟體。您不必擔心產品終止支援。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>使用開放原始碼不在於不花錢，而在於您對自己系統獲得的完全控制權！永遠！<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software AMFA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 您正在閱讀的書籍已不再屬於您。您的電子書閱讀器只在閱讀期間提供它們。您使用的是軟體即服務，您無法控制軟體何時更新、新增或移除哪些功能，甚至服務是否會被停止。您只獲得有時間限制的合法使用權。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 您可以在自己的伺服器上安裝專屬軟體，但您對此安裝也只有有限的權利。您不被允許修改或轉交此專屬軟體。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 現在開放原始碼軟體 AMFA 是<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>您的財產<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>！沒有人能奪走這套軟體或此安裝。根據 AGPLv3 授權，您可以修改或散布此軟體。您不必擔心產品終止支援。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>使用開放原始碼不在於不花錢，而在於您對自己系統獲得的完全控制權！永遠！<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.addedValuePrivacyidea" datatype="html">
-        <source>The added value of privacyIDEA Enterprise Edition</source>
-        <target>privacyIDEA 企業版的附加價值</target>
+        <source>The added value of AMFA Enterprise Edition</source>
+        <target>AMFA 企業版的附加價值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
           <context context-type="linenumber">46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.accordingAgplv3" datatype="html">
-        <source>According to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target state="new">根據 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.softwareComes" datatype="html">
@@ -8626,30 +8570,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.addedValuesPrivacyidea" datatype="html">
-        <source>The added values of the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> are:</source>
-        <target state="new"><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA 企業版 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>的附加價值為：</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">69</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.supportService" datatype="html">
-        <source><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Support and <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>Service Level Agreements by NetKnights<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>, Germany. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Stable enterprise packages for Ubuntu and RHEL allow for an easy update and secure operations.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> An exclusive <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Appliance<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>-Tool, which allows easy setup of RADIUS clients, MySQL replications, backup and restore... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Exclusive timely news and bug reports.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Depending on the support level you get help with updates and yearly consultancy.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> By buying the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> you ensure that professional developers can work full time on privacyIDEA, add new features and fix bugs in a timely manner. In addition, you allow for external services like code audits. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></source>
-        <target state="new"><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> 由德國 NetKnights 提供的支援與<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>服務等級協議 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>。 <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>適用於 Ubuntu 和 RHEL 的穩定企業套件，可輕鬆更新並安全運作。<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> 一項專屬的<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>應用裝置<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>工具，可輕鬆設定 RADIUS 用戶端、MySQL 複寫、備份與還原... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>專屬的即時新聞與錯誤報告。<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>視支援等級而定，您可獲得更新方面的協助及每年的諮詢。<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> 透過購買 <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA 企業版 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>，您確保專業開發人員能全職投入 privacyIDEA、及時新增功能並修正錯誤。此外，您也支持了如程式碼稽核等外部服務。 <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.askPrivacyidea" datatype="html">
-        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>Ask for the privacyIDEA Enterprise Edition, now!<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target state="new"><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>立即洽詢 privacyIDEA 企業版！ <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.thankYouImproving" datatype="html">
@@ -8661,19 +8581,11 @@
         </context-group>
       </trans-unit>
       <trans-unit id="welcome.thankYouUsing" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using privacyIDEA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using privacyIDEA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>感謝您使用 privacyIDEA，讓您的網路乃至這個世界成為更安全的地方！<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>祝您使用 privacyIDEA 愉快！<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
+        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using AMFA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using AMFA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
+        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>感謝您使用 AMFA，讓您的網路乃至這個世界成為更安全的地方！<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>祝您使用 AMFA 愉快！<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
           <context context-type="linenumber">118</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.youUsingPrivacyidea" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>You are using privacyIDEA with more than 50 users.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for your trust!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> For the productive enterprise use, we recommend the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target state="new"><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>您使用 privacyIDEA 的使用者數已超過 50 人。<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>感謝您的信任！<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> 對於正式的企業使用，我們推薦 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA 企業版。 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights 提供 <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA 企業版 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>，內含<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>支援與服務等級協議<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>。此外，NetKnights 也提供服務、諮詢及新功能的付費開發。 <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.assignTokenSelf" datatype="html">
@@ -10581,8 +10493,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.vascoSerialRead" datatype="html">
-        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within privacyIDEA, activate the checkbox. Otherwise, privacyIDEA will create a new unique serial number.</source>
-        <target>VASCO 序號是從 VASCO blob 讀取的。若您想在 privacyIDEA 中使用此 VASCO 序號，請勾選核取方塊。否則，privacyIDEA 將建立一個新的唯一序號。</target>
+        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within AMFA, activate the checkbox. Otherwise, AMFA will create a new unique serial number.</source>
+        <target>VASCO 序號是從 VASCO blob 讀取的。若您想在 AMFA 中使用此 VASCO 序號，請勾選核取方塊。否則，AMFA 將建立一個新的唯一序號。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-vasco/enroll-vasco.component.html</context>
           <context context-type="linenumber">51</context>
@@ -12715,16 +12627,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.privacyideaUser" datatype="html">
-        <source>privacyIDEA User Groups Key</source>
-        <target>privacyIDEA 使用者群組金鑰</target>
+        <source>AMFA User Groups Key</source>
+        <target>AMFA 使用者群組金鑰</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.keyStoreGroups" datatype="html">
-        <source>Key to store the groups of the user in privacyIDEA.</source>
-        <target>用於在 privacyIDEA 中儲存使用者群組的金鑰。</target>
+        <source>Key to store the groups of the user in AMFA.</source>
+        <target>用於在 AMFA 中儲存使用者群組的金鑰。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">38</context>
@@ -12791,8 +12703,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userGroupsReceived" datatype="html">
-        <source>User groups are received in a separate request and stored under the privacyIDEA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
-        <target>使用者群組會在另一個請求中接收，並儲存於 privacyIDEA 屬性 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> 之下。</target>
+        <source>User groups are received in a separate request and stored under the AMFA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
+        <target>使用者群組會在另一個請求中接收，並儲存於 AMFA 屬性 <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> 之下。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">110</context>
@@ -13015,8 +12927,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.leftColumnDefines" datatype="html">
-        <source>The left column defines the user attributes used in privacyIDEA and the right column the equivalent attribute in the user store.</source>
-        <target>左欄定義 privacyIDEA 中使用的使用者屬性，右欄則為使用者儲存區中對應的屬性。</target>
+        <source>The left column defines the user attributes used in AMFA and the right column the equivalent attribute in the user store.</source>
+        <target>左欄定義 AMFA 中使用的使用者屬性，右欄則為使用者儲存區中對應的屬性。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">306</context>
@@ -13043,16 +12955,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataUserStore" datatype="html">
-        <source>The user data in this user store can be modified from within privacyIDEA.</source>
-        <target>此使用者儲存區中的使用者資料可從 privacyIDEA 內部修改。</target>
+        <source>The user data in this user store can be modified from within AMFA.</source>
+        <target>此使用者儲存區中的使用者資料可從 AMFA 內部修改。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">337</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.timeSecondsPrivacyidea" datatype="html">
-        <source>Time in seconds privacyIDEA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
-        <target>privacyIDEA 嘗試連接使用者儲存區伺服器的<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>時間（秒）。</target>
+        <source>Time in seconds AMFA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
+        <target>AMFA 嘗試連接使用者儲存區伺服器的<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/>時間（秒）。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">353</context>
@@ -13091,8 +13003,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllowsConfigure" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
-        <target>此區段可設定一個端點，privacyIDEA 伺服器必須向其進行驗證以接收存取權杖。此權杖隨後可用於存取使用者儲存區 API。您可在 Entra 系統管理中心的應用程式註冊中找到大部分的這些設定，或者您也必須在那裡新增它們。</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
+        <target>此區段可設定一個端點，AMFA 伺服器必須向其進行驗證以接收存取權杖。此權杖隨後可用於存取使用者儲存區 API。您可在 Entra 系統管理中心的應用程式註冊中找到大部分的這些設定，或者您也必須在那裡新增它們。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">398</context>
@@ -13179,8 +13091,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllows" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
-        <target>此區段可設定一個端點，privacyIDEA 伺服器必須向其進行驗證以接收存取權杖。此權杖隨後可用於存取使用者儲存區 API。</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
+        <target>此區段可設定一個端點，AMFA 伺服器必須向其進行驗證以接收存取權杖。此權杖隨後可用於存取使用者儲存區 API。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">541</context>
@@ -13459,8 +13371,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataDatabase" datatype="html">
-        <source>The user data in this database can be modified from within privacyIDEA.</source>
-        <target>此資料庫中的使用者資料可從 privacyIDEA 內部進行修改。</target>
+        <source>The user data in this database can be modified from within AMFA.</source>
+        <target>此資料庫中的使用者資料可從 AMFA 內部進行修改。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">269</context>
@@ -14871,32 +14783,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullySaved" datatype="html">
-        <source>Successfully saved privacyIDEA server.</source>
-        <target>已成功儲存 privacyIDEA 伺服器。</target>
+        <source>Successfully saved AMFA server.</source>
+        <target>已成功儲存 AMFA 伺服器。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedSavePrivacyidea" datatype="html">
-        <source>Failed to save privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target state="new">儲存 privacyIDEA 伺服器失敗。</target>
+        <source>Failed to save AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target state="new">儲存 AMFA 伺服器失敗。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullyDeleted" datatype="html">
-        <source>Successfully deleted privacyIDEA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
-        <target state="new">已成功刪除 privacyIDEA 伺服器：<x id="IDENTIFIER" equiv-text="identifier"/>。</target>
+        <source>Successfully deleted AMFA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
+        <target state="new">已成功刪除 AMFA 伺服器：<x id="IDENTIFIER" equiv-text="identifier"/>。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedDeletePrivacyidea" datatype="html">
-        <source>Failed to delete privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target state="new">刪除 privacyIDEA 伺服器失敗。</target>
+        <source>Failed to delete AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target state="new">刪除 AMFA 伺服器失敗。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">142</context>
@@ -15535,8 +15447,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.remoteTokenForwards" datatype="html">
-        <source>The remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Remote 權杖會將驗證要求轉送至另一部 privacyIDEA 伺服器。</target>
+        <source>The remote token forwards the authentication request to another AMFA server.</source>
+        <target>Remote 權杖會將驗證要求轉送至另一部 AMFA 伺服器。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">68</context>
@@ -15599,8 +15511,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.indexedSecret" datatype="html">
-        <source>The indexed secret Token is based on a shared secret between privacyIDEA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
-        <target>Indexed Secret 權杖以 privacyIDEA 與使用者之間共用的祕密為基礎。驗證時，系統會要求使用者提供此已知祕密中隨機位置的字元。</target>
+        <source>The indexed secret Token is based on a shared secret between AMFA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
+        <target>Indexed Secret 權杖以 AMFA 與使用者之間共用的祕密為基礎。驗證時，系統會要求使用者提供此已知祕密中隨機位置的字元。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">131</context>
@@ -15684,42 +15596,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">201</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslate" datatype="html">
-        <source>Help translate</source>
-        <target>協助翻譯</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">195</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslateInterface" datatype="html">
-        <source>Help translate this interface on Weblate</source>
-        <target>在 Weblate 上協助翻譯此介面</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">197</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.getEnterprise" datatype="html">
-        <source>Get enterprise support</source>
-        <target>取得企業支援</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">155</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">157</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">166</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.answersRequired" datatype="html">
@@ -16279,16 +16155,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunning" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
+        <target state="new">AMFA is running in DEBUG mode. You can change the debug level in pi.cfg.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebug" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
+        <target state="new">AMFA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">32</context>
@@ -16311,8 +16187,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebugMode" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
-        <target state="new">privacyIDEA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</target>
+        <source>AMFA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
+        <target state="new">AMFA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">45</context>
@@ -16943,8 +16819,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="policy.condition.piNodes" datatype="html">
-        <source>privacyIDEA Nodes</source>
-        <target state="new">privacyIDEA Nodes</target>
+        <source>AMFA Nodes</source>
+        <target state="new">AMFA Nodes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/policies-table/view-conditions-column/view-conditions-column.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -17919,8 +17795,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="audit.everyActionPerformed" datatype="html">
-        <source>Every action performed in privacyIDEA is recorded in the audit log.</source>
-        <target state="new">Every action performed in privacyIDEA is recorded in the audit log.</target>
+        <source>Every action performed in AMFA is recorded in the audit log.</source>
+        <target state="new">Every action performed in AMFA is recorded in the audit log.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.html</context>
           <context context-type="linenumber">209</context>
@@ -17967,8 +17843,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="periodicTask.createPeriodicTask" datatype="html">
-        <source>Create a periodic task to run recurring jobs on your privacyIDEA nodes.</source>
-        <target state="new">Create a periodic task to run recurring jobs on your privacyIDEA nodes.</target>
+        <source>Create a periodic task to run recurring jobs on your AMFA nodes.</source>
+        <target state="new">Create a periodic task to run recurring jobs on your AMFA nodes.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/periodic-task/periodic-task.component.html</context>
           <context context-type="linenumber">258</context>
@@ -18303,8 +18179,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.inUseThisIsThe" datatype="html">
-        <source>In use: this is the privacyIDEA server itself.</source>
-        <target state="new">In use: this is the privacyIDEA server itself.</target>
+        <source>In use: this is the AMFA server itself.</source>
+        <target state="new">In use: this is the AMFA server itself.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
           <context context-type="linenumber">274</context>
@@ -18463,24 +18339,24 @@
         </context-group>
       </trans-unit>
       <trans-unit id="caConnector.createCAConnector" datatype="html">
-        <source>Create a CA connector to issue and manage certificates from privacyIDEA.</source>
-        <target state="new">Create a CA connector to issue and manage certificates from privacyIDEA.</target>
+        <source>Create a CA connector to issue and manage certificates from AMFA.</source>
+        <target state="new">Create a CA connector to issue and manage certificates from AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/ca-connectors/ca-connectors.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.noPrivacyIDEAServers" datatype="html">
-        <source>No privacyIDEA servers yet</source>
-        <target state="new">No privacyIDEA servers yet</target>
+        <source>No AMFA servers yet</source>
+        <target state="new">No AMFA servers yet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyIDEAServer" datatype="html">
-        <source>Create a privacyIDEA server to forward authentication requests to another instance.</source>
-        <target state="new">Create a privacyIDEA server to forward authentication requests to another instance.</target>
+        <source>Create an AMFA server to forward authentication requests to another instance.</source>
+        <target state="new">Create an AMFA server to forward authentication requests to another instance.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">199</context>
@@ -18715,8 +18591,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="common.theRequestFailedCheckThe" datatype="html">
-        <source>The request failed. Check the connection to the privacyIDEA server and try again.</source>
-        <target state="new">The request failed. Check the connection to the privacyIDEA server and try again.</target>
+        <source>The request failed. Check the connection to the AMFA server and try again.</source>
+        <target state="new">The request failed. Check the connection to the AMFA server and try again.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/table-state/table-state.component.html</context>
           <context context-type="linenumber">94</context>
@@ -19543,8 +19419,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="apiClient.apiClientsIntro" datatype="html">
-        <source>API clients authenticate against privacyIDEA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
-        <target state="new">API clients authenticate against privacyIDEA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</target>
+        <source>API clients authenticate against AMFA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
+        <target state="new">API clients authenticate against AMFA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/api-clients/api-clients.component.html</context>
           <context context-type="linenumber">78</context>
@@ -22903,8 +22779,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="authLog.addressPrivacyideaSawConnection" datatype="html">
-        <source>The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
-        <target state="new">The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.</target>
+        <source>The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
+        <target state="new">The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.ts</context>
           <context context-type="linenumber">33</context>
@@ -24143,16 +24019,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServer" datatype="html">
-        <source>Delete privacyIDEA Server</source>
-        <target state="new">Delete privacyIDEA Server</target>
+        <source>Delete AMFA Server</source>
+        <target state="new">Delete AMFA Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.privacyideaServer" datatype="html">
-        <source>privacyIDEA server</source>
-        <target state="new">privacyIDEA server</target>
+        <source>AMFA server</source>
+        <target state="new">AMFA server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">194</context>

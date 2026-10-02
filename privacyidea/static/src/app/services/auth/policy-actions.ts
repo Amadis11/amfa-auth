@@ -223,7 +223,7 @@ export type PolicyAction =
   | "container_register"
   | "container_unregister"
   | "container_rollover"
-  | "privacyIDEA_server_url"
+  | "AMFA_server_url"
   | "container_registration_ttl"
   | "container_challenge_ttl"
   | "force_challenge_response"

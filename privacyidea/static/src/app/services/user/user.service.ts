@@ -40,7 +40,7 @@ import { catchError, map } from "rxjs/operators";
 
 const apiFilterKeys = ["description", "email", "givenname", "mobile", "phone", "resolver", "surname", "username"];
 
-// Not a user store attribute but privacyIDEA's own record, hence passed through unwrapped: the
+// Not a user store attribute but AMFA's own record, hence passed through unwrapped: the
 // backend reads it as a boolean, not as a pattern.
 const advancedApiFilterKeys = ["has_tokens"];
 
