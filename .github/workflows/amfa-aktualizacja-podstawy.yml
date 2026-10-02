@@ -4,11 +4,9 @@ name: AMFA — aktualizacja podstawy
 # uruchamia testy (nasze strazniki pierwsze), buduje pakiet i zglasza wynik:
 #  - udalo sie  -> galaz + pull request do linii amfa (do przegladu i scalenia),
 #  - konflikt   -> zgloszenie z lista plikow, ktore sie zderzyly,
-#  - testy padly-> zgloszenie z raportem, bez wydania,
-#  - nowa linia -> zgloszenie "wymaga decyzji o zgodnosci z brama" (kod 5): aktualizacja jest
-#    caloscia, a brama ma liste linii wydan zamknieta celowo, wiec to decyzja, nie awaria.
+#  - testy padly-> zgloszenie z raportem, bez wydania.
 # Logika jest w amfa/aktualizacja-podstawy.py, zeby dalo sie ja uruchomic i sprawdzic lokalnie.
-# Lista kontrolna wydania: amfa/lista-kontrolna-wydania.md.
+# Lista kontrolna wydania (co musi byc zielone przed wdrozeniem na lab): amfa/lista-kontrolna-wydania.md.
 
 on:
   schedule:
@@ -86,17 +84,8 @@ jobs:
             --title "AMFA: aktualizacja podstawy do ${ZNACZNIK:-nowego wydania}" \
             --body-file raport.txt
 
-      - name: Nowa linia wydania — zgloszenie decyzji o zgodnosci z brama
-        if: steps.nalozenie.outputs.kod == '5'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue create \
-            --title "AMFA: nowa linia podstawy wymaga decyzji o zgodnosci z brama" \
-            --body-file raport.txt
-
       - name: Konflikt — zgloszenie z lista plikow
-        if: steps.nalozenie.outcome != 'success' && steps.nalozenie.outputs.kod != '5'
+        if: steps.nalozenie.outcome != 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
