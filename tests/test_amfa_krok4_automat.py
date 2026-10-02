@@ -136,6 +136,18 @@ def test_automat_buduje_panel_przed_pakietem() -> None:
     assert ogon.index("zbuduj_panel()") < ogon.index("zbuduj()"), "pakiet buduje sie przed panelem"
 
 
+def test_automat_sprawdza_testy_podstawy_dotkniete_naszymi_krokami() -> None:
+    """Powierzchnie, ktore zmieniamy w podstawie, maja swoje testy podstawy w bramce.
+
+    Chodzi o widoczna warstwe konsoli (tytul strony, logo) i zadania okresowe po usunieciu statystyk —
+    bez nich nasza zmiana wychodzi dopiero na czerwonym CI, gdzie latwo ja wziac za cudzy blad.
+    """
+    automat = _automat()
+    podstawa = set(automat.TESTY_PODSTAWY)
+    assert "tests/test_ui_login.py" in podstawa, "bramka nie sprawdza testu podstawy o widocznej warstwie"
+    assert "tests/cli/test_cli_cron.py" in podstawa, "bramka nie sprawdza testu podstawy o zadaniach okresowych"
+
+
 def test_automat_uruchamia_testy_pythonem_z_zaleznosciami() -> None:
     """Straznicy potrzebuja zaleznosci podstawy (np. flask), wiec testy ida przez venv z repozytorium.
 
