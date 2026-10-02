@@ -62,9 +62,7 @@ interface SectionNode {
  * services/integrations/integrations.service.ts), just always present on its own at the
  * top.
  */
-const SERVER_DISPLAY_NAME = "privacyIDEA Server";
-const PTL_BASE_URL = "https://netknights.it/plugin-traffic-light";
-const SERVER_PTL_SLUG = "privacyidea-server";
+const SERVER_DISPLAY_NAME = "AMFA Server";
 
 /**
  * Display label per dashboard section key. The catalog's `Integration.section` is a
@@ -210,21 +208,12 @@ export class SubscriptionsWidgetComponent extends DashboardWidget implements OnI
   }
 
   /**
-   * Landing page of a component as <base>/<language>/<sla|non-sla|expired>/<slug>. Only
-   * German is served in its own language, every other locale gets the English page.
-   * Returns null for components without a slug, which are then rendered as plain text.
+   * Wiersz tabeli nie odsyla do stron dostawcy podstawy: zwracamy null, a szablon rysuje wtedy
+   * sam tekst. Adresy docelowe beda nasze, gdy bede one istnialy (jak dokumentacja: patrz
+   * services/documentation/documentation.service.ts).
    */
-  protected componentLink(status: SubscriptionStatus): string | null {
-    const slug =
-      status.application === "privacyidea"
-        ? SERVER_PTL_SLUG
-        : this.integrationsService.integrations().find((integration) => integration.id === status.application)
-            ?.ptl_slug;
-    if (!slug) {
-      return null;
-    }
-    const language = this.locale.startsWith("de") ? "de" : "en";
-    return `${PTL_BASE_URL}/${language}/${this.subscriptionSegment(status.subscription)}/${slug}`;
+  protected componentLink(_status: SubscriptionStatus): string | null {
+    return null;
   }
 
   /**
@@ -271,7 +260,7 @@ export class SubscriptionsWidgetComponent extends DashboardWidget implements OnI
    */
   protected usageReason(status: SubscriptionStatus): string {
     if (status.is_server) {
-      return $localize`:@@dashboard.inUseThisIsThe:In use: this is the privacyIDEA server itself.`;
+      return $localize`:@@dashboard.inUseThisIsThe:In use: this is the AMFA server itself.`;
     }
     if (!status.in_use) {
       return $localize`:@@dashboard.notInUseNoSubscription:Not in use: no subscription, and not seen in the last 7 days.`;
