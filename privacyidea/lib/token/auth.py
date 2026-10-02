@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from privacyidea.lib import _
+from privacyidea.lib.amfa_stan_katalogu import stany_katalogu_z_zadania
 from privacyidea.lib.challengeresponsedecorators import (generic_challenge_response_reset_pin,
                                                          generic_challenge_response_resync)
 from privacyidea.lib.conditional_access.request_context import confirm_attempt_for_serials
@@ -724,14 +725,6 @@ def check_token_list(token_object_list: list[TokenClass], passw: str, user: User
         # not even the PIN.
         # Depending on IncFailCountOnFalsePin, we increase the failcounter.
         reply_dict["message"] = _("wrong otp pin")
-        # Katalog mogl rozpoznac stan konta (haslo wygasle, wymagana zmiana, konto zablokowane).
-        # Przekazujemy to jako pole rozpoznawalne maszynowo, zeby dostawca poswiadczen mial
-        # z czego zbudowac ekran zmiany poswiadczen. Nazwa pola jest wspolna z nasza brama.
-        stany_katalogu = {t.auth_details.get("directory_password_state")
-                          for t in invalid_token_list if t.auth_details.get("password_change_required")}
-        if stany_katalogu:
-            reply_dict["password_change_required"] = True
-            reply_dict["directory_password_state"] = sorted(s for s in stany_katalogu if s)
         if get_inc_fail_count_on_false_pin():
             for token_object in invalid_token_list:
                 token_object.inc_failcount()
@@ -744,6 +737,20 @@ def check_token_list(token_object_list: list[TokenClass], passw: str, user: User
     else:
         # There is no suitable token for authentication
         reply_dict["message"] = _("No suitable token found for authentication.")
+
+    # Stan konta rozpoznany przez katalog (haslo wygasle, wymagana zmiana, konto wylaczone albo wygasle).
+    # Przekazujemy go jako pole rozpoznawalne maszynowo - nazwa jest wspolna z nasza brama i z dostawca
+    # poswiadczen, ktory buduje z niego ekran zmiany poswiadczen. Robimy to po calym lancuchu i niezaleznie
+    # od tego, na ktora liste trafil token, bo adnotacja na tokenie nie dochodzi do odpowiedzi: kontrola
+    # poswiadczenia i budowanie odpowiedzi pracuja na swiezo pobieranych obiektach tokenow (zgloszenie #222).
+    stany_katalogu = {t.auth_details.get("directory_password_state")
+                      for t in invalid_token_list if t.auth_details.get("password_change_required")}
+    stany_katalogu.update(stany_katalogu_z_zadania())
+    stany_katalogu.discard(None)
+    stany_katalogu.discard("")
+    if stany_katalogu:
+        reply_dict["password_change_required"] = True
+        reply_dict["directory_password_state"] = sorted(stany_katalogu)
 
     # Reduce the per-token events collected during the walk to the single highest-precedence one for the
     # authentication log: no event means NO_USABLE_TOKEN if every owned token was unusable (revoked, disabled,
