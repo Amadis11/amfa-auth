@@ -66,73 +66,48 @@ def _automat():
     return modul
 
 
-def test_automat_czyta_linie_przyjmowane_przez_brame() -> None:
-    """Aktualizacja jest caloscia: automat musi wiedziec, ktore linie wydan przyjmuje brama."""
+def test_automat_wie_ktore_znaczniki_sa_wydaniem() -> None:
+    """Podstawa wybierana jest z wydan, nie z wersji rozwojowych — inaczej na lab szloby `v3.14dev4`."""
     automat = _automat()
-    linie, gdzie, jak = automat.przyjmowane_linie()
-    assert "3.14" in linie, f"brama ma przyjmowac linie, na ktorej stoimy: {linie}"
-    assert "privacyidea.py" in gdzie, "brak wskazania, gdzie w bramie zyje lista linii"
-    assert jak, "brak instrukcji, co zrobic, gdy trzeba dopisac linie"
-
-    plik = KORZEN / "amfa" / "brama-linie.json"
-    assert plik.is_file(), "brak zadeklarowanej listy linii bramy (amfa/brama-linie.json)"
-
-
-def test_automat_wie_ktora_linia_ma_wydanie() -> None:
-    """Linia wydania z znacznika — bez tego automat nie ma czego porownac z lista bramy."""
-    automat = _automat()
-    assert automat.linia_wydania("v3.14.1") == "3.14"
-    assert automat.linia_wydania("v3.15") == "3.15"
-    assert automat.linia_wydania("3.13.4") == "3.13"
-    assert automat.linia_wydania("v3.9dev3") is None, "wersja rozwojowa nie jest wydaniem podstawy"
-    assert automat.linia_wydania("—") is None
-    assert automat.linia_wydania(None) is None
-
-    # Wybor podstawy tez musi pomijac wersje rozwojowe (inaczej automat bierze `v3.14dev4` za wydanie
-    # i nie ma czego porownac z lista bramy).
     assert automat.czy_wydanie("v3.14") is True
     assert automat.czy_wydanie("3.14.1") is True
     assert automat.czy_wydanie("v3.14dev4") is False
     assert automat.czy_wydanie("v3.9dev1") is False
+    assert automat.czy_wydanie("—") is False
+    assert automat.czy_wydanie(None) is False
 
 
-def test_automat_przyjmuje_linie_z_listy_bramy() -> None:
-    """Linia z listy: zgodnosc potwierdzona, opis mowi wprost o przyjmowaniu."""
-    automat = _automat()
-    zgodne, opis = automat.zgodnosc_bramy("v3.14")
-    assert zgodne is True
-    assert "przyjmuje" in opis and "3.14" in opis
+def test_automat_nie_wymaga_decyzji_o_liscie_wydan() -> None:
+    """Zgodnosc z nowa linia potwierdzaja testy, a nie numer wydania dopisany w kodzie bramy.
 
-
-def test_automat_wstrzymuje_wydanie_linii_spoza_listy_bramy() -> None:
-    """Linia spoza listy to decyzja, nie awaria: brak zgody, wskazanie miejsca i lista kontrolna.
-
-    Ten test pilnuje tez, ze automat nie przemilcza rozjazdu: bez tego wydanie przeszloby, a logowanie
-    przez brame zatrzymaloby sie dopiero na labie.
+    Ten straznik zapisuje decyzje: powrot listy linii (albo kodu wyjscia dla recznej decyzji) oznaczalby,
+    ze nowe wydanie podstawy znowu trzeba obwarowac recznym krokiem.
     """
-    automat = _automat()
-    zgodne, opis = automat.zgodnosc_bramy("v3.15")
-    assert zgodne is False, "linia spoza listy bramy nie moze przejsc jako wydanie"
-    assert "NIE PRZYJMUJE" in opis
-    assert "privacyidea.py" in opis, "brak wskazania, gdzie dopisac linie"
-    assert "Lista kontrolna wydania" in opis
-    assert "pi-manage db upgrade" in opis, "lista kontrolna bez kroku migracji schematu"
-    assert len(automat.LISTA_KONTROLNA_WYDANIA) >= 6, "lista kontrolna wydania jest niekompletna"
-
-
-def test_workflow_zglasza_decyzje_o_zgodnosci_osobno_od_konfliktu() -> None:
-    """Zgloszenie o zgodnosci z brama nie moze wygladac jak konflikt przy nakladaniu zmian."""
-    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
-    assert "kod == '5'" in workflow, "workflow nie rozpoznaje kodu 5"
-    assert "wymaga decyzji o zgodnosci z brama" in workflow, "brak osobnego tytulu zgloszenia"
-    assert "PIPESTATUS[0]" in workflow, "kod wyjscia musi byc brany ze skryptu, nie z tee"
-    assert "steps.nalozenie.outputs.kod != '5'" in workflow, "konflikt nie odsiewa kodu 5"
-
     skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
-    assert "5 — nowa linia wydania" in skrypt, "kod wyjscia 5 nie jest udokumentowany"
+    assert "brama-linie.json" not in skrypt, "wrocila lista linii bramy wymagajaca recznej decyzji"
+    assert "5 —" not in skrypt, "wrocil kod wyjscia dla recznej decyzji"
+    assert "SANE_RELEASE_LINES" not in skrypt, "automat wrocil do pytania o liste wydan w bramie"
 
-    lista = KORZEN / "amfa" / "lista-kontrolna-wydania.md"
-    assert lista.is_file(), "brak listy kontrolnej wydania"
-    tresc = lista.read_text(encoding="utf-8")
-    assert "SANE_RELEASE_LINES" in tresc, "lista kontrolna nie wskazuje listy linii w bramie"
+    automat = _automat()
+    assert not hasattr(automat, "zgodnosc_bramy"), "wrocila bramka zgodnosci z lista wydan"
+
+    lista = automat.LISTA_KONTROLNA_WYDANIA
+    assert any("regresja bramy" in punkt for punkt in lista), "lista kontrolna bez calej regresji bramy"
+    assert any("test:flow" in punkt for punkt in lista), "lista kontrolna bez przebiegu na zywym labie"
+    assert any("pi-manage db upgrade" in punkt for punkt in lista), "lista kontrolna bez migracji schematu"
+    assert any("requirements.txt" in punkt for punkt in lista), "lista kontrolna bez aktualizacji zaleznosci"
+
+
+def test_lista_kontrolna_mowi_o_testach_a_nie_o_decyzji() -> None:
+    """Dokument i workflow mowia to samo, co automat: wydajemy po testach."""
+    lista = (KORZEN / "amfa" / "lista-kontrolna-wydania.md").read_text(encoding="utf-8")
+    assert "tests/web/gateway" in lista, "lista kontrolna nie wskazuje regresji bramy"
+    assert "test:flow" in lista, "lista kontrolna nie wskazuje przebiegu na labie"
+    assert "SANE_RELEASE_LINES" not in lista, "lista kontrolna wciaz mowi o liscie wydan w kodzie"
+    assert "brama-linie.json" not in lista, "lista kontrolna wciaz mowi o pliku z lista wydan"
+
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
+    assert "kod == '5'" not in workflow, "workflow wciaz rozpoznaje kod recznej decyzji"
+    assert "wymaga decyzji o zgodnosci z brama" not in workflow, "workflow wciaz zglasza decyzje o liscie wydan"
+    assert "PIPESTATUS[0]" in workflow, "kod wyjscia musi byc brany ze skryptu, nie z tee"
 
