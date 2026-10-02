@@ -30,12 +30,47 @@ def test_stan_konta_z_katalogu_jest_rozpoznawany() -> None:
 
 def test_stan_konta_nie_jest_polykany_po_drodze() -> None:
     """Sygnal musi byc przepuszczony przez warstwe uzytkownika i przekazany do odpowiedzi."""
+    resolver = (KORZEN / "privacyidea" / "lib" / "resolvers" / "LDAPIdResolver.py").read_text(encoding="utf-8")
+    # Resolver podnosi stan, ale ponizszy `except Exception` zjadal go jako zwykla pomylke i zwracal False
+    # (log 475 sasiadujacy z 484) - dlatego stan musi byc przepuszczony wyzej (zgloszenie #222).
+    assert "except DirectoryPasswordState:" in resolver, "resolver polyka stan konta z katalogu"
+    stan_kod = resolver.index("except DirectoryPasswordState:")
+    zwykly_kod = resolver.index('Failed to check password for {uid!r}/{bind_user!r}')
+    assert stan_kod < zwykly_kod, "przepuszczenie stanu musi stac przed obsluga zwyklej pomylki"
     uzytkownik = (KORZEN / "privacyidea" / "lib" / "user.py").read_text(encoding="utf-8")
-    assert "except DirectoryPasswordState:" in uzytkownik, "user.py polyka stan konta z katalogu"
+    assert "except DirectoryPasswordState as stan:" in uzytkownik, "user.py polyka stan konta z katalogu"
+    # Zapis na czas zadania: adnotacja na tokenie nie dochodzi do odpowiedzi, bo odpowiedz budowana jest
+    # na swiezo pobieranych obiektach tokenow (zgloszenie #222).
+    assert "zapamietaj_stan_katalogu(stan.state, self.login)" in uzytkownik
     dekoratory = (KORZEN / "privacyidea" / "lib" / "policydecorators.py").read_text(encoding="utf-8")
     assert 'token.auth_details["password_change_required"] = True' in dekoratory
     odpowiedz = (KORZEN / "privacyidea" / "lib" / "token" / "auth.py").read_text(encoding="utf-8")
     assert 'reply_dict["password_change_required"] = True' in odpowiedz
+    assert "stany_katalogu_z_zadania()" in odpowiedz, "odpowiedz nie czyta stanu zapisanego na czas zadania"
+
+
+def test_stan_konta_zyje_tyle_co_zadanie() -> None:
+    """Stan rozpoznany przez katalog musi przetrwac do budowania odpowiedzi w tym samym zadaniu."""
+    import sys
+    sys.path.insert(0, str(KORZEN))
+    from flask import Flask
+
+    from privacyidea.lib.amfa_stan_katalogu import (stany_katalogu_z_zadania,
+                                                     zapamietaj_stan_katalogu)
+
+    # Poza zadaniem nie ma gdzie tego trzymac - i nie moze wybuchnac.
+    assert stany_katalogu_z_zadania() == []
+
+    aplikacja = Flask(__name__)
+    with aplikacja.test_request_context("/validate/check"):
+        zapamietaj_stan_katalogu("password_change_required", "amfa-test-zmiana")
+        zapamietaj_stan_katalogu("password_change_required", "amfa-test-zmiana")
+        zapamietaj_stan_katalogu("account_disabled", "amfa-test-wylaczone")
+        assert stany_katalogu_z_zadania() == ["password_change_required", "account_disabled"]
+
+    # Nastepne zadanie nie widzi stanu poprzedniego.
+    with aplikacja.test_request_context("/validate/check"):
+        assert stany_katalogu_z_zadania() == []
 
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
