@@ -32,6 +32,20 @@ def test_lista_zadan_nadal_istnieje() -> None:
     assert "TASK_CLASSES" in zdefiniowane, "brak definicji TASK_CLASSES — wyjecie wpisu zdjelo liste"
     assert "TASK_MODULES" in zdefiniowane, "brak definicji TASK_MODULES"
 
+
+def test_test_podstawy_nie_wola_usunietego_zadania() -> None:
+    """Test podstawy nie moze wolac zadania statystyk, ktore usunelismy (krok 1).
+
+    Inaczej CI jest czerwone bez powodu: `ParameterError(Unknown task module: "SimpleStats")`,
+    a nasz blad trudno odroznic od cudzego.
+    """
+    plik = KORZEN / "tests" / "cli" / "test_cli_cron.py"
+    if not plik.is_file():
+        return
+    tresc = plik.read_text(encoding="utf-8")
+    assert "SimpleStats" not in tresc, "test podstawy wola usuniete zadanie statystyk"
+    assert "EventCounter" in tresc, "test podstawy nie wola zadania, ktore istnieje"
+
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
     import sys as _sys

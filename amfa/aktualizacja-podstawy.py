@@ -57,11 +57,17 @@ LISTA_KONTROLNA_WYDANIA = (
 # wydania ma uruchamiac **wszystkie**. Wpisany tu po nazwie plik latwo zostawic poza bramka — tak
 # wlasnie zginal straznik brandu (krok 5), gdy powstal po kroku 4.
 NASZE_STRAZNICY_WZORZEC = "tests/test_amfa_krok*.py"
+# Testy podstawy: ich braki sa tylko notowane (nazwy zmieniaja sie miedzy wydaniami), ale te, ktore
+# dotykaja powierzchni zmienionych przez nasze kroki, trzymamy tu na stale — inaczej nasz brand widac
+# dopiero na czerwonym CI: `test_ui_login.py` (tytul strony, logo konsoli), `test_cli_cron.py`
+# (zadania okresowe po usunieciu statystyk).
 TESTY_PODSTAWY = [
     "tests/test_api_validate.py",
     "tests/test_app.py",
     "tests/test_api_lib_policy.py",
     "tests/test_api_periodictask.py",
+    "tests/test_ui_login.py",
+    "tests/cli/test_cli_cron.py",
 ]
 
 
