@@ -82,7 +82,7 @@ def get_last_runs(app: Flask, name: str) -> dict:
 
 class TestPICronRunManually:
     def test_01_successful_task_is_recorded(self, app):
-        create_task(app, "succeeding", "SimpleStats", retry_if_failed=True)
+        create_task(app, "succeeding", "EventCounter", retry_if_failed=True)
         runner = app.test_cli_runner()
         # A run_scheduled -c before, in the same process, does not silence run_manually
         runner.invoke(privacyidea_cron, ["run_scheduled", "-c"])
