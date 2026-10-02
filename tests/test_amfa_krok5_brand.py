@@ -177,8 +177,8 @@ if __name__ == "__main__":
             try:
                 _funkcja()
                 print(f"OK   {_nazwa}")
-            except AssertionError as _blad:
+            except Exception as _blad:            # takze brak zaleznosci: straznik nie mogl ruszyc
                 _bledy += 1
-                print(f"FAIL {_nazwa}: {_blad}")
+                print(f"FAIL {_nazwa}: {type(_blad).__name__}: {_blad}")
     _sys.exit(1 if _bledy else 0)
 
