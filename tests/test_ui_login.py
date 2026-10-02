@@ -223,8 +223,8 @@ class ConfigTestCase(MyApiTestCase):
 
             self.assertEqual("static/customize", config["customization"])
             self.assertEqual("", config["custom_css"])
-            self.assertEqual("", config["logo"])
-            self.assertEqual("privacyIDEA Authentication System", config["page_title"])
+            self.assertEqual("amfa.svg", config["logo"])
+            self.assertEqual("AMFA", config["page_title"])
             self.assertEqual("", config["realms"])
             self.assertEqual("", config["show_node"])
             self.assertEqual("templates/menu.html", config["customization_menu_file"])
