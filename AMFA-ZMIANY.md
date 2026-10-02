@@ -24,12 +24,11 @@ nasze zmiany zderzyly sie z nowa wersja.
 
 ## Aktualizacja jest caloscia
 
-Wydanie nowej linii podstawy nie konczy sie na tym repozytorium: brama AMFA ma **zamknieta liste linii
-wydan**, ktore przyjmuje (`SANE_RELEASE_LINES` w `amitronic-amfa`, kopia w `amfa/brama-linie.json`).
-Dlatego automat, widzac wydanie z linii spoza tej listy, **nie naklada naszych zmian** i konczy sie
-kodem `5` z zgloszeniem „wymaga decyzji o zgodnosci z brama” — to decyzja, a nie awaria. Pelny lancuch
-wydania (kod, brama, zaleznosci, schemat, panel, wzorce, wdrozenie) jest w
-`amfa/lista-kontrolna-wydania.md`.
+Wydanie nowej linii podstawy nie konczy sie na tym repozytorium: trzeba miec **zielona cala regresje
+bramy** i **przebieg na zywym labie**, a nie numer wydania dopisany w kodzie bramy. Brama nie trzyma
+listy obslugiwanych wydan — sprawdza ksztalt i spojnosc odpowiedzi privacyIDEA, a zgodnosc kontraktu
+potwierdzaja testy. Pelny lancuch weryfikacji (kod, brama, brama na labie, zaleznosci, schemat, panel,
+wzorce, wdrozenie) jest w `amfa/lista-kontrolna-wydania.md`, a automat dokłada go do raportu wydania.
 
 ## Konwencja commitow
 
