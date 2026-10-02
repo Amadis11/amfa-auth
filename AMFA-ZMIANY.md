@@ -22,6 +22,15 @@ najnowszy znacznik wydania, naklada nasze commity z linii `amfa` na nowa podstaw
 (ze szczegolnym naciskiem na nasze) i zglasza, ze jest aktualizacja — albo zglasza konflikt, jesli
 nasze zmiany zderzyly sie z nowa wersja.
 
+## Aktualizacja jest caloscia
+
+Wydanie nowej linii podstawy nie konczy sie na tym repozytorium: brama AMFA ma **zamknieta liste linii
+wydan**, ktore przyjmuje (`SANE_RELEASE_LINES` w `amitronic-amfa`, kopia w `amfa/brama-linie.json`).
+Dlatego automat, widzac wydanie z linii spoza tej listy, **nie naklada naszych zmian** i konczy sie
+kodem `5` z zgloszeniem „wymaga decyzji o zgodnosci z brama” — to decyzja, a nie awaria. Pelny lancuch
+wydania (kod, brama, zaleznosci, schemat, panel, wzorce, wdrozenie) jest w
+`amfa/lista-kontrolna-wydania.md`.
+
 ## Konwencja commitow
 
 Kazdy commit zaczyna sie od `AMFA: `. Po temacie idzie blok opisowy w stalej kolejnosci:
