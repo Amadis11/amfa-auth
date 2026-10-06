@@ -46,6 +46,7 @@ describe("ConfigService", () => {
     has_job_queue: "true",
     login_text: "Welcome",
     gdpr_link: "http://gdpr",
+    documentation_url: "https://docs.example/",
     translation_warning: true,
     passkey_login: "hide"
   };
@@ -86,6 +87,7 @@ describe("ConfigService", () => {
       has_job_queue: "false",
       login_text: "",
       gdpr_link: "",
+      documentation_url: "",
       translation_warning: false,
       passkey_login: "show"
     });
@@ -153,6 +155,7 @@ describe("ConfigService", () => {
       has_job_queue: "false",
       login_text: "",
       gdpr_link: "",
+      documentation_url: "",
       translation_warning: false,
       passkey_login: "show"
     });
