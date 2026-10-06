@@ -17,8 +17,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  **/
 import { inject, Injectable } from "@angular/core";
-import { ROUTE_PATHS } from "@app/route_paths";
-import { VersioningService } from "@services/version/version.service";
+import { ConfigService, ConfigServiceInterface } from "@services/config/config.service";
 
 export interface ActionDocumentation {
   info: string[];
@@ -50,88 +49,52 @@ export interface DocumentationServiceInterface {
 
 @Injectable()
 export class DocumentationService implements DocumentationServiceInterface {
-  private _versioningService = inject(VersioningService);
-  // Nasz produkt nie odsyla do instrukcji dostawcy podstawy, wiec adres jest pusty: przyciski pomocy
-  // nic nie otwieraja, a podpowiedzi w edytorze polityk sie nie pokazuja. Gdy bedziemy mieli wlasna
-  // dokumentacje, tu wchodzi jej adres (docelowo podawany przez serwer, jak logo i tytul strony).
-  private _baseUrl = "";
+  private readonly _configService: ConfigServiceInterface = inject(ConfigService);
 
-  openDocumentation(page: string) {
-    if (!this._baseUrl) {
+  /**
+   * The address of our own product documentation (the AMITRONIC knowledge base), provided by the
+   * server in the app config (``documentation_url``) exactly like the logo and the page title. It
+   * is not baked into the console, so one build serves any deployment and an admin can point it at
+   * another address without a rebuild. An empty value means there is no documentation to open and
+   * every help entry point stays inert.
+   */
+  private get _baseUrl(): string {
+    return this._configService.config().documentation_url || "";
+  }
+
+  /**
+   * Open our product documentation. The knowledge base is a single live site with its own
+   * navigation and search; it has no per-console-route pages, so the console route is deliberately
+   * not turned into a deep link (that would open a non-existent page). When a deployment publishes
+   * per-page documentation at the configured address, use :meth:`openDocumentationPage`.
+   */
+  openDocumentation(_page: string): Promise<void> {
+    const baseUrl = this._baseUrl;
+    if (!baseUrl) {
       return Promise.resolve();
     }
-    let pageUrl;
-    if (page.startsWith(ROUTE_PATHS.TOKENS_DETAILS)) {
-      pageUrl = "webui/token_details.html";
-    } else if (page.startsWith(ROUTE_PATHS.CONTAINERS_DETAILS)) {
-      pageUrl = "webui/container_view.html#container-details";
-    } else {
-      switch (page) {
-        case ROUTE_PATHS.TOKENS_ENROLLMENT:
-          pageUrl = "webui/token_details.html#enroll-token";
-          break;
-        case ROUTE_PATHS.TOKENS:
-          pageUrl = "webui/index.html#tokens";
-          break;
-        case ROUTE_PATHS.CONTAINERS:
-          pageUrl = "webui/index.html#containers";
-          break;
-        case "tokentypes":
-          pageUrl = "tokens/tokentypes.html";
-          break;
-        case ROUTE_PATHS.TOKENS_GET_SERIAL:
-          pageUrl = "webui/token_details.html#get-serial";
-          break;
-        case ROUTE_PATHS.TOKENS_APPLICATIONS:
-          pageUrl = "machines/index.html";
-          break;
-        case ROUTE_PATHS.TOKENS_CHALLENGES:
-          pageUrl = "tokens/authentication_modes.html#challenge-mode";
-          break;
-        case "containertypes":
-          pageUrl = "container/container_types.html";
-          break;
-        case ROUTE_PATHS.CONTAINERS_CREATE:
-          pageUrl = "webui/container_view.html#container-create";
-          break;
-        default:
-          pageUrl = `webui/index.html#${page}`;
-          break;
-      }
-    }
-    const versionUrl = this.getVersionUrl(pageUrl);
-    const fallbackUrl = this.getFallbackUrl(pageUrl);
-    const promise = this.checkFullUrl(versionUrl).then((found) => {
-      if (found) {
-        window.open(versionUrl, "_blank");
-      } else {
-        this.checkFullUrl(fallbackUrl).then((foundFallback) => {
-          if (foundFallback) {
-            window.open(fallbackUrl, "_blank");
-          } else {
-            alert("The documentation page is currently not available.");
-          }
-        });
-      }
-    });
-    return promise;
+    window.open(baseUrl, "_blank");
+    return Promise.resolve();
   }
 
+  /**
+   * Compose the URL of a page within the documentation tree at the configured address.
+   */
   getVersionUrl(pageUrl: string): string {
-    if (!this._baseUrl) {
+    const baseUrl = this._baseUrl;
+    if (!baseUrl) {
       return "";
     }
     pageUrl = pageUrl.replace(/^\/+/, ""); // Remove leading slashes
-    const version = this._versioningService.version();
-    return `${this._baseUrl}v${version}/${pageUrl}`;
+    return `${baseUrl}${pageUrl}`;
   }
 
+  /**
+   * Our documentation is one live tree, not a versioned/stable pair like the vendor's readthedocs;
+   * the fallback address is therefore the same page as the primary one.
+   */
   getFallbackUrl(pageUrl: string): string {
-    if (!this._baseUrl) {
-      return "";
-    }
-    pageUrl = pageUrl.replace(/^\/+/, ""); // Remove leading slashes
-    return `${this._baseUrl}stable/${pageUrl}`;
+    return this.getVersionUrl(pageUrl);
   }
 
   /**
@@ -158,62 +121,54 @@ export class DocumentationService implements DocumentationServiceInterface {
   /**
    *
    * @param pageUrl The page URL to check (relative to the documentation base URL)
-   *  * Checks if the documentation page exists for the current version or falls back to stable.
-   *  * Alerts the user if the page is not found in either version.
+   *  * Checks if the documentation page exists at the configured address.
+   *  * Alerts the user if the page is not found.
    *
    * @returns A promise that resolves to the found URL or false if not found.
    */
   async checkPageUrl(pageUrl: string): Promise<string | false> {
     const versionUrl = this.getVersionUrl(pageUrl);
-    return this.checkFullUrl(versionUrl).then((found) => {
-      if (found) {
-        return versionUrl;
-      } else {
-        const fallbackUrl = this.getFallbackUrl(pageUrl);
-        return this.checkFullUrl(fallbackUrl).then((foundFallback) => {
-          if (foundFallback) {
-            return fallbackUrl;
-          } else {
-            alert("The documentation page is currently not available.");
-            return false;
-          }
-        });
-      }
-    });
+    if (await this.checkFullUrl(versionUrl)) {
+      return versionUrl;
+    }
+    const fallbackUrl = this.getFallbackUrl(pageUrl);
+    if (await this.checkFullUrl(fallbackUrl)) {
+      return fallbackUrl;
+    }
+    alert("The documentation page is currently not available.");
+    return false;
   }
 
   async openDocumentationPage(page: string): Promise<boolean> {
-    if (!this._baseUrl) {
+    const baseUrl = this._baseUrl;
+    if (!baseUrl) {
       return false;
     }
     // First check the page and when found open it
-    return new Promise(() => {
-      const versionUrl = this.getVersionUrl(page);
-      this.checkFullUrl(versionUrl).then((found) => {
-        if (found) {
-          window.open(versionUrl, "_blank");
-        } else {
-          const fallbackUrl = this.getFallbackUrl(page);
-          this.checkFullUrl(fallbackUrl).then((foundFallback) => {
-            if (foundFallback) {
-              window.open(fallbackUrl, "_blank");
-            } else {
-              alert("The documentation page is currently not available.");
-            }
-          });
-        }
-      });
-    });
+    const versionUrl = this.getVersionUrl(page);
+    if (await this.checkFullUrl(versionUrl)) {
+      window.open(versionUrl, "_blank");
+      return true;
+    }
+    const fallbackUrl = this.getFallbackUrl(page);
+    if (await this.checkFullUrl(fallbackUrl)) {
+      window.open(fallbackUrl, "_blank");
+      return true;
+    }
+    alert("The documentation page is currently not available.");
+    return false;
   }
 
   async getPolicyActionDocumentation(scope: string, actionName: string): Promise<ActionDocumentation | null> {
-    if (!scope || !actionName) {
+    if (!scope || !actionName || !this._baseUrl) {
       return null;
     }
+    // The policy hint is built from a per-scope page (``policies/<scope>.html``) with one section
+    // per action. Our knowledge base publishes no such page, so there is nothing to show; the
+    // console falls back to the server-provided action description rather than a fabricated hint.
     const page = `policies/${scope}.html`;
     const docUrl = await this._getValidDocUrl(page);
     if (!docUrl) {
-      console.warn(`Documentation page not found for scope '${scope}'`);
       return null;
     }
     try {
@@ -224,7 +179,6 @@ export class DocumentationService implements DocumentationServiceInterface {
       const sectionId = actionName.replaceAll("_", "-").toLowerCase();
       const section = doc.getElementById(sectionId);
       if (!section) {
-        console.warn(`Section with id '${sectionId}' not found in documentation for scope '${scope}'.`);
         return null;
       }
       const info: string[] = [];
