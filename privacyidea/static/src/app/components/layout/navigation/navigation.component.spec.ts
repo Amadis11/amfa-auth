@@ -263,11 +263,11 @@ describe("NavigationComponent (async, no RouterTestingModule, no MatSnackBar)", 
       expect(component.versionPrefix()).toBe("");
     });
 
-    it("should return 'privacyIDEA ' versionPrefix when a custom logo is set", () => {
+    it("should return 'AMFA ' versionPrefix when a custom logo is set", () => {
       const configService = TestBed.inject(ConfigService) as unknown as MockConfigService;
       configService.config.set({ ...configService.config(), logo: "my-logo.png" });
 
-      expect(component.versionPrefix()).toBe("privacyIDEA ");
+      expect(component.versionPrefix()).toBe("AMFA ");
     });
 
     it("should expose the version from VersioningService", () => {
