@@ -24374,6 +24374,230 @@
           <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="authLog.authenticationRequestsRecorded" datatype="html">
+        <source>Authentication requests are recorded here as they arrive.</source>
+        <target state="translated">Authentifizierungsanfragen werden hier laufend aufgezeichnet.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.html</context>
+          <context context-type="linenumber">505</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="authLog.noAuthenticationLogEntriesYet" datatype="html">
+        <source>No authentication log entries yet</source>
+        <target state="translated">Noch keine Einträge im Authentifizierungsprotokoll</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.html</context>
+          <context context-type="linenumber">504</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blocklist.ipsBlockedByPolicy" datatype="html">
+        <source>IP addresses blocked by a conditional-access policy are listed here.</source>
+        <target state="translated">Hier werden IP-Adressen aufgelistet, die durch eine Richtlinie für bedingten Zugriff blockiert wurden.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/blocklist/blocklist.component.html</context>
+          <context context-type="linenumber">318</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blocklist.noBlockedIps" datatype="html">
+        <source>No blocked IP addresses</source>
+        <target state="translated">Keine blockierten IP-Adressen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/blocklist/blocklist.component.html</context>
+          <context context-type="linenumber">317</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAction" datatype="html">
+        <source>Filter by this action</source>
+        <target state="translated">Nach dieser Aktion filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByActionDetail" datatype="html">
+        <source>Filter by this action detail</source>
+        <target state="translated">Nach diesem Aktionsdetail filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAdministrator" datatype="html">
+        <source>Filter by this administrator</source>
+        <target state="translated">Nach diesem Administrator filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAttemptId" datatype="html">
+        <source>Filter by this attempt ID</source>
+        <target state="translated">Nach dieser Versuchs-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByClient" datatype="html">
+        <source>Filter by this client</source>
+        <target state="translated">Nach diesem Client filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByContainer" datatype="html">
+        <source>Filter by this container</source>
+        <target state="translated">Nach diesem Container filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByDay" datatype="html">
+        <source>Filter by this day</source>
+        <target state="translated">Nach diesem Tag filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByErrorMessage" datatype="html">
+        <source>Filter by this error message</source>
+        <target state="translated">Nach dieser Fehlermeldung filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByEvent" datatype="html">
+        <source>Filter by this event</source>
+        <target state="translated">Nach diesem Ereignis filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByPeerAddress" datatype="html">
+        <source>Filter by this peer address</source>
+        <target state="translated">Nach dieser Peer-Adresse filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByPolicy" datatype="html">
+        <source>Filter by this policy</source>
+        <target state="translated">Nach dieser Richtlinie filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByRealm" datatype="html">
+        <source>Filter by this realm</source>
+        <target state="translated">Nach diesem Realm filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByResolver" datatype="html">
+        <source>Filter by this resolver</source>
+        <target state="translated">Nach diesem Resolver filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterBySerial" datatype="html">
+        <source>Filter by this serial</source>
+        <target state="translated">Nach dieser Seriennummer filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByServer" datatype="html">
+        <source>Filter by this server</source>
+        <target state="translated">Nach diesem Server filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByServiceId" datatype="html">
+        <source>Filter by this service ID</source>
+        <target state="translated">Nach dieser Dienst-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterBySourceIp" datatype="html">
+        <source>Filter by this source IP</source>
+        <target state="translated">Nach dieser Quell-IP filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByTransactionId" datatype="html">
+        <source>Filter by this transaction ID</source>
+        <target state="translated">Nach dieser Transaktions-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByUser" datatype="html">
+        <source>Filter by this user</source>
+        <target state="translated">Nach diesem Benutzer filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByUserAgent" datatype="html">
+        <source>Filter by this user agent</source>
+        <target state="translated">Nach diesem User-Agent filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="lockedUsers.noLockedUsers" datatype="html">
+        <source>No locked users</source>
+        <target state="translated">Keine gesperrten Benutzer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
+          <context context-type="linenumber">424</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="lockedUsers.usersLockedByPolicy" datatype="html">
+        <source>Users locked by a conditional-access policy are listed here.</source>
+        <target state="translated">Hier werden Benutzer aufgelistet, die durch eine Richtlinie für bedingten Zugriff gesperrt wurden.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
+          <context context-type="linenumber">425</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.pageRangeCompact" datatype="html">
+        <source><x id="START" equiv-text="startIndex + 1"/> – <x id="END" equiv-text="endIndex"/></source>
+        <target state="translated"><x id="START" equiv-text="startIndex + 1"/> – <x id="END" equiv-text="endIndex"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/paginator-intl.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.pageRangeCompact.zero" datatype="html">
+        <source>0</source>
+        <target state="translated">0</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/paginator-intl.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
