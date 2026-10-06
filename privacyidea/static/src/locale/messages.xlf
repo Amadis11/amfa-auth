@@ -2072,13 +2072,6 @@
           <context context-type="linenumber">165</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="systemConfig.none" datatype="html">
-        <source>None</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/system/system-config.component.html</context>
-          <context context-type="linenumber">172</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="systemConfig.selectPredefined" datatype="html">
         <source>Select a predefined <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;[ROUTE_PATHS.EXTERNAL_SERVICES_SMTP]&quot; &gt;"/><x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>SMTP server configuration<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/><x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
         <context-group purpose="location">
@@ -8126,109 +8119,11 @@
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="subscription.subscriptionExpires" datatype="html">
-        <source>Subscription expires soon</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.oneMoreSubscriptions" datatype="html">
-        <source>One or more subscriptions will expire within the next month. Please review your subscriptions.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.validUntil" datatype="html">
-        <source>Valid until:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.remainingDays" datatype="html">
-        <source>Remaining days:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">25</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="common.switchTheme" datatype="html">
         <source>Switch theme</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/theme-switcher/theme-switcher.component.html</context>
           <context context-type="linenumber">25</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.welcome" datatype="html">
-        <source>Welcome</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">50</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.valueOpenSource" datatype="html">
-        <source>The value of open source</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.youReadingBooks" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software AMFA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">30</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.addedValuePrivacyidea" datatype="html">
-        <source>The added value of AMFA Enterprise Edition</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.softwareComes" datatype="html">
-        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>THIS SOFTWARE COMES WITHOUT ANY WARRANTY!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.thankYouImproving" datatype="html">
-        <source>Thank you for improving your security!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.thankYouUsing" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using AMFA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using AMFA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">118</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.readAgain" datatype="html">
-        <source>Read again</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">59</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.diveIn" datatype="html">
-        <source>Dive In!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.okay" datatype="html">
-        <source>Okay</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.assignTokenSelf" datatype="html">
@@ -18713,13 +18608,6 @@
           <context context-type="linenumber">371</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="authLog.filterAttemptId" datatype="html">
-        <source>Filter by this attempt ID</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">266</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="conditionalAccess.stagesActions" datatype="html">
         <source>Stages &amp; Actions</source>
         <context-group purpose="location">
@@ -18802,13 +18690,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-details/user-details-lock-dialog/user-details-lock-dialog.component.html</context>
           <context context-type="linenumber">26</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterTransactionId" datatype="html">
-        <source>Filter by this transaction ID</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">265</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.noLongerValid" datatype="html">
@@ -19251,13 +19132,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access-edit-page/conditional-access-edit-page.component.ts</context>
           <context context-type="linenumber">359</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterPeerAddress" datatype="html">
-        <source>Filter by this peer address</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.html</context>
-          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="authLog.dryRunOnly" datatype="html">
@@ -20358,17 +20232,6 @@
           <context context-type="linenumber">349</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="authLog.filterSourceIp" datatype="html">
-        <source>Filter by this source IP</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">263</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.html</context>
-          <context context-type="linenumber">38</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="conditionalAccess.policyMayTripOnce" datatype="html">
         <source>The policy may trip at once. And a stage fires as the count reaches its threshold - if the count already sits above it, that stage stays silent until those events age out of the window, so a real attack may raise no alarm.</source>
         <context-group purpose="location">
@@ -20539,13 +20402,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access-edit-page/conditional-access-edit-page.component.ts</context>
           <context context-type="linenumber">378</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterSerial" datatype="html">
-        <source>Filter by this serial</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.failedRemoveBlocklistEntry" datatype="html">
@@ -21107,17 +20963,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.html</context>
           <context context-type="linenumber">91</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="common.filterUser" datatype="html">
-        <source>Filter by this user</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">262</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
-          <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.unit" datatype="html">
