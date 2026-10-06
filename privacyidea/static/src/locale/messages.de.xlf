@@ -356,7 +356,7 @@
       </trans-unit>
       <trans-unit id="common.realm" datatype="html">
         <source>Realm</source>
-        <target>Realm</target>
+        <target state="translated">Realm</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-table/container-table.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -408,7 +408,7 @@
       </trans-unit>
       <trans-unit id="common.administrator" datatype="html">
         <source>Administrator</source>
-        <target>Administrator</target>
+        <target state="translated">Administrator</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/administration-widget/administration-widget.component.html</context>
           <context context-type="linenumber">36</context>
@@ -428,7 +428,7 @@
       </trans-unit>
       <trans-unit id="audit.info" datatype="html">
         <source>Info</source>
-        <target>Info</target>
+        <target state="translated">Info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.ts</context>
           <context context-type="linenumber">111</context>
@@ -460,7 +460,7 @@
       </trans-unit>
       <trans-unit id="common.client" datatype="html">
         <source>Client</source>
-        <target>Client</target>
+        <target state="translated">Client</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.ts</context>
           <context context-type="linenumber">113</context>
@@ -548,7 +548,7 @@
       </trans-unit>
       <trans-unit id="common.resolver" datatype="html">
         <source>Resolver</source>
-        <target>Resolver</target>
+        <target state="translated">Resolver</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-details/container-details.component.ts</context>
           <context context-type="linenumber">100</context>
@@ -680,7 +680,7 @@
       </trans-unit>
       <trans-unit id="common.hostname" datatype="html">
         <source>Hostname</source>
-        <target>Hostname</target>
+        <target state="translated">Hostname</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/machines/machines.component.html</context>
           <context context-type="linenumber">65</context>
@@ -724,7 +724,7 @@
       </trans-unit>
       <trans-unit id="machine.hostname" datatype="html">
         <source>Hostname:</source>
-        <target>Hostname:</target>
+        <target state="translated">Hostname:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/machines/machine-details/machine-details.component.html</context>
           <context context-type="linenumber">38</context>
@@ -1396,7 +1396,7 @@
       </trans-unit>
       <trans-unit id="common.name" datatype="html">
         <source>Name</source>
-        <target>Name</target>
+        <target state="translated">Name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access-edit-page/conditional-access-edit-page.component.html</context>
           <context context-type="linenumber">147</context>
@@ -1880,7 +1880,7 @@
       </trans-unit>
       <trans-unit id="common.subscriptions" datatype="html">
         <source>Subscriptions</source>
-        <target>Subscriptions</target>
+        <target state="translated">Subscriptions</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1992,7 +1992,7 @@
       </trans-unit>
       <trans-unit id="subscription.clients" datatype="html">
         <source>Clients:</source>
-        <target>Clients:</target>
+        <target state="translated">Clients:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
           <context context-type="linenumber">111</context>
@@ -2472,7 +2472,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.daypassword" datatype="html">
         <source>DayPassword</source>
-        <target>DayPassword</target>
+        <target state="translated">DayPassword</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/daypassword-config/daypassword-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2556,7 +2556,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.eMail" datatype="html">
         <source>E-Mail</source>
-        <target>E-Mail</target>
+        <target state="translated">E-Mail</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/email-config/email-config.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2612,7 +2612,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.hotp" datatype="html">
         <source>HOTP</source>
-        <target>HOTP</target>
+        <target state="translated">HOTP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/hotp-config/hotp-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2712,7 +2712,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.radius" datatype="html">
         <source>RADIUS</source>
-        <target>RADIUS</target>
+        <target state="translated">RADIUS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/radius-config/radius-config.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2748,7 +2748,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.remote" datatype="html">
         <source>Remote</source>
-        <target>Remote</target>
+        <target state="translated">Remote</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/remote-config/remote-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2788,7 +2788,7 @@
       </trans-unit>
       <trans-unit id="common.sms" datatype="html">
         <source>SMS</source>
-        <target>SMS</target>
+        <target state="translated">SMS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/sms-config/sms-config.component.html</context>
           <context context-type="linenumber">23</context>
@@ -2840,7 +2840,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.tiqr" datatype="html">
         <source>TiQR</source>
-        <target>TiQR</target>
+        <target state="translated">TiQR</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2992,7 +2992,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.totp" datatype="html">
         <source>TOTP</source>
-        <target>TOTP</target>
+        <target state="translated">TOTP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/totp-config/totp-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3040,7 +3040,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.u2f" datatype="html">
         <source>U2F</source>
-        <target>U2F</target>
+        <target state="translated">U2F</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3064,7 +3064,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.appid" datatype="html">
         <source>AppID</source>
-        <target>AppID</target>
+        <target state="translated">AppID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">35</context>
@@ -3104,7 +3104,7 @@
       </trans-unit>
       <trans-unit id="common.webauthn" datatype="html">
         <source>WebAuthn</source>
-        <target>WebAuthn</target>
+        <target state="translated">WebAuthn</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3132,7 +3132,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.trustAnchorDir" datatype="html">
         <source>trust_anchor_dir</source>
-        <target>trust_anchor_dir</target>
+        <target state="translated">trust_anchor_dir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">36</context>
@@ -3204,7 +3204,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.yubico" datatype="html">
         <source>Yubico</source>
-        <target>Yubico</target>
+        <target state="translated">Yubico</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubico-config/yubico-config.component.html</context>
           <context context-type="linenumber">23</context>
@@ -3312,7 +3312,7 @@
       </trans-unit>
       <trans-unit id="tokenTypeConfig.yubikey" datatype="html">
         <source>Yubikey</source>
-        <target>Yubikey</target>
+        <target state="translated">Yubikey</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3616,7 +3616,7 @@
       </trans-unit>
       <trans-unit id="container.token" datatype="html">
         <source>Token <x id="INTERPOLATION" equiv-text="{{ currentIndex() + 1 }}"/> / <x id="INTERPOLATION_1" equiv-text="{{ total() }}"/></source>
-        <target>Token <x id="INTERPOLATION" equiv-text="{{ currentIndex() + 1 }}"/> / <x id="INTERPOLATION_1" equiv-text="{{ total() }}"/></target>
+        <target state="translated">Token <x id="INTERPOLATION" equiv-text="{{ currentIndex() + 1 }}"/> / <x id="INTERPOLATION_1" equiv-text="{{ total() }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-tokens-enrolled-dialog/container-tokens-enrolled-dialog.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3920,7 +3920,7 @@
       </trans-unit>
       <trans-unit id="common.details" datatype="html">
         <source>Details</source>
-        <target>Details</target>
+        <target state="translated">Details</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-details/container-details.component.html</context>
           <context context-type="linenumber">24</context>
@@ -4068,7 +4068,7 @@
       </trans-unit>
       <trans-unit id="common.status" datatype="html">
         <source>Status</source>
-        <target>Status</target>
+        <target state="translated">Status</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-details/container-details.component.html</context>
           <context context-type="linenumber">57</context>
@@ -4120,7 +4120,7 @@
       </trans-unit>
       <trans-unit id="common.realms" datatype="html">
         <source>Realms</source>
-        <target>Realms</target>
+        <target state="translated">Realms</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access-edit-page/conditions/conditional-access-conditions.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -4328,7 +4328,7 @@
       </trans-unit>
       <trans-unit id="common.rollover" datatype="html">
         <source>Rollover</source>
-        <target>Rollover</target>
+        <target state="translated">Rollover</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-details/container-details-actions/container-details-actions.component.html</context>
           <context context-type="linenumber">76</context>
@@ -4772,7 +4772,7 @@
       </trans-unit>
       <trans-unit id="event.position" datatype="html">
         <source>Position</source>
-        <target>Position</target>
+        <target state="translated">Position</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/event/event-edit-page/event-edit-page.component.html</context>
           <context context-type="linenumber">121</context>
@@ -5260,7 +5260,7 @@
       </trans-unit>
       <trans-unit id="caConnector.microsoft" datatype="html">
         <source>Microsoft</source>
-        <target>Microsoft</target>
+        <target state="translated">Microsoft</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/ca-connectors/new-ca-connector/new-ca-connector.component.html</context>
           <context context-type="linenumber">112</context>
@@ -5756,7 +5756,7 @@
       </trans-unit>
       <trans-unit id="piServer.url" datatype="html">
         <source>URL</source>
-        <target>URL</target>
+        <target state="translated">URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">131</context>
@@ -5952,7 +5952,7 @@
       </trans-unit>
       <trans-unit id="common.port" datatype="html">
         <source>Port</source>
-        <target>Port</target>
+        <target state="translated">Port</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/radius-servers/new-radius-server/new-radius-server.component.html</context>
           <context context-type="linenumber">119</context>
@@ -5968,7 +5968,7 @@
       </trans-unit>
       <trans-unit id="common.secret" datatype="html">
         <source>Secret</source>
-        <target>Secret</target>
+        <target state="translated">Secret</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/radius-servers/new-radius-server/new-radius-server.component.html</context>
           <context context-type="linenumber">132</context>
@@ -6008,7 +6008,7 @@
       </trans-unit>
       <trans-unit id="common.timeout" datatype="html">
         <source>Timeout</source>
-        <target>Timeout</target>
+        <target state="translated">Timeout</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/radius-servers/new-radius-server/new-radius-server.component.html</context>
           <context context-type="linenumber">149</context>
@@ -6080,7 +6080,7 @@
       </trans-unit>
       <trans-unit id="common.ipFqdnColumn" datatype="html">
         <source>IP/FQDN</source>
-        <target>IP/FQDN</target>
+        <target state="translated">IP/FQDN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/radius-servers/radius-servers.component.html</context>
           <context context-type="linenumber">130</context>
@@ -6092,7 +6092,7 @@
       </trans-unit>
       <trans-unit id="radiusServer.dictionary" datatype="html">
         <source>Dictionary</source>
-        <target>Dictionary</target>
+        <target state="translated">Dictionary</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/radius-servers/radius-servers.component.html</context>
           <context context-type="linenumber">147</context>
@@ -6400,7 +6400,7 @@
       </trans-unit>
       <trans-unit id="smtpServer.sMime" datatype="html">
         <source>S/MIME</source>
-        <target>S/MIME</target>
+        <target state="translated">S/MIME</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/smtp-servers/new-smtp-server/new-smtp-server.component.html</context>
           <context context-type="linenumber">227</context>
@@ -6500,7 +6500,7 @@
       </trans-unit>
       <trans-unit id="smtpServer.starttls" datatype="html">
         <source>StartTLS</source>
-        <target>StartTLS</target>
+        <target state="translated">StartTLS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/smtp-servers/smtp-servers.component.html</context>
           <context context-type="linenumber">164</context>
@@ -6560,7 +6560,7 @@
       </trans-unit>
       <trans-unit id="nav.layout" datatype="html">
         <source>Layout</source>
-        <target>Layout</target>
+        <target state="translated">Layout</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/layout.component.html</context>
           <context context-type="linenumber">21</context>
@@ -6672,7 +6672,7 @@
       </trans-unit>
       <trans-unit id="nav.openSourceProject" datatype="html">
         <source>AMFA — authentication system by AMITRONIC</source>
-        <target>AMFA — authentication system by AMITRONIC</target>
+        <target state="translated">AMFA — Authentifizierungssystem von AMITRONIC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">111</context>
@@ -6680,7 +6680,7 @@
       </trans-unit>
       <trans-unit id="nav.collaborationCommunity" datatype="html">
         <source>AMITRONIC · Amadeusz Kusz</source>
-        <target>AMITRONIC · Amadeusz Kusz</target>
+        <target state="translated">AMITRONIC · Amadeusz Kusz</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">119</context>
@@ -6736,7 +6736,7 @@
       </trans-unit>
       <trans-unit id="nav.import" datatype="html">
         <source>Import</source>
-        <target>Import</target>
+        <target state="translated">Import</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">328</context>
@@ -6744,7 +6744,7 @@
       </trans-unit>
       <trans-unit id="nav.challenges" datatype="html">
         <source>Challenges</source>
-        <target>Challenges</target>
+        <target state="translated">Challenges</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">336</context>
@@ -6844,7 +6844,7 @@
       </trans-unit>
       <trans-unit id="nav.system" datatype="html">
         <source>System</source>
-        <target>System</target>
+        <target state="translated">System</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">652</context>
@@ -7100,7 +7100,7 @@
       </trans-unit>
       <trans-unit id="common.token" datatype="html">
         <source>Token</source>
-        <target>Token</target>
+        <target state="translated">Token</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/ui-settings/ui-settings.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -7116,7 +7116,7 @@
       </trans-unit>
       <trans-unit id="common.container" datatype="html">
         <source>Container</source>
-        <target>Container</target>
+        <target state="translated">Container</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-details/container-details.component.html</context>
           <context context-type="linenumber">85</context>
@@ -7164,7 +7164,7 @@
       </trans-unit>
       <trans-unit id="nav.subscription" datatype="html">
         <source>Subscription</source>
-        <target>Subscription</target>
+        <target state="translated">Subscription</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
           <context context-type="linenumber">66</context>
@@ -7176,7 +7176,7 @@
       </trans-unit>
       <trans-unit id="nav.audit" datatype="html">
         <source>Audit</source>
-        <target>Audit</target>
+        <target state="translated">Audit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/ui-settings/ui-settings.component.ts</context>
           <context context-type="linenumber">81</context>
@@ -8422,7 +8422,7 @@
       </trans-unit>
       <trans-unit id="common.pin" datatype="html">
         <source>PIN</source>
-        <target>PIN</target>
+        <target state="translated">PIN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/enrollment-pin/enrollment-pin.component.html</context>
           <context context-type="linenumber">27</context>
@@ -9038,7 +9038,7 @@
       </trans-unit>
       <trans-unit id="token.test" datatype="html">
         <source>Test</source>
-        <target>Test</target>
+        <target state="translated">Test</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-details-actions/token-details-actions.component.html</context>
           <context context-type="linenumber">63</context>
@@ -9106,7 +9106,7 @@
       </trans-unit>
       <trans-unit id="token.otp" datatype="html">
         <source>OTP</source>
-        <target>OTP</target>
+        <target state="translated">OTP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-details-actions/verify-enrollment/verify-enrollment.component.html</context>
           <context context-type="linenumber">21</context>
@@ -11190,7 +11190,7 @@
       </trans-unit>
       <trans-unit id="common.ok" datatype="html">
         <source>OK</source>
-        <target>OK</target>
+        <target state="translated">OK</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/notification-delivery-widget/notification-delivery-widget.component.html</context>
           <context context-type="linenumber">53</context>
@@ -11626,7 +11626,7 @@
       </trans-unit>
       <trans-unit id="common.pinOptional" datatype="html">
         <source>PIN (optional)</source>
-        <target>PIN (optional)</target>
+        <target state="translated">PIN (optional)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-table/token-table-actions/selected-user-attach-dialog/selected-user-attach-dialog.component.html</context>
           <context context-type="linenumber">83</context>
@@ -13012,7 +13012,7 @@
       </trans-unit>
       <trans-unit id="resolver.authority" datatype="html">
         <source>Authority</source>
-        <target>Authority</target>
+        <target state="translated">Authority</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">405</context>
@@ -13176,7 +13176,7 @@
       </trans-unit>
       <trans-unit id="resolver.subtree" datatype="html">
         <source>SUBTREE</source>
-        <target>SUBTREE</target>
+        <target state="translated">SUBTREE</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">35</context>
@@ -13184,7 +13184,7 @@
       </trans-unit>
       <trans-unit id="resolver.base" datatype="html">
         <source>BASE</source>
-        <target>BASE</target>
+        <target state="translated">BASE</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">40</context>
@@ -13192,7 +13192,7 @@
       </trans-unit>
       <trans-unit id="resolver.level" datatype="html">
         <source>LEVEL</source>
-        <target>LEVEL</target>
+        <target state="translated">LEVEL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">45</context>
@@ -13200,7 +13200,7 @@
       </trans-unit>
       <trans-unit id="common.baseDn" datatype="html">
         <source>Base DN</source>
-        <target>Base DN</target>
+        <target state="translated">Base DN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/machine-resolver/machine-resolver-ldap-tab/machine-resolver-ldap-tab.component.html</context>
           <context context-type="linenumber">55</context>
@@ -13240,7 +13240,7 @@
       </trans-unit>
       <trans-unit id="resolver.starttls" datatype="html">
         <source>STARTTLS</source>
-        <target>STARTTLS</target>
+        <target state="translated">STARTTLS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">87</context>
@@ -13284,7 +13284,7 @@
       </trans-unit>
       <trans-unit id="common.bindDn" datatype="html">
         <source>Bind DN</source>
-        <target>Bind DN</target>
+        <target state="translated">Bind DN</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/machine-resolver/machine-resolver-ldap-tab/machine-resolver-ldap-tab.component.html</context>
           <context context-type="linenumber">64</context>
@@ -13704,7 +13704,7 @@
       </trans-unit>
       <trans-unit id="resolver.server" datatype="html">
         <source>Server</source>
-        <target>Server</target>
+        <target state="translated">Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/sql-resolver/sql-resolver.component.html</context>
           <context context-type="linenumber">54</context>
@@ -13776,7 +13776,7 @@
       </trans-unit>
       <trans-unit id="resolver.limit" datatype="html">
         <source>Limit</source>
-        <target>Limit</target>
+        <target state="translated">Limit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/sql-resolver/sql-resolver.component.html</context>
           <context context-type="linenumber">191</context>
@@ -14464,7 +14464,7 @@
       </trans-unit>
       <trans-unit id="common.id" datatype="html">
         <source>ID</source>
-        <target>ID</target>
+        <target state="translated">ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/machines/machines.component.html</context>
           <context context-type="linenumber">112</context>
@@ -14628,7 +14628,7 @@
       </trans-unit>
       <trans-unit id="policy.in" datatype="html">
         <source>In</source>
-        <target>In</target>
+        <target state="translated">In</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/policies/policies.service.ts</context>
           <context context-type="linenumber">148</context>
@@ -15116,7 +15116,7 @@
       </trans-unit>
       <trans-unit id="welcome.okay" datatype="html">
         <source>Okay</source>
-        <target>Okay</target>
+        <target state="translated">Okay</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
           <context context-type="linenumber">76</context>
@@ -15752,7 +15752,7 @@
       </trans-unit>
       <trans-unit id="dashboard.detail" datatype="html">
         <source>Detail</source>
-        <target>Detail</target>
+        <target state="translated">Detail</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/administration-widget/administration-widget.component.html</context>
           <context context-type="linenumber">51</context>
@@ -15760,7 +15760,7 @@
       </trans-unit>
       <trans-unit id="dashboard.administration" datatype="html">
         <source>Administration</source>
-        <target>Administration</target>
+        <target state="translated">Administration</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/administration-widget/administration-widget.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -15816,7 +15816,7 @@
       </trans-unit>
       <trans-unit id="dashboard.push" datatype="html">
         <source>Push</source>
-        <target>Push</target>
+        <target state="translated">Push</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/notification-delivery-widget/notification-delivery-widget.component.html</context>
           <context context-type="linenumber">35</context>
@@ -15824,7 +15824,7 @@
       </trans-unit>
       <trans-unit id="dashboard.gateway" datatype="html">
         <source>Gateway</source>
-        <target>Gateway</target>
+        <target state="translated">Gateway</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/notification-delivery-widget/notification-delivery-widget.component.html</context>
           <context context-type="linenumber">44</context>
@@ -15896,7 +15896,7 @@
       </trans-unit>
       <trans-unit id="dashboard.operation" datatype="html">
         <source>Operation</source>
-        <target>Operation</target>
+        <target state="translated">Operation</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/resolver-timing-widget/resolver-timing-widget.component.html</context>
           <context context-type="linenumber">48</context>
@@ -15920,7 +15920,7 @@
       </trans-unit>
       <trans-unit id="dashboard.p95Ms" datatype="html">
         <source>P95 (ms)</source>
-        <target>P95 (ms)</target>
+        <target state="translated">P95 (ms)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/resolver-timing-widget/resolver-timing-widget.component.html</context>
           <context context-type="linenumber">74</context>
@@ -15992,7 +15992,7 @@
       </trans-unit>
       <trans-unit id="dashboard.hardware" datatype="html">
         <source>Hardware</source>
-        <target>Hardware</target>
+        <target state="translated">Hardware</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">83</context>
@@ -16000,7 +16000,7 @@
       </trans-unit>
       <trans-unit id="dashboard.software" datatype="html">
         <source>Software</source>
-        <target>Software</target>
+        <target state="translated">Software</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">96</context>
@@ -16172,7 +16172,7 @@
       </trans-unit>
       <trans-unit id="nav.debug" datatype="html">
         <source>Debug</source>
-        <target>Debug</target>
+        <target state="translated">Debug</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">37</context>
@@ -16256,7 +16256,7 @@
       </trans-unit>
       <trans-unit id="nav.dashboard" datatype="html">
         <source>Dashboard</source>
-        <target>Dashboard</target>
+        <target state="translated">Dashboard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/ui-settings/ui-settings.component.ts</context>
           <context context-type="linenumber">78</context>
@@ -16532,7 +16532,7 @@
       </trans-unit>
       <trans-unit id="common.challenge" datatype="html">
         <source>Challenge</source>
-        <target>Challenge</target>
+        <target state="translated">Challenge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/filter-hint.utils.ts</context>
           <context context-type="linenumber">60</context>
@@ -16876,7 +16876,7 @@
       </trans-unit>
       <trans-unit id="token.offline" datatype="html">
         <source>(Offline)</source>
-        <target>(Offline)</target>
+        <target state="translated">(Offline)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-details.component.html</context>
           <context context-type="linenumber">50</context>
@@ -18932,7 +18932,7 @@
       </trans-unit>
       <trans-unit id="dashboard.depthAndCorners" datatype="html">
         <source><x id="DEPTH" equiv-text="DEPTH_LABELS[preset.depth]"/>, <x id="CORNERS" equiv-text="CORNER_LABELS[preset.corner]"/></source>
-        <target><x id="DEPTH" equiv-text="DEPTH_LABELS[preset.depth]"/>, <x id="CORNERS" equiv-text="CORNER_LABELS[preset.corner]"/></target>
+        <target state="translated"><x id="DEPTH" equiv-text="DEPTH_LABELS[preset.depth]"/>, <x id="CORNERS" equiv-text="CORNER_LABELS[preset.corner]"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/appearance-widget/appearance-widget.component.ts</context>
           <context context-type="linenumber">89</context>
@@ -19048,7 +19048,7 @@
       </trans-unit>
       <trans-unit id="common.labelWithColon" datatype="html">
         <source><x id="LABEL" equiv-text="label"/>:</source>
-        <target><x id="LABEL" equiv-text="label"/>:</target>
+        <target state="translated"><x id="LABEL" equiv-text="label"/>:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/i18n.utils.ts</context>
           <context context-type="linenumber">22</context>
@@ -19944,7 +19944,7 @@
       </trans-unit>
       <trans-unit id="valueLabelChallenge" datatype="html">
         <source>Challenge</source>
-        <target>Challenge</target>
+        <target state="translated">Challenge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/value-label.utils.ts</context>
           <context context-type="linenumber">47</context>
@@ -21768,7 +21768,7 @@
       </trans-unit>
       <trans-unit id="nav.conditionalAccess" datatype="html">
         <source>Conditional Access</source>
-        <target>Conditional Access</target>
+        <target state="translated">Conditional Access</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/ui-settings/ui-settings.component.ts</context>
           <context context-type="linenumber">82</context>
@@ -21780,7 +21780,7 @@
       </trans-unit>
       <trans-unit id="dashboard.h" datatype="html">
         <source>1 h</source>
-        <target>1 h</target>
+        <target state="translated">1 h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/activity-range.ts</context>
           <context context-type="linenumber">123</context>
@@ -21788,7 +21788,7 @@
       </trans-unit>
       <trans-unit id="dashboard.h2" datatype="html">
         <source>24 h</source>
-        <target>24 h</target>
+        <target state="translated">24 h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/activity-range.ts</context>
           <context context-type="linenumber">129</context>
@@ -22112,7 +22112,7 @@
       </trans-unit>
       <trans-unit id="common.ips" datatype="html">
         <source>IPs</source>
-        <target>IPs</target>
+        <target state="translated">IPs</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/conditional-access-widget/conditional-access-widget.component.ts</context>
           <context context-type="linenumber">84</context>
@@ -22848,7 +22848,7 @@
       </trans-unit>
       <trans-unit id="authLog.xForwarded" datatype="html">
         <source>X-Forwarded-For</source>
-        <target>X-Forwarded-For</target>
+        <target state="translated">X-Forwarded-For</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.ts</context>
           <context context-type="linenumber">56</context>
@@ -24152,7 +24152,7 @@
       </trans-unit>
       <trans-unit id="7324241450799564337" datatype="html">
         <source>1 h</source>
-        <target>1 h</target>
+        <target state="translated">1 h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/metrics-time-window.ts</context>
           <context context-type="linenumber">40</context>
@@ -24160,7 +24160,7 @@
       </trans-unit>
       <trans-unit id="1272598752638190101" datatype="html">
         <source>6 h</source>
-        <target>6 h</target>
+        <target state="translated">6 h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/metrics-time-window.ts</context>
           <context context-type="linenumber">46</context>
@@ -24168,7 +24168,7 @@
       </trans-unit>
       <trans-unit id="8073962907604601724" datatype="html">
         <source>24 h</source>
-        <target>24 h</target>
+        <target state="translated">24 h</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/metrics-time-window.ts</context>
           <context context-type="linenumber">47</context>
@@ -24308,7 +24308,7 @@
       </trans-unit>
       <trans-unit id="dashboard.selectRealm" datatype="html">
         <source>Select realm</source>
-        <target state="new">Select realm</target>
+        <target state="translated">Realm auswählen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">27</context>
@@ -24320,7 +24320,7 @@
       </trans-unit>
       <trans-unit id="dashboard.noRealms" datatype="html">
         <source>There is no realm to count. Create one to see its tokens and users.</source>
-        <target state="new">There is no realm to count. Create one to see its tokens and users.</target>
+        <target state="translated">Es gibt kein Realm zum Zählen. Erstellen Sie eines, um dessen Token und Benutzer zu sehen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">56</context>
@@ -24328,7 +24328,7 @@
       </trans-unit>
       <trans-unit id="dashboard.usersWithTokens" datatype="html">
         <source>Users with tokens</source>
-        <target state="new">Users with tokens</target>
+        <target state="translated">Benutzer mit Token</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">158</context>
@@ -24336,7 +24336,7 @@
       </trans-unit>
       <trans-unit id="dashboard.usersWithoutTokens" datatype="html">
         <source>Users without tokens</source>
-        <target state="new">Users without tokens</target>
+        <target state="translated">Benutzer ohne Token</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">170</context>
@@ -24344,7 +24344,7 @@
       </trans-unit>
       <trans-unit id="dashboard.userListIncomplete" datatype="html">
         <source>Excluding <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, which did not answer.</source>
-        <target state="new">Excluding <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, which did not answer.</target>
+        <target state="translated">Ausgenommen <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, der nicht geantwortet hat.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">181</context>
@@ -24352,7 +24352,7 @@
       </trans-unit>
       <trans-unit id="common.cannotBeNamed" datatype="html">
         <source>Cannot be named &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot;.</source>
-        <target state="new">Cannot be named &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot;.</target>
+        <target state="translated">Kann nicht &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot; heißen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">92</context>
