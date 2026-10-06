@@ -190,6 +190,12 @@ def get_render_context():
     browser_lang = get_accepted_language()
     # The page title can be configured in pi.cfg
     page_title = current_app.config.get("PI_PAGE_TITLE", "AMFA")
+    # The address of our own product documentation (the AMITRONIC knowledge base). Like the logo
+    # and the page title this is provided by the server, not baked into the console: an admin sets
+    # it in the system configuration (key ``documentation_url``) or in pi.cfg
+    # (``PI_DOCUMENTATION_URL``). Empty means the console shows no documentation links.
+    documentation_url = get_from_config("documentation_url",
+                                        current_app.config.get("PI_DOCUMENTATION_URL", ""))
     # check if login with REMOTE_USER is allowed.
     remote_user = ""
     force_remote_user = False
@@ -293,6 +299,7 @@ def get_render_context():
         'gdpr_link': gdpr_link,
         'logo': logo,
         'page_title': page_title,
+        'documentation_url': documentation_url,
         'otp_pin_set_random_user': otp_pin_set_random_user,
         'privacyideaVersionNumber': version_number,
         'passkey_login': passkey_login,

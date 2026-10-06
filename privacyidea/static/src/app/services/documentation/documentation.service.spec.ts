@@ -18,21 +18,14 @@
  **/
 import { provideHttpClient } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { signal } from "@angular/core";
 import { TestBed } from "@angular/core/testing";
-import { PolicyService } from "@services/policies/policies.service";
-import { VersioningService } from "@services/version/version.service";
-import { MockVersioningService } from "@testing/mock-services";
+import { ConfigService } from "@services/config/config.service";
+import { MockConfigService } from "@testing/mock-services/mock-config-service";
 import { DocumentationService } from "./documentation.service";
-
-class MockPolicyService {
-  selectedAction = signal<{ name: string } | null>(null);
-  selectedPolicyScope = signal<string | null>(null);
-}
 
 describe("DocumentationService", () => {
   let service: DocumentationService;
-  let versioningService: MockVersioningService;
+  let configService: MockConfigService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,78 +33,52 @@ describe("DocumentationService", () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         DocumentationService,
-        { provide: VersioningService, useClass: MockVersioningService },
-        { provide: PolicyService, useClass: MockPolicyService }
+        { provide: ConfigService, useClass: MockConfigService }
       ]
     });
     service = TestBed.inject(DocumentationService);
-    versioningService = TestBed.inject(VersioningService) as MockVersioningService;
-    versioningService.version.set("3.9.1");
+    configService = TestBed.inject(ConfigService) as unknown as MockConfigService;
   });
 
   it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  it("getVersionUrl should construct the correct versioned URL", () => {
-    const url = service.getVersionUrl("some/page.html");
-    expect(url).toBe("https://privacyidea.readthedocs.io/en/v3.9.1/some/page.html");
+  it("does nothing while no documentation address is configured", async () => {
+    const windowOpenSpy = jest.spyOn(window, "open").mockImplementation(() => null);
+    await service.openDocumentation("tokens");
+    expect(windowOpenSpy).not.toHaveBeenCalled();
+    expect(service.getVersionUrl("some/page.html")).toBe("");
+    windowOpenSpy.mockRestore();
   });
 
-  it("getFallbackUrl should construct the correct stable URL", () => {
-    const url = service.getFallbackUrl("some/page.html");
-    expect(url).toBe("https://privacyidea.readthedocs.io/en/stable/some/page.html");
+  it("builds page URLs from the configured address", () => {
+    configService.config.set({ ...configService.config(), documentation_url: "https://docs.example/" });
+    expect(service.getVersionUrl("some/page.html")).toBe("https://docs.example/some/page.html");
+    // One live tree, so the fallback is the same page.
+    expect(service.getFallbackUrl("some/page.html")).toBe("https://docs.example/some/page.html");
   });
 
-  describe("openDocumentation", () => {
-    let windowOpenSpy: jest.SpyInstance;
-    let checkFullUrlSpy: jest.SpyInstance;
+  it("opens the configured documentation root", async () => {
+    configService.config.set({ ...configService.config(), documentation_url: "https://docs.example/" });
+    const windowOpenSpy = jest.spyOn(window, "open").mockImplementation(() => null);
+    await service.openDocumentation("tokens");
+    expect(windowOpenSpy).toHaveBeenCalledWith("https://docs.example/", "_blank");
+    windowOpenSpy.mockRestore();
+  });
 
-    beforeEach(() => {
-      windowOpenSpy = jest.spyOn(window, "open").mockImplementation(() => null);
-      checkFullUrlSpy = jest.spyOn(service, "checkFullUrl");
-    });
+  it("opens a documentation page that exists", async () => {
+    configService.config.set({ ...configService.config(), documentation_url: "https://docs.example/" });
+    const windowOpenSpy = jest.spyOn(window, "open").mockImplementation(() => null);
+    const checkFullUrlSpy = jest.spyOn(service, "checkFullUrl").mockResolvedValue(true);
+    const opened = await service.openDocumentationPage("guide.html");
+    expect(opened).toBe(true);
+    expect(windowOpenSpy).toHaveBeenCalledWith("https://docs.example/guide.html", "_blank");
+    windowOpenSpy.mockRestore();
+    checkFullUrlSpy.mockRestore();
+  });
 
-    afterEach(() => {
-      windowOpenSpy.mockRestore();
-      checkFullUrlSpy.mockRestore();
-    });
-
-    it("should open versioned URL if it exists", async () => {
-      checkFullUrlSpy.mockResolvedValue(true);
-      await service.openDocumentation("tokens");
-      expect(checkFullUrlSpy).toHaveBeenCalledWith(
-        "https://privacyidea.readthedocs.io/en/v3.9.1/webui/index.html#tokens"
-      );
-      expect(windowOpenSpy).toHaveBeenCalledWith(
-        "https://privacyidea.readthedocs.io/en/v3.9.1/webui/index.html#tokens",
-        "_blank"
-      );
-    });
-
-    it("should open fallback URL if versioned URL does not exist", async () => {
-      checkFullUrlSpy.mockImplementation(async (url: string) => {
-        return url.includes("stable");
-      });
-      await service.openDocumentation("tokens");
-      expect(checkFullUrlSpy).toHaveBeenCalledWith(
-        "https://privacyidea.readthedocs.io/en/v3.9.1/webui/index.html#tokens"
-      );
-      expect(checkFullUrlSpy).toHaveBeenCalledWith(
-        "https://privacyidea.readthedocs.io/en/stable/webui/index.html#tokens"
-      );
-      expect(windowOpenSpy).toHaveBeenCalledWith(
-        "https://privacyidea.readthedocs.io/en/stable/webui/index.html#tokens",
-        "_blank"
-      );
-    });
-
-    it("should show alert if no documentation is found", async () => {
-      const alertSpy = jest.spyOn(window, "alert").mockReturnValue();
-      checkFullUrlSpy.mockResolvedValue(false);
-      await service.openDocumentation("tokens");
-      expect(alertSpy).toHaveBeenCalledWith("The documentation page is currently not available.");
-      alertSpy.mockRestore();
-    });
+  it("shows no policy hint while no documentation address is configured", async () => {
+    expect(await service.getPolicyActionDocumentation("admin", "set_pin")).toBeNull();
   });
 });

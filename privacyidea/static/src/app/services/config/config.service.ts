@@ -39,6 +39,7 @@ export interface AppConfig {
   has_job_queue: string;
   login_text: string;
   gdpr_link: string;
+  documentation_url: string;
   translation_warning: boolean;
   passkey_login: string;
 }
@@ -67,6 +68,7 @@ export class ConfigService implements ConfigServiceInterface {
     has_job_queue: "false",
     login_text: "",
     gdpr_link: "",
+    documentation_url: "",
     translation_warning: false,
     passkey_login: "show"
   });

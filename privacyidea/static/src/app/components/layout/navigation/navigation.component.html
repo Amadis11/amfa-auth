@@ -111,6 +111,27 @@
 
 <ng-template #supportDocs>
   <span class="spacer"></span>
+  @if (configService.config().documentation_url) {
+    <button
+      type="button"
+      (click)="documentationService.openDocumentation(contentService.routePath())"
+      aria-label="Documentation"
+      i18n-aria-label="@@nav.documentation"
+      class="nav-button docs-button-full">
+      <mat-icon>info_outline</mat-icon>
+      <span i18n="@@nav.documentation">Documentation</span>
+    </button>
+    <button
+      mat-icon-button
+      (click)="documentationService.openDocumentation(contentService.routePath())"
+      aria-label="Documentation"
+      i18n-aria-label="@@nav.documentation"
+      matTooltip="Documentation"
+      i18n-matTooltip="@@nav.documentation"
+      class="docs-button-icon">
+      <mat-icon>info_outline</mat-icon>
+    </button>
+  }
   <span
     class="version-text"
     [class.node-shown]="authService.showNode()"

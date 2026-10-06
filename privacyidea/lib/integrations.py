@@ -290,10 +290,15 @@ CATALOG: tuple[Integration, ...] = (
         product_id="privacyidea-ldap-proxy",
     ),
     Integration(
+        # The console's own User-Agent header is ``AMFA-WebUI/<version>`` (see the WebUI's
+        # user-agent interceptor), so the policy ``user_agents`` value and the dropdown key have
+        # to be ``AMFA-WebUI`` for the console to match its own restriction. ``privacyIDEA-WebUI``
+        # stays in ``agent_names`` so a request still carrying the old, unbranded header keeps
+        # resolving to this same integration instead of an unknown product.
         id="privacyidea-webui",
-        label="privacyIDEA WebUI",
-        agent_names=("privacyIDEA-WebUI",),
-        policy_value="privacyIDEA-WebUI",
+        label="AMFA WebUI",
+        agent_names=("AMFA-WebUI", "privacyIDEA-WebUI"),
+        policy_value="AMFA-WebUI",
         product_id=None,
     ),
 )
