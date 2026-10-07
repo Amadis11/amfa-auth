@@ -102,9 +102,7 @@
         i18n="@@nav.openSourceProject"
         >AMFA — authentication system by AMITRONIC</div
       >
-      <div i18n="@@nav.collaborationCommunity"
-        >AMITRONIC · Amadeusz Kusz</div
-      >
+      <div i18n="@@nav.collaborationCommunity">AMITRONIC · Amadeusz Kusz</div>
     </div>
   }
 </ng-template>
@@ -498,21 +496,6 @@
         <span i18n="@@nav.createEvent">Create Event</span>
       </a>
     }
-    <ng-container *ngTemplateOutlet="supportDocs"></ng-container>
-  </mat-toolbar>
-}
-
-@if (activeSection() === "subscription") {
-  <mat-toolbar
-    class="secondary-toolbar"
-    appOverflowNav>
-    <ng-container *ngTemplateOutlet="footerText"></ng-container>
-    <a
-      [ngClass]="contentService.onSubscription() ? 'sub-nav-active' : ''"
-      [routerLink]="[ROUTE_PATHS.SUBSCRIPTION]">
-      <mat-icon>event_repeat</mat-icon>
-      <span i18n="@@nav.overview">Overview</span>
-    </a>
     <ng-container *ngTemplateOutlet="supportDocs"></ng-container>
   </mat-toolbar>
 }

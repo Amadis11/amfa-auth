@@ -723,7 +723,7 @@ describe("AuthenticationLog", () => {
   });
 
   it("exposes client-label options mapping friendly name -> identifier", () => {
-    expect(component.clientLabelOptions).toContainEqual({ label: "Keycloak", value: "privacyIDEA-Keycloak" });
+    expect(component.clientLabelOptions).toContainEqual({ label: "Keycloak", value: "AMFA-Keycloak" });
     expect(component.clientLabelOptions.every((o) => o.label && o.value)).toBe(true);
   });
 

@@ -86,7 +86,6 @@ export interface ContentServiceInterface {
   onApiClients: Signal<boolean>;
   onUsersResolvers: Signal<boolean>;
   onConfigurationPeriodicTasks: Signal<boolean>;
-  onSubscription: Signal<boolean>;
   onMachineResolver: Signal<boolean>;
 
   matchesPath: (path: string) => boolean;
@@ -255,7 +254,6 @@ export class ContentService implements ContentServiceInterface {
       this.matchesPath(ROUTE_PATHS.CONFIGURATION_PERIODIC_TASKS_NEW) ||
       this.routeUrl().startsWith(ROUTE_PATHS.CONFIGURATION_PERIODIC_TASKS_DETAILS)
   );
-  onSubscription = computed(() => this.matchesPath(ROUTE_PATHS.SUBSCRIPTION));
   onMachineResolver = computed(
     () =>
       this.matchesPath(ROUTE_PATHS.MACHINE_RESOLVER) ||

@@ -129,12 +129,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
       section: "users"
     },
     { icon: "gavel", label: $localize`:@@common.policies:Policies`, route: ROUTE_PATHS.POLICIES, section: "policies" },
-    {
-      icon: "event_repeat",
-      label: $localize`:@@nav.subscription:Subscription`,
-      route: ROUTE_PATHS.SUBSCRIPTION,
-      section: "subscription"
-    },
     // The "logs" umbrella section still carries several sub-pages (see the "logs" secondary toolbar in the
     // template: Audit, Known Clients, Authentication Log, Locked Users, IP Blocklist) that master's own "audit"
     // rename does not know about, so this keeps routing to ROUTE_PATHS.LOGS/section "logs" rather than master's
@@ -172,7 +166,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     if (url.startsWith(ROUTE_PATHS.DASHBOARD) || url.startsWith(ROUTE_PATHS.NEWS)) return "dashboard";
     if (url.startsWith(ROUTE_PATHS.USERS)) return "users";
     if (url.startsWith(ROUTE_PATHS.POLICIES) || url.startsWith(ROUTE_PATHS.EVENTS)) return "policies";
-    if (url.startsWith(ROUTE_PATHS.SUBSCRIPTION)) return "subscription";
     if (url.startsWith(ROUTE_PATHS.LOGS)) return "logs";
     if (url.startsWith(ROUTE_PATHS.EXTERNAL_SERVICES)) return "external_services";
     if (url.startsWith(ROUTE_PATHS.CONFIGURATION)) return "config";
@@ -262,8 +255,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
           return this.authService.actionAllowed("userlist");
         case "policies":
           return this.authService.actionAllowed("policyread") || this.authService.actionAllowed("eventhandling_read");
-        case "subscription":
-          return this.authService.actionAllowed("managesubscription");
         case "logs":
           return this.authService.oneActionAllowed([
             "auditlog",
