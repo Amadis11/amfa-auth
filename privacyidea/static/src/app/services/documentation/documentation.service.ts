@@ -68,7 +68,7 @@ export class DocumentationService implements DocumentationServiceInterface {
    * not turned into a deep link (that would open a non-existent page). When a deployment publishes
    * per-page documentation at the configured address, use :meth:`openDocumentationPage`.
    */
-  openDocumentation(_page: string): Promise<void> {
+  openDocumentation(_: string): Promise<void> {
     const baseUrl = this._baseUrl;
     if (!baseUrl) {
       return Promise.resolve();
