@@ -218,6 +218,10 @@ class ConfigTestCase(MyApiTestCase):
                                 "translation_warning", "password_reset", "hsm_ready", "has_job_queue", "customization",
                                 "custom_css", "customization_menu_file", "customization_baseline_file", "realms",
                                 "show_node", "external_links", "login_text", "gdpr_link", "logo", "page_title",
+                                # AMFA: adres dokumentacji produktu jest naszym ustawieniem konsoli (PI_DOCUMENTATION_URL),
+                                # wiec test podstawy o zbiorze kluczy konfiguracji panelu musi go znac — inaczej
+                                # czerwienieje przy kazdym wydaniu (AMFA-ZMIANY.md: testy podstawy ida z naszymi zmianami).
+                                "documentation_url",
                                 "otp_pin_set_random_user", "privacyideaVersionNumber", "passkey_login"}
             self.assertSetEqual(expected_entries, set(config.keys()))
 
