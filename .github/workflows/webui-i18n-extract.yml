@@ -20,6 +20,7 @@ name: WebUI i18n extract
 on:
   schedule:
     - cron: "0 2 * * *"
+  workflow_dispatch: # uruchomienie na zadanie: ten sam przebieg co nocny, bez czekania do 02:00
 
 permissions: {}
 
