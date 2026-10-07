@@ -31,7 +31,6 @@ export type WidgetTypeId =
   | "administration"
   | "policies"
   | "events"
-  | "subscriptions"
   | "certificate-health"
   | "resolver-timing"
   | "notification-delivery"

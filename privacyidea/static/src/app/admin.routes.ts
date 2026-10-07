@@ -33,7 +33,6 @@ import { MachineDetailsComponent } from "@components/configuration/machines/mach
 import { MachinesComponent } from "@components/configuration/machines/machines.component";
 import { PeriodicTaskEditComponent } from "@components/configuration/periodic-task/periodic-task-edit/periodic-task-edit.component";
 import { PeriodicTaskComponent } from "@components/configuration/periodic-task/periodic-task.component";
-import { SubscriptionComponent } from "@components/configuration/subscription/subscription.component";
 import { SystemConfigComponent } from "@components/configuration/system/system-config.component";
 import { TokenTypeConfigComponent } from "@components/configuration/token-type-config/token-type-config.component";
 import { EventEditPageComponent } from "@components/event/event-edit-page/event-edit-page.component";
@@ -313,7 +312,6 @@ export const routes: Routes = [
           }
         ]
       },
-      { path: "subscription", title: PAGE_NAMES.subscription, component: SubscriptionComponent },
       {
         path: "system",
         title: PAGE_NAMES.system,
