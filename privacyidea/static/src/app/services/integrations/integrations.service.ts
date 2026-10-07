@@ -27,7 +27,7 @@ import { ContentService, ContentServiceInterface } from "@services/content/conte
  * One entry of the shared ecosystem-integration catalog served by the backend
  * (privacyidea.lib.integrations). Replaces what used to be three independently
  * hardcoded lists: the API client `client_type` dropdown, the policy `user_agents`
- * condition picker, and the dashboard subscription widget's rows.
+ * condition picker.
  */
 export interface Integration {
   id: string;
@@ -48,8 +48,6 @@ export interface IntegrationsServiceInterface {
 
   apiClientIntegrations(): Integration[];
 
-  dashboardIntegrations(): Integration[];
-
   labelFor(id: string): string;
 
   labelForPolicyValue(policyValue: string): string;
@@ -64,7 +62,11 @@ export class IntegrationsService implements IntegrationsServiceInterface {
 
   integrationsResource = httpResource<PiResponse<Integration[]>>(() => {
     if (this.authService.isSelfServiceUser()) return undefined;
-    if (!this.contentService.onDashboard() && !this.contentService.onApiClients() && !this.contentService.onPolicies()) {
+    if (
+      !this.contentService.onDashboard() &&
+      !this.contentService.onApiClients() &&
+      !this.contentService.onPolicies()
+    ) {
       return undefined;
     }
     return {
@@ -90,10 +92,6 @@ export class IntegrationsService implements IntegrationsServiceInterface {
 
   apiClientIntegrations(): Integration[] {
     return this.integrations().filter((integration) => integration.api_client);
-  }
-
-  dashboardIntegrations(): Integration[] {
-    return this.integrations().filter((integration) => integration.dashboard);
   }
 
   labelFor(id: string): string {

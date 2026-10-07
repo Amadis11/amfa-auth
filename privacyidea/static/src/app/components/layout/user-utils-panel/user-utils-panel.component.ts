@@ -75,7 +75,6 @@ import { ServiceIdService, ServiceIdServiceInterface } from "@services/service-i
 import { SessionTimerService, SessionTimerServiceInterface } from "@services/session-timer/session-timer.service";
 import { SmsGatewayService, SmsGatewayServiceInterface } from "@services/sms-gateway/sms-gateway.service";
 import { SmtpService, SmtpServiceInterface } from "@services/smtp/smtp.service";
-import { SubscriptionService } from "@services/subscription/subscription.service";
 import { SystemService, SystemServiceInterface } from "@services/system/system.service";
 import { ChallengesService, ChallengesServiceInterface } from "@services/token/challenges/challenges.service";
 import { TokenService, TokenServiceInterface } from "@services/token/token.service";
@@ -113,7 +112,6 @@ export class UserUtilsPanelComponent {
     inject(ConditionalAccessPolicyService);
   private readonly conditionalAccessStateService: ConditionalAccessStateServiceInterface =
     inject(ConditionalAccessStateService);
-  private readonly subscriptionService = inject(SubscriptionService);
   private readonly machineResolverService: MachineResolverServiceInterface = inject(MachineResolverService);
   private readonly containerTemplateService: ContainerTemplateServiceInterface = inject(ContainerTemplateService);
   private readonly dashboardDataStore = inject(DashboardDataStore);
@@ -320,9 +318,6 @@ export class UserUtilsPanelComponent {
         break;
       case ROUTE_PATHS.CONFIGURATION_MACHINES:
         this.machineService.machinesResource.reload();
-        break;
-      case ROUTE_PATHS.SUBSCRIPTION:
-        this.subscriptionService.reload();
         break;
       case ROUTE_PATHS.USERS_RESOLVERS:
         this.resolverService.resolversResource.reload();

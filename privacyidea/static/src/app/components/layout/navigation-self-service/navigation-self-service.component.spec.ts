@@ -53,7 +53,6 @@ import { ServiceIdService } from "@services/service-id/service-id.service";
 import { SessionTimerService } from "@services/session-timer/session-timer.service";
 import { SmsGatewayService } from "@services/sms-gateway/sms-gateway.service";
 import { SmtpService } from "@services/smtp/smtp.service";
-import { SubscriptionService } from "@services/subscription/subscription.service";
 import { SystemService } from "@services/system/system.service";
 import { ChallengesService } from "@services/token/challenges/challenges.service";
 import { TokenService } from "@services/token/token.service";
@@ -96,7 +95,6 @@ import {
 import { MockAuthService } from "@testing/mock-services/mock-auth-service";
 import { MockEventService } from "@testing/mock-services/mock-event-service";
 import { MockResolverService } from "@testing/mock-services/mock-resolver-service";
-import { MockSubscriptionService } from "@testing/mock-services/mock-subscription-service";
 import { of } from "rxjs";
 
 describe("NavigationSelfServiceComponent", () => {
@@ -143,7 +141,6 @@ describe("NavigationSelfServiceComponent", () => {
         { provide: PolicyService, useClass: MockPolicyService },
         { provide: ConditionalAccessPolicyService, useClass: MockConditionalAccessPolicyService },
         { provide: ConditionalAccessStateService, useClass: MockConditionalAccessStateService },
-        { provide: SubscriptionService, useClass: MockSubscriptionService },
         { provide: MachineResolverService, useClass: MockMachineResolverService },
         { provide: ContainerTemplateService, useClass: MockContainerTemplateService },
         { provide: ContentService, useClass: MockContentService },
