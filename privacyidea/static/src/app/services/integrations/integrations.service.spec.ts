@@ -116,11 +116,6 @@ describe("IntegrationsService", () => {
     expect(service.apiClientIntegrations()).toEqual([CP]);
   });
 
-  it("should filter to dashboard integrations", () => {
-    service.integrations.set([CP, WEBUI]);
-    expect(service.dashboardIntegrations()).toEqual([CP]);
-  });
-
   it("should look up a label by id, falling back to the raw id", () => {
     service.integrations.set([CP]);
     expect(service.labelFor("privacyidea-cp")).toBe("Windows Credential Provider");

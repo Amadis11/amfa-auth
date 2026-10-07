@@ -44,7 +44,7 @@ describe("userAgentInterceptor", () => {
   it("should add the User-Agent header with the correct version", (done) => {
     const req = new HttpRequest("GET", "/test");
     const next: HttpHandlerFn = (request) => {
-      expect(request.headers.get("User-Agent")).toBe("privacyIDEA-WebUI/1.2.3.dev224");
+      expect(request.headers.get("User-Agent")).toBe("AMFA-WebUI/1.2.3.dev224");
       done();
       return EMPTY;
     };
@@ -57,7 +57,7 @@ describe("userAgentInterceptor", () => {
     });
     const next: HttpHandlerFn = (request) => {
       expect(request.headers.get("PI-Authorization")).toBe("abc");
-      expect(request.headers.get("User-Agent")).toBe("privacyIDEA-WebUI/1.2.3.dev224");
+      expect(request.headers.get("User-Agent")).toBe("AMFA-WebUI/1.2.3.dev224");
       done();
       return EMPTY;
     };

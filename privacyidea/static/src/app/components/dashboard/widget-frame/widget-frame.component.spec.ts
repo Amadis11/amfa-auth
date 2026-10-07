@@ -27,14 +27,12 @@ import { DashboardLayoutService } from "@services/dashboard/dashboard-layout.ser
 import { WidgetRegistryService } from "@services/dashboard/widget-registry.service";
 import { InfoService } from "@services/info/info.service";
 import { ResolverService } from "@services/resolver/resolver.service";
-import { SubscriptionService } from "@services/subscription/subscription.service";
 import { SystemService } from "@services/system/system.service";
 import { RealmService } from "@services/realm/realm.service";
 import { UserService } from "@services/user/user.service";
 import { TokenService } from "@services/token/token.service";
 import { MockAuthService, MockInfoService } from "@testing/mock-services";
 import { MockResolverService } from "@testing/mock-services/mock-resolver-service";
-import { MockSubscriptionService } from "@testing/mock-services/mock-subscription-service";
 import { MockSystemService } from "@testing/mock-services/mock-system-service";
 import { MockRealmService } from "@testing/mock-services/mock-realm-service";
 import { MockUserService } from "@testing/mock-services/mock-user-service";
@@ -104,7 +102,6 @@ describe("WidgetFrameComponent", () => {
         { provide: TokenService, useClass: MockTokenService },
         { provide: UserService, useClass: MockUserService },
         { provide: RealmService, useClass: MockRealmService },
-        { provide: SubscriptionService, useClass: MockSubscriptionService },
         { provide: InfoService, useClass: MockInfoService },
         { provide: SystemService, useClass: MockSystemService },
         { provide: ResolverService, useClass: MockResolverService },

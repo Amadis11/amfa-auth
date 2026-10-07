@@ -67,7 +67,7 @@ describe("DashboardLayoutService", () => {
   describe("initialisation", () => {
     it("should fall back to the default layout when persistence is empty", () => {
       build();
-      expect(service.widgets()).toHaveLength(10);
+      expect(service.widgets()).toHaveLength(9);
       expect(
         service
           .widgets()
@@ -81,7 +81,6 @@ describe("DashboardLayoutService", () => {
         "notification-delivery",
         "policies",
         "resolver-timing",
-        "subscriptions",
         "token-types",
         "tokens"
       ]);
@@ -94,12 +93,10 @@ describe("DashboardLayoutService", () => {
       expect(service.widgets()).toContainEqual(stored[0]);
     });
 
-    it("should pin news and subscriptions to the right in the default layout", () => {
+    it("should pin news to the right in the default layout", () => {
       build();
       const news = service.widgets().find((widget) => widget.type === "news");
-      const subscriptions = service.widgets().find((widget) => widget.type === "subscriptions");
       expect(news).toMatchObject({ x: 16, y: 0, cols: 8, rows: 3 });
-      expect(subscriptions).toMatchObject({ x: 16, y: 3, cols: 8, rows: 8 });
     });
 
     it("should open the default layout with authentication activity in the top left corner", () => {
@@ -116,12 +113,6 @@ describe("DashboardLayoutService", () => {
           expect(overlaps(widgets[i], widgets[j])).toBe(false);
         }
       }
-    });
-
-    it("should leave out a pinned widget the admin may not see", () => {
-      auth.actionAllowed.mockImplementation((action: string) => action !== "managesubscription");
-      build();
-      expect(service.hasWidgetOfType("subscriptions")).toBe(false);
     });
 
     it("should drop a stored widget that overlaps a pinned one", () => {
@@ -402,8 +393,8 @@ describe("DashboardLayoutService", () => {
 
       const storedWidget = stored()?.find((widget) => widget.id === id);
       expect(storedWidget?.settings).toEqual({ realm: "realm1" });
-      });
     });
+  });
 
   describe("setWidgetOptions", () => {
     beforeEach(() => build());
@@ -450,7 +441,7 @@ describe("DashboardLayoutService", () => {
       service.removeWidget(service.widgets().find((widget) => widget.type === "tokens")!.id);
       service.resetLayout();
 
-      expect(service.widgets()).toHaveLength(10);
+      expect(service.widgets()).toHaveLength(9);
       expect(
         service
           .widgets()
@@ -464,7 +455,6 @@ describe("DashboardLayoutService", () => {
         "notification-delivery",
         "policies",
         "resolver-timing",
-        "subscriptions",
         "token-types",
         "tokens"
       ]);
@@ -473,7 +463,7 @@ describe("DashboardLayoutService", () => {
     it("should persist the reset layout", () => {
       service.removeWidget(service.widgets().find((widget) => widget.type === "tokens")!.id);
       service.resetLayout();
-      expect(stored()).toHaveLength(10);
+      expect(stored()).toHaveLength(9);
     });
 
     it("should keep the id and options of a widget that was already on the dashboard", () => {
@@ -498,12 +488,15 @@ describe("DashboardLayoutService", () => {
     });
 
     it("should move widgets up into the gap a forbidden widget leaves", () => {
-      auth.actionAllowed.mockImplementation((action: string) => action !== "managesubscription");
+      auth.actionAllowed.mockImplementation((action: string) => action !== "policyread");
       service.resetLayout();
-      expect(service.widgets().find((widget) => widget.type === "notification-delivery")).toMatchObject({
-        x: 16,
-        y: 3
-      });
+
+      const widgets = service.widgets();
+      expect(widgets.some((widget) => widget.type === "policies")).toBe(false);
+      // Grawitacja układu: po wycięciu zakazanego widgetu żaden inny nie może mieć wolnego wiersza nad sobą.
+      for (const widget of widgets.filter((entry) => entry.y > 0)) {
+        expect(widgets.some((other) => other !== widget && overlaps({ ...widget, y: widget.y - 1 }, other))).toBe(true);
+      }
     });
 
     it("should not move a widget up past another one", () => {
@@ -581,7 +574,6 @@ describe("DashboardLayoutService", () => {
       service.pruneForbiddenWidgets();
 
       expect(service.hasWidgetOfType("policies")).toBe(true);
-      expect(service.hasWidgetOfType("subscriptions")).toBe(true);
     });
 
     it("should not touch the layout when auth data is not yet available", () => {

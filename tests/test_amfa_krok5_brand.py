@@ -181,13 +181,18 @@ def test_ikona_karty_jest_nasza() -> None:
     """Ikona karty przegladarki to nasz znak, nie ikona podstawy.
 
     Nowa podstawa przynosi wlasna ikone (niebieskie kolko); straznik pilnuje, ze podmiana
-    w naszym drzewie nie zniknela i ze plik nie zostal podmieniony na cudzy.
+    w naszym drzewie nie zniknela i ze pliki nie zostaly podmienione na cudze. Karta bierze
+    najpierw SVG (znak na firmowym kafelku — ten sam plik, ktory ma Zammad), a ICO zostaje zapasem.
     """
-    ikona = PANEL / "public" / "assets" / "favicon.ico"
-    assert ikona.is_file(), "brak ikony karty w zasobach panelu"
-    skrot = hashlib.sha256(ikona.read_bytes()).hexdigest()
-    assert skrot == "c6873772fa2775445676bfc9503200edff4f9d1ceef80f2473bd4b8170043320", \
-        "ikona karty nie jest nasza (podstawa przyniosla wlasna?)"
+    oczekiwane = {
+        "favicon.svg": "61b3a3a9df34737d30770a2f55817334a59daa8428585f407978ab3962b0b86a",
+        "favicon.ico": "204a80b43a68fc94378665d9500f76c49a19ec2152bc0dbbf96c9e5fddef5f50",
+    }
+    for nazwa, skrot_oczekiwany in oczekiwane.items():
+        ikona = PANEL / "public" / "assets" / nazwa
+        assert ikona.is_file(), f"brak ikony karty {nazwa} w zasobach panelu"
+        skrot = hashlib.sha256(ikona.read_bytes()).hexdigest()
+        assert skrot == skrot_oczekiwany, f"{nazwa} nie jest nasza (podstawa przyniosla wlasna?)"
 
 
 if __name__ == "__main__":
