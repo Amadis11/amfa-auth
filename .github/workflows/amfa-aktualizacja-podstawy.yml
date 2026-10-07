@@ -7,6 +7,10 @@ name: AMFA — aktualizacja podstawy
 #  - testy padly-> zgloszenie z raportem, bez wydania.
 # Logika jest w amfa/aktualizacja-podstawy.py, zeby dalo sie ja uruchomic i sprawdzic lokalnie.
 # Lista kontrolna wydania (co musi byc zielone przed wdrozeniem na lab): amfa/lista-kontrolna-wydania.md.
+#
+# Wazne: `schedule` i `workflow_dispatch` uruchamiaja workflow **tylko z galezi domyslnej** repozytorium.
+# Galaz domyslna `amfa-auth` jest `amfa` (nasza linia), a `master` to lustro podstawy — przy domyslnej
+# `master` ten plik lezy w repozytorium, ale automat nie uruchamia sie nigdy.
 
 on:
   schedule:
@@ -57,8 +61,18 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
+          PODSTAWA_PRZED=$(cat amfa/PODSTAWA)
           python amfa/aktualizacja-podstawy.py --przygotuj 2>&1 | tee -a raport.txt
-          exit "${PIPESTATUS[0]}"
+          KOD=${PIPESTATUS[0]}
+          # Bez nowego wydania skrypt konczy sie kodem 0 i **nie** rusza pliku podstawy. Bez tego
+          # rozroznienia krok wydania robilby galaz i pull request przy kazdym przebiegu.
+          PODSTAWA_PO=$(cat amfa/PODSTAWA)
+          if [ "$PODSTAWA_PRZED" = "$PODSTAWA_PO" ]; then
+            echo "zmiana=nie" >> "$GITHUB_OUTPUT"
+          else
+            echo "zmiana=tak" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$KOD"
 
       - name: Wyslanie raportu
         uses: actions/upload-artifact@v4
@@ -70,7 +84,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Wydanie — galaz i pull request
-        if: steps.nalozenie.outcome == 'success'
+        if: steps.nalozenie.outcome == 'success' && steps.nalozenie.outputs.zmiana == 'tak'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

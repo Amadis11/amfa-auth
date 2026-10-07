@@ -66,6 +66,44 @@ def _automat():
     return modul
 
 
+def test_automat_wydaje_tylko_gdy_podstawa_sie_zmienila() -> None:
+    """Bez nowego wydania skrypt nie rusza `amfa/PODSTAWA`, a krok wydania nie powstaje.
+
+    `--przygotuj` konczy sie kodem 0 zarowno wtedy, gdy nalozyl nowe wydanie, jak i wtedy, gdy nie bylo
+    czego nakladac. Bez rozroznienia workflow robilby galaz i pull request przy kazdym przebiegu
+    (a `gh pr create` bez roznicy commitow konczylby sie czerwonym zadaniem) — dlatego workflow
+    rozpoznaje wydanie po **zmianie pliku podstawy**, a nie po samym kodzie wyjscia.
+    """
+    ogon = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8").split("def main(")[1]
+    przed_zapisem = ogon.split("zapisz_podstawe(")[0]
+    assert przed_zapisem.count("return 0") >= 2, \
+        "brak aktualizacji nie konczy przebiegu przed zapisem podstawy — workflow nie ma czego porownywac"
+
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
+    assert "PODSTAWA_PRZED" in workflow and "PODSTAWA_PO" in workflow, \
+        "workflow nie porownuje podstawy przed i po nalozeniu"
+    assert "zmiana=nie" in workflow and "zmiana=tak" in workflow, "workflow nie zapisuje znacznika zmiany"
+    assert "steps.nalozenie.outputs.zmiana == 'tak'" in workflow, \
+        "krok wydania nie jest bramkowany zmiana podstawy"
+
+
+def test_automat_uruchamia_sie_z_galezi_domyslnej() -> None:
+    """`schedule` i `workflow_dispatch` dzialaja tylko z galezi domyslnej repozytorium.
+
+    Galaz domyslna `amfa-auth` jest `amfa` (nasza linia), a `master` to lustro podstawy. Przy domyslnej
+    `master` plik workflow lezy w repozytorium, ale automat nie uruchamia sie nigdy — a straznik tego
+    nie widzi, bo patrzy na plik, nie na ustawienie repozytorium.
+    """
+    tresc = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
+    assert "schedule:" in tresc, "automat nie ma wyzwalacza czasowego"
+    assert "workflow_dispatch:" in tresc, "automatu nie da sie uruchomic recznie"
+    assert "galezi domyslnej" in tresc, "workflow nie zapisuje wymogu galezi domyslnej"
+
+    lista = (KORZEN / "amfa" / "lista-kontrolna-wydania.md").read_text(encoding="utf-8")
+    assert "workflow_dispatch" in lista, "lista kontrolna nie mowi o uruchamialnosci automatu"
+    assert "gałąź domyślna" in lista, "lista kontrolna nie wskazuje galezi domyslnej"
+
+
 def test_automat_wie_ktore_znaczniki_sa_wydaniem() -> None:
     """Podstawa wybierana jest z wydan, nie z wersji rozwojowych — inaczej na lab szloby `v3.14dev4`."""
     automat = _automat()
