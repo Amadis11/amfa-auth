@@ -80,7 +80,7 @@ describe("PrivacyideaServerService", () => {
     req.flush({ result: { status: true } });
 
     await promise;
-    expect(notificationService.success).toHaveBeenCalledWith("Successfully saved privacyIDEA server.");
+    expect(notificationService.success).toHaveBeenCalledWith("Successfully saved AMFA server.");
   });
 
   it("should show error notification when posting privacyIDEA server fails", async () => {
@@ -100,7 +100,7 @@ describe("PrivacyideaServerService", () => {
     });
 
     await expect(promise).rejects.toThrow();
-    expect(notificationService.error).toHaveBeenCalledWith("Failed to save privacyIDEA server. Something went wrong");
+    expect(notificationService.error).toHaveBeenCalledWith("Failed to save AMFA server. Something went wrong");
   });
 
   it("should delete privacyIDEA server", async () => {
@@ -111,7 +111,7 @@ describe("PrivacyideaServerService", () => {
     req.flush({ result: { status: true } });
 
     await promise;
-    expect(notificationService.success).toHaveBeenCalledWith("Successfully deleted privacyIDEA server: test.");
+    expect(notificationService.success).toHaveBeenCalledWith("Successfully deleted AMFA server: test.");
   });
 
   it("should show error notification when deleting privacyIDEA server fails", async () => {
@@ -124,7 +124,7 @@ describe("PrivacyideaServerService", () => {
     });
 
     await expect(promise).rejects.toThrow();
-    expect(notificationService.error).toHaveBeenCalledWith("Failed to delete privacyIDEA server. Something went wrong");
+    expect(notificationService.error).toHaveBeenCalledWith("Failed to delete AMFA server. Something went wrong");
   });
 
   it("should test privacyIDEA server", async () => {

@@ -162,7 +162,7 @@ describe("valueDisplayLabel", () => {
   const vocabularyLists: [string, string[], string[]][] = [
     ["autoassignment", ["any_pin", "userstore"], ["Any PIN", "User store"]],
     ["hashlib", ["sha1", "sha256", "sha512"], ["SHA-1", "SHA-256", "SHA-512"]],
-    ["login_mode", ["userstore", "privacyIDEA", "disable"], ["User store", "privacyIDEA", "Disabled"]],
+    ["login_mode", ["userstore", "privacyIDEA", "disable"], ["User store", "AMFA", "Disabled"]],
     ["otppin", ["tokenpin", "userstore", "none"], ["Token PIN", "User store", "None"]],
     ["remote_user", ["disable", "allowed", "force"], ["Disabled", "Allowed", "Forced"]],
     ["timeout_action", ["logout", "lockscreen"], ["Logout", "Lock screen"]],

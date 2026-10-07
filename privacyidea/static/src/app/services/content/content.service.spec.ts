@@ -197,7 +197,6 @@ describe("ContentService", () => {
           ROUTE_PATHS.CONFIGURATION_PERIODIC_TASKS_DETAILS + "1"
         ]
       },
-      { name: "onSubscription", read: (s) => s.onSubscription(), urls: [ROUTE_PATHS.SUBSCRIPTION] },
       {
         name: "onMachineResolver",
         read: (s) => s.onMachineResolver(),

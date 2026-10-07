@@ -25,10 +25,9 @@ import { ContentService, ContentServiceInterface } from "@services/content/conte
 
 /**
  * One entry of the shared ecosystem-integration catalog served by the backend
- * (privacyidea.lib.integrations). Replaces what used to be independently hardcoded
- * lists: the API client `client_type` dropdown, the policy `user_agents` condition
- * picker, the authentication log's client filter and the dashboard subscription
- * widget's rows.
+ * (privacyidea.lib.integrations). Replaces what used to be three independently
+ * hardcoded lists: the API client `client_type` dropdown, the policy `user_agents`
+ * condition picker.
  */
 export interface Integration {
   id: string;
@@ -49,11 +48,9 @@ export interface IntegrationsServiceInterface {
 
   apiClientIntegrations(): Integration[];
 
-  dashboardIntegrations(): Integration[];
-
   labelFor(id: string): string;
 
-  displayForPolicyValue(policyValue: string): string;
+  labelForPolicyValue(policyValue: string): string;
 }
 
 @Injectable()
@@ -64,11 +61,11 @@ export class IntegrationsService implements IntegrationsServiceInterface {
   private readonly integrationsBaseUrl = environment.proxyUrl + "/info/integrations";
 
   integrationsResource = httpResource<PiResponse<Integration[]>>(() => {
+    if (this.authService.isSelfServiceUser()) return undefined;
     if (
       !this.contentService.onDashboard() &&
       !this.contentService.onApiClients() &&
-      !this.contentService.onPolicies() &&
-      !this.contentService.onAuthenticationLog()
+      !this.contentService.onPolicies()
     ) {
       return undefined;
     }
@@ -97,23 +94,17 @@ export class IntegrationsService implements IntegrationsServiceInterface {
     return this.integrations().filter((integration) => integration.api_client);
   }
 
-  dashboardIntegrations(): Integration[] {
-    return this.integrations().filter((integration) => integration.dashboard);
-  }
-
   labelFor(id: string): string {
     return this.integrations().find((integration) => integration.id === id)?.label ?? id;
   }
 
-  displayForPolicyValue(policyValue: string): string {
+  labelForPolicyValue(policyValue: string): string {
     // The server matches policy user_agents case-insensitively, so a hand-typed value
-    // still gets the label of the preset it means. The stored value is always shown: a
-    // custom value that only looks like a label (e.g. "Shibboleth") never matches the
-    // plugin, so it must not read the same as the preset.
+    // still gets the label of the preset it means.
     const normalized = policyValue.toLowerCase();
-    const label = this.integrations().find(
-      (integration) => integration.policy_value.toLowerCase() === normalized
-    )?.label;
-    return label && label !== policyValue ? `${label} (${policyValue})` : policyValue;
+    return (
+      this.integrations().find((integration) => integration.policy_value.toLowerCase() === normalized)?.label ??
+      policyValue
+    );
   }
 }

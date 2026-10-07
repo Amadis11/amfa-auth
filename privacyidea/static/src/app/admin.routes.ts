@@ -18,8 +18,6 @@
  **/
 
 import { Routes } from "@angular/router";
-import { ROUTE_PARAMS } from "@app/route_paths";
-import { detailsTitle, newTitle, PAGE_NAMES } from "@core/route-titles";
 import { dashboardGuard } from "@app/guards/dashboard.guard";
 import { logsLandingRedirect } from "@app/routing/landing-redirects";
 import { pendingChangesGuard } from "@app/guards/pending-changes.guard";
@@ -33,7 +31,6 @@ import { MachineDetailsComponent } from "@components/configuration/machines/mach
 import { MachinesComponent } from "@components/configuration/machines/machines.component";
 import { PeriodicTaskEditComponent } from "@components/configuration/periodic-task/periodic-task-edit/periodic-task-edit.component";
 import { PeriodicTaskComponent } from "@components/configuration/periodic-task/periodic-task.component";
-import { SubscriptionComponent } from "@components/configuration/subscription/subscription.component";
 import { SystemConfigComponent } from "@components/configuration/system/system-config.component";
 import { TokenTypeConfigComponent } from "@components/configuration/token-type-config/token-type-config.component";
 import { EventEditPageComponent } from "@components/event/event-edit-page/event-edit-page.component";
@@ -84,7 +81,6 @@ import { UserTableComponent } from "@components/user/user-table/user-table.compo
 export const routes: Routes = [
   {
     path: "dashboard",
-    title: PAGE_NAMES.dashboard,
     component: DashboardComponent,
     canActivate: [dashboardGuard],
     canDeactivate: [pendingChangesGuard]
@@ -92,59 +88,28 @@ export const routes: Routes = [
   {
     path: "tokens",
     children: [
-      { path: "", title: PAGE_NAMES.tokens, component: TokenTableComponent },
-      {
-        path: "enrollment",
-        title: PAGE_NAMES.enrollToken,
-        component: TokenEnrollmentComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      { path: "challenges", title: PAGE_NAMES.challenges, component: ChallengesTableComponent },
-      { path: "applications", title: PAGE_NAMES.applications, component: TokenApplicationsComponent },
-      { path: "get-serial", title: PAGE_NAMES.getSerial, component: TokenFindSerialComponent },
-      {
-        path: "details/:serial",
-        title: detailsTitle(PAGE_NAMES.tokens),
-        component: TokenDetailsComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: "import",
-        title: PAGE_NAMES.importTokens,
-        component: TokenImportComponent,
-        canDeactivate: [pendingChangesGuard]
-      }
+      { path: "", component: TokenTableComponent },
+      { path: "enrollment", component: TokenEnrollmentComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "challenges", component: ChallengesTableComponent },
+      { path: "applications", component: TokenApplicationsComponent },
+      { path: "get-serial", component: TokenFindSerialComponent },
+      { path: "details/:serial", component: TokenDetailsComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "import", component: TokenImportComponent, canDeactivate: [pendingChangesGuard] }
     ]
   },
   {
     path: "containers",
     children: [
-      { path: "", title: PAGE_NAMES.containers, component: ContainerTableComponent },
-      {
-        path: "create",
-        title: newTitle(PAGE_NAMES.containers),
-        component: ContainerCreateComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: "details/:serial",
-        title: detailsTitle(PAGE_NAMES.containers),
-        component: ContainerDetailsComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
+      { path: "", component: ContainerTableComponent },
+      { path: "create", component: ContainerCreateComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "details/:serial", component: ContainerDetailsComponent, canDeactivate: [pendingChangesGuard] },
       {
         path: "templates",
         children: [
-          { path: "", title: PAGE_NAMES.containerTemplates, component: ContainerTemplatesComponent },
+          { path: "", component: ContainerTemplatesComponent },
+          { path: "create", component: ContainerTemplateEditPageComponent, canDeactivate: [pendingChangesGuard] },
           {
-            path: "create",
-            title: newTitle(PAGE_NAMES.containerTemplates),
-            component: ContainerTemplateEditPageComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.containerTemplates),
+            path: "details/:name",
             component: ContainerTemplateEditPageComponent,
             canDeactivate: [pendingChangesGuard]
           }
@@ -155,90 +120,42 @@ export const routes: Routes = [
   {
     path: "users",
     children: [
-      { path: "", title: PAGE_NAMES.users, component: UserTableComponent },
-      {
-        path: "new",
-        title: newTitle(PAGE_NAMES.users),
-        component: UserCreateComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: "details/:username",
-        title: detailsTitle(PAGE_NAMES.users),
-        component: UserDetailsComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: "realms",
-        title: PAGE_NAMES.realms,
-        component: RealmTableComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      { path: "resolvers", title: PAGE_NAMES.resolvers, component: UserResolversComponent },
-      {
-        path: "resolvers/new",
-        title: newTitle(PAGE_NAMES.resolvers),
-        component: UserNewResolverComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: `resolvers/details/:${ROUTE_PARAMS.NAME}`,
-        title: detailsTitle(PAGE_NAMES.resolvers),
-        component: UserNewResolverComponent,
-        canDeactivate: [pendingChangesGuard]
-      }
+      { path: "", component: UserTableComponent },
+      { path: "new", component: UserCreateComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "details/:username", component: UserDetailsComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "realms", component: RealmTableComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "resolvers", component: UserResolversComponent },
+      { path: "resolvers/new", component: UserNewResolverComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "resolvers/details/:name", component: UserNewResolverComponent, canDeactivate: [pendingChangesGuard] }
     ]
   },
   {
     path: "policies",
     children: [
-      { path: "", title: PAGE_NAMES.policies, component: PoliciesTableComponent },
-      {
-        path: "new",
-        title: newTitle(PAGE_NAMES.policies),
-        component: PolicyEditPageComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: `details/:${ROUTE_PARAMS.NAME}`,
-        title: detailsTitle(PAGE_NAMES.policies),
-        component: PolicyEditPageComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
+      { path: "", component: PoliciesTableComponent },
+      { path: "new", component: PolicyEditPageComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "details/:name", component: PolicyEditPageComponent, canDeactivate: [pendingChangesGuard] },
       {
         path: "conditional-access",
-        title: PAGE_NAMES.conditionalAccess,
         component: ConditionalAccessComponent,
         canDeactivate: [pendingChangesGuard]
       },
       {
         path: "conditional-access/new",
-        title: newTitle(PAGE_NAMES.conditionalAccess),
         component: ConditionalAccessEditPageComponent,
         canDeactivate: [pendingChangesGuard]
       },
       {
-        path: `conditional-access/details/:${ROUTE_PARAMS.ID}`,
-        title: detailsTitle(PAGE_NAMES.conditionalAccess),
+        path: "conditional-access/details/:id",
         component: ConditionalAccessEditPageComponent,
         canDeactivate: [pendingChangesGuard]
       },
       {
         path: "api-clients",
         children: [
-          { path: "", title: PAGE_NAMES.apiClients, component: ApiClientsComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.apiClients),
-            component: ApiClientEditComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.ID}`,
-            title: detailsTitle(PAGE_NAMES.apiClients),
-            component: ApiClientEditComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: ApiClientsComponent },
+          { path: "new", component: ApiClientEditComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:id", component: ApiClientEditComponent, canDeactivate: [pendingChangesGuard] }
         ]
       }
     ]
@@ -246,19 +163,9 @@ export const routes: Routes = [
   {
     path: "events",
     children: [
-      { path: "", title: PAGE_NAMES.events, component: EventComponent, canDeactivate: [pendingChangesGuard] },
-      {
-        path: "new",
-        title: newTitle(PAGE_NAMES.events),
-        component: EventEditPageComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      {
-        path: `details/:${ROUTE_PARAMS.ID}`,
-        title: detailsTitle(PAGE_NAMES.events),
-        component: EventEditPageComponent,
-        canDeactivate: [pendingChangesGuard]
-      }
+      { path: "", component: EventComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "new", component: EventEditPageComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "details/:id", component: EventEditPageComponent, canDeactivate: [pendingChangesGuard] }
     ]
   },
   {
@@ -268,81 +175,44 @@ export const routes: Routes = [
       {
         path: "machine_resolver",
         children: [
-          { path: "", title: PAGE_NAMES.machineResolvers, component: MachineResolverComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.machineResolvers),
-            component: MachineResolverDetailsComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.machineResolvers),
-            component: MachineResolverDetailsComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: MachineResolverComponent },
+          { path: "new", component: MachineResolverDetailsComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: MachineResolverDetailsComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "machines",
         children: [
-          { path: "", title: PAGE_NAMES.machines, component: MachinesComponent },
-          {
-            path: `details/:${ROUTE_PARAMS.ID}`,
-            title: detailsTitle(PAGE_NAMES.machines),
-            component: MachineDetailsComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: MachinesComponent },
+          { path: "details/:id", component: MachineDetailsComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "periodic-tasks",
         children: [
-          { path: "", title: PAGE_NAMES.periodicTasks, component: PeriodicTaskComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.periodicTasks),
-            component: PeriodicTaskEditComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.periodicTasks),
-            component: PeriodicTaskEditComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: PeriodicTaskComponent },
+          { path: "new", component: PeriodicTaskEditComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: PeriodicTaskEditComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
-      { path: "subscription", title: PAGE_NAMES.subscription, component: SubscriptionComponent },
-      {
-        path: "system",
-        title: PAGE_NAMES.system,
-        component: SystemConfigComponent,
-        canDeactivate: [pendingChangesGuard]
-      },
-      { path: "ui-settings", title: PAGE_NAMES.settings, component: UISettingsComponent },
-      {
-        path: "tokens",
-        title: PAGE_NAMES.tokenTypes,
-        component: TokenTypeConfigComponent,
-        canDeactivate: [pendingChangesGuard]
-      }
+      { path: "system", component: SystemConfigComponent, canDeactivate: [pendingChangesGuard] },
+      { path: "ui-settings", component: UISettingsComponent },
+      { path: "tokens", component: TokenTypeConfigComponent, canDeactivate: [pendingChangesGuard] }
     ]
   },
   {
     path: "logs",
     children: [
       { path: "", pathMatch: "full", redirectTo: logsLandingRedirect },
-      { path: "audit", title: PAGE_NAMES.audit, component: AuditComponent },
-      { path: "authentication-log", title: PAGE_NAMES.authenticationLog, component: AuthenticationLog },
-      { path: "clients", title: PAGE_NAMES.clients, component: ClientsComponent },
-      { path: "locked-users", title: PAGE_NAMES.lockedUsers, component: LockedUsersComponent },
-      { path: "blocklist", title: PAGE_NAMES.blocklist, component: BlocklistComponent }
+      { path: "audit", component: AuditComponent },
+      { path: "authentication-log", component: AuthenticationLog },
+      { path: "clients", component: ClientsComponent },
+      { path: "locked-users", component: LockedUsersComponent },
+      { path: "blocklist", component: BlocklistComponent }
     ]
   },
   {
     path: "news",
-    title: PAGE_NAMES.news,
     component: NewsComponent
   },
   {
@@ -351,70 +221,34 @@ export const routes: Routes = [
       {
         path: "smtp",
         children: [
-          { path: "", title: PAGE_NAMES.smtp, component: SmtpServersComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.smtp),
-            component: NewSmtpServerComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.IDENTIFIER}`,
-            title: detailsTitle(PAGE_NAMES.smtp),
-            component: NewSmtpServerComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: SmtpServersComponent },
+          { path: "new", component: NewSmtpServerComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:identifier", component: NewSmtpServerComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "radius",
         children: [
-          { path: "", title: PAGE_NAMES.radius, component: RadiusServersComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.radius),
-            component: NewRadiusServerComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.IDENTIFIER}`,
-            title: detailsTitle(PAGE_NAMES.radius),
-            component: NewRadiusServerComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: RadiusServersComponent },
+          { path: "new", component: NewRadiusServerComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:identifier", component: NewRadiusServerComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "sms",
         children: [
-          { path: "", title: PAGE_NAMES.sms, component: SmsGatewaysComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.sms),
-            component: NewSmsGatewayComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.sms),
-            component: NewSmsGatewayComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: SmsGatewaysComponent },
+          { path: "new", component: NewSmsGatewayComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: NewSmsGatewayComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "privacyidea",
         children: [
-          { path: "", title: PAGE_NAMES.privacyideaServers, component: PrivacyideaServersComponent },
+          { path: "", component: PrivacyideaServersComponent },
+          { path: "new", component: NewPrivacyideaServerComponent, canDeactivate: [pendingChangesGuard] },
           {
-            path: "new",
-            title: newTitle(PAGE_NAMES.privacyideaServers),
-            component: NewPrivacyideaServerComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.IDENTIFIER}`,
-            title: detailsTitle(PAGE_NAMES.privacyideaServers),
+            path: "details/:identifier",
             component: NewPrivacyideaServerComponent,
             canDeactivate: [pendingChangesGuard]
           }
@@ -423,55 +257,25 @@ export const routes: Routes = [
       {
         path: "ca-connectors",
         children: [
-          { path: "", title: PAGE_NAMES.caConnectors, component: CaConnectorsComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.caConnectors),
-            component: NewCaConnectorComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.caConnectors),
-            component: NewCaConnectorComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: CaConnectorsComponent },
+          { path: "new", component: NewCaConnectorComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: NewCaConnectorComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "tokengroups",
         children: [
-          { path: "", title: PAGE_NAMES.tokengroups, component: TokengroupsComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.tokengroups),
-            component: NewTokengroupComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.tokengroups),
-            component: NewTokengroupComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: TokengroupsComponent },
+          { path: "new", component: NewTokengroupComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: NewTokengroupComponent, canDeactivate: [pendingChangesGuard] }
         ]
       },
       {
         path: "service-ids",
         children: [
-          { path: "", title: PAGE_NAMES.serviceIds, component: ServiceIdsComponent },
-          {
-            path: "new",
-            title: newTitle(PAGE_NAMES.serviceIds),
-            component: NewServiceIdComponent,
-            canDeactivate: [pendingChangesGuard]
-          },
-          {
-            path: `details/:${ROUTE_PARAMS.NAME}`,
-            title: detailsTitle(PAGE_NAMES.serviceIds),
-            component: NewServiceIdComponent,
-            canDeactivate: [pendingChangesGuard]
-          }
+          { path: "", component: ServiceIdsComponent },
+          { path: "new", component: NewServiceIdComponent, canDeactivate: [pendingChangesGuard] },
+          { path: "details/:name", component: NewServiceIdComponent, canDeactivate: [pendingChangesGuard] }
         ]
       }
     ]
