@@ -30,7 +30,7 @@ jobs:
         persist-credentials: false
     # Build the new WebUI using node.js
     - name: Set up Node.js for building the new WebUI
-      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
       with:
         # Pin the major LTS line for release builds so the shipped artifact is
         # reproducible and a new Node LTS can't silently change build output.
@@ -45,7 +45,7 @@ jobs:
       run: npm run build -- --configuration production
       working-directory: ./privacyidea/static
     - name: Upload WebUI build artifact
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: webui-artifact
         path: ./privacyidea/static/dist
@@ -87,7 +87,7 @@ jobs:
       run: >-
         python -m build --sdist --wheel --outdir dist/
     - name: Upload packages to artifacts
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: python-dist
         path: dist/*
