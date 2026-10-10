@@ -250,6 +250,26 @@ class PolicyAction:
     BLOCKLIST_RESET = "blocklist_reset"
     BLOCKLIST_SET = "blocklist_set"
 
+    # AMFA: zapis polityki zawężony do **zakresu docelowego** polityki. `POLICYWRITE`/`POLICYDELETE`
+    # zostają pełnym prawem (zgodność wstecz: istniejące konta i klienci nie tracą możliwości), a
+    # nazwy `<POLICYWRITE>_<zakres>` obejmują tylko politykę w swoim zakresie. Zakresu `admin` na tej
+    # liście nie ma i nie będzie — dzięki temu konto z wąskim prawem **nie zapisze** polityki
+    # administracyjnej, czyli granica leży w silniku, a nie w kodzie klienta.
+    POLICY_WRITE_SCOPES = ("authentication", "authorization", "audit", "user", "enrollment",
+                           "webui", "register", "container", "token", "hardening",
+                           "conditional_access")
+
+
+def policy_write_action(scope: str, delete: bool = False) -> str | None:
+    """Nazwa prawa zapisu polityki dla zakresu docelowego (``None``, gdy takiego prawa nie ma).
+
+    :param scope: zakres polityki, której dotyczy zadanie (np. ``authentication``)
+    :param delete: ``True`` dla usunięcia polityki (``policydelete_<zakres>``)
+    """
+    if scope not in PolicyAction.POLICY_WRITE_SCOPES:
+        return None
+    return f"policydelete_{scope}" if delete else f"policywrite_{scope}"
+
 
 class PasskeyLoginButtonOptions:
     __doc__ = """This is the list of options for passkey login."""
