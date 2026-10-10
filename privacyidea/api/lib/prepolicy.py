@@ -91,7 +91,7 @@ from privacyidea.lib.crypto import generate_password
 from privacyidea.lib.error import (PolicyError, RegistrationError,
                                    TokenAdminError, ResourceNotFoundError, AuthError, ParameterError)
 from privacyidea.lib.fido2.policy_action import FIDO2PolicyAction, PasskeyAction
-from privacyidea.lib.policies.actions import PolicyAction
+from privacyidea.lib.policies.actions import PolicyAction, policy_write_action
 from privacyidea.lib.policies.helper import (check_max_auth_fail, check_max_auth_success,
                                              DEFAULT_JWT_VALIDITY, admin_granted_realms, policy_realm_names)
 from privacyidea.lib.policy import Match, PolicyClass, check_pin
@@ -1491,6 +1491,74 @@ def check_admin_base_action(request=None, action=None, anonymous=False):
     if g.logged_in_user.get("role") == ROLE.USER:
         return True
     return check_base_action(request=request, action=action, anonymous=anonymous)
+
+
+def check_scoped_policy_write(request=None, action=None, delete=False):
+    """AMFA: write access to a policy — full right or a right scoped to the target policy's scope.
+
+    The full right (``policywrite``/``policydelete``) is checked exactly as before. If the admin
+    does not hold it, we accept ``policywrite_<scope>``/``policydelete_<scope>`` matching the scope
+    of the policy the request touches:
+
+    * ``POST /policy/<name>`` — scope from the request body (new policy) or from the stored policy
+      (update); **changing the scope of an existing policy needs the full right**,
+    * ``POST /policy/enable|disable/<name>``, ``PATCH /policy/<name>``, ``DELETE /policy/<name>`` —
+      scope from the stored policy.
+
+    The scope-limited names do not exist for the ``admin`` scope, so a service account holding them
+    cannot write an admin policy at all: the boundary lives in the engine instead of the client's
+    code (see the engine repository's issue #40).
+    """
+    if action not in (PolicyAction.POLICYWRITE, PolicyAction.POLICYDELETE):
+        # Not our path (e.g. policy import): keep the plain check.
+        return check_base_action(request=request, action=action)
+
+    def _holds(name):
+        try:
+            check_base_action(request=request, action=name)
+            return True
+        except PolicyError:
+            return False
+
+    if _holds(action):
+        return True
+
+    scope = _policy_target_scope(request)
+    scoped = policy_write_action(scope, delete=delete) if scope else None
+    if scoped and _holds(scoped):
+        return True
+    raise PolicyError(f"Admin actions are defined, but neither the action {action} nor "
+                      f"{scoped or 'a scope-limited write right'} is allowed!")
+
+
+def check_scoped_policy_delete(request=None, action=None):
+    """AMFA: ``check_scoped_policy_write`` dla usunięcia polityki.
+
+    Osobna funkcja, bo dekorator ``prepolicy`` przekazuje tylko ``request`` i ``action``
+    (``prepolicy.__init__(self, function, request, action=None)``) — czwartego argumentu nie ma jak podać.
+    """
+    return check_scoped_policy_write(request=request, action=action, delete=True)
+
+
+def _policy_target_scope(request):
+    """Scope of the policy a write request touches (``None`` = full right required).
+
+    For an existing policy the scope comes from the database. If the request asks for a different
+    scope than the stored one, we return ``None`` on purpose: moving a policy between scopes with a
+    scope-limited right would let an admin push a policy into a scope they must not touch.
+    """
+    view_args = getattr(request, "view_args", None) or {}
+    name = view_args.get("name") or view_args.get("old_name")
+    if not name:
+        return None
+    stored = PolicyClass().list_policies(name=name)
+    stored_scope = stored[0].get("scope") if stored else None
+    requested_scope = request.all_data.get("scope")
+    if stored_scope is None:
+        return requested_scope
+    if requested_scope and requested_scope != stored_scope:
+        return None
+    return stored_scope
 
 
 def check_token_action(request: Request = None, action: str = None):
