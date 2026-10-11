@@ -200,7 +200,7 @@ from privacyidea.lib.utils import (check_time_in_range, check_pin_contents,
 from privacyidea.lib.utils.compare import COMPARATOR_DESCRIPTIONS
 from privacyidea.lib.utils.export import (register_import, register_export)
 from .log import log_with
-from .policies.actions import PolicyAction, PasskeyLoginButtonOptions
+from .policies.actions import PolicyAction, PasskeyLoginButtonOptions, policy_write_action
 from .policies.conditions import PolicyConditionClass, ConditionCheck, ConditionSection
 from .policies.evaluators import EVALUATOR_FUNCTIONS
 from ..models import (Policy, db, save_config_timestamp, PolicyDescription, PolicyCondition)
@@ -1947,6 +1947,19 @@ def get_static_policy_definitions(scope=None):
                                       'desc': _("Admin is allowed to read policies."),
                                       'group': GROUP.SYSTEM,
                                       'mainmenu': [MAIN_MENU.CONFIG]},
+            # AMFA: prawa zapisu polityki zawezone do zakresu docelowego. Pelne `policywrite` i
+            # `policydelete` dzialaja jak dotad (zgodnosc wstecz); nazwy `*_<zakres>` obejmuja tylko
+            # polityki tego zakresu. Zakresu `admin` na liscie nie ma — konto z prawem zawezonym
+            # nie zapisze polityki administracyjnej, czyli granice trzyma silnik, a nie klient.
+            **{policy_write_action(scope, delete): {
+                   'type': 'bool',
+                   'desc': _("Admin is allowed to {0!s} policies of the "
+                             "scope '{1!s}' only.").format("delete" if delete else "write and modify",
+                                                           scope),
+                   'group': GROUP.SYSTEM,
+                   'mainmenu': [MAIN_MENU.CONFIG]}
+               for delete in (False, True)
+               for scope in PolicyAction.POLICY_WRITE_SCOPES},
             PolicyAction.RESOLVERWRITE: {'type': 'bool',
                                          "desc": _("Admin is allowed to write and "
                                                    "modify the "
