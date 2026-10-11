@@ -60,7 +60,8 @@ from ..lib.token import get_dynamic_policy_definitions
 from ..lib.error import (ParameterError)
 from privacyidea.lib.utils import is_true
 from privacyidea.lib.config import get_privacyidea_node_names
-from ..api.lib.prepolicy import prepolicy, check_base_action
+from ..api.lib.prepolicy import (prepolicy, check_base_action, check_global_config_action,
+                                 check_scoped_policy_write, check_scoped_policy_delete)
 
 from flask import g
 from werkzeug.datastructures import FileStorage
@@ -81,7 +82,7 @@ policy_blueprint = Blueprint('policy_blueprint', __name__)
 
 @policy_blueprint.route('/enable/<name>', methods=['POST'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYWRITE)
+@prepolicy(check_scoped_policy_write, request, PolicyAction.POLICYWRITE)
 def enable_policy_api(name):
     """
     Enable a policy. The policy definition is preserved; only the
@@ -100,7 +101,7 @@ def enable_policy_api(name):
 
 @policy_blueprint.route('/disable/<name>', methods=['POST'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYWRITE)
+@prepolicy(check_scoped_policy_write, request, PolicyAction.POLICYWRITE)
 def disable_policy_api(name):
     """
     Disable a policy. The policy definition is preserved; only the
@@ -118,7 +119,7 @@ def disable_policy_api(name):
 
 @policy_blueprint.route('/<old_name>', methods=['PATCH'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYWRITE)
+@prepolicy(check_scoped_policy_write, request, PolicyAction.POLICYWRITE)
 def patch_policy_name_api(old_name):
     """
     Rename a policy. Only the policy's name is modified; all other
@@ -142,7 +143,7 @@ def patch_policy_name_api(old_name):
 
 @policy_blueprint.route('/<name>', methods=['POST'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYWRITE)
+@prepolicy(check_scoped_policy_write, request, PolicyAction.POLICYWRITE)
 def set_policy_api(name=None):
     """
     Create or update a policy. If a policy with the given ``name``
@@ -184,18 +185,11 @@ def set_policy_api(name=None):
     :jsonparam time: time-of-day window during which the policy is
         active (see the policy reference for the format).
     :jsonparam pinode: privacyIDEA node or list of nodes the policy
-        applies to. Validated against the configured nodes. The node
-        names are compared exactly: wildcards (``*``) and negations
-        (``!node``, ``-node``) are rejected. Leave it empty to apply the
-        policy on every node.
+        applies to. Validated against the configured nodes.
     :jsonparam client: client IP, optionally with a subnet
         (e.g. ``172.16.0.0/16``).
-    :jsonparam user_agents: list of user-agent names the policy
-        applies to, e.g. ``privacyidea-cp``. Each name may only contain
-        letters, digits, ``_`` and ``-``; a version
-        (``privacyidea-cp/1.0``), spaces, ``*`` and ``!`` are
-        rejected. Compared case-insensitively with the name from the
-        user agent of the request.
+    :jsonparam user_agents: list of user-agent identifiers the policy
+        applies to.
     :jsonparam active: boolean, whether the policy starts out active.
         Default ``True``.
     :jsonparam check_all_resolvers: if ``True``, the policy is checked
@@ -207,10 +201,8 @@ def set_policy_api(name=None):
         The order of conditions is not guaranteed to be preserved.
     :status 200: ``{"setPolicy <name>": <db-id>}`` in ``result.value``.
     :status 400: invalid scope, invalid policy name, priority below
-        1, invalid time format, unknown realm / resolver / pinode /
-        admin realm, a pinode with a wildcard or negation, an invalid
-        user agent, or a pinode or user_agents list with values that
-        are not strings.
+        1, invalid time format, or unknown realm / resolver / pinode /
+        admin realm.
 
     **Example request**:
 
@@ -388,7 +380,7 @@ def get_policy(name=None, export=None):
 
 @policy_blueprint.route('/<name>', methods=['DELETE'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYDELETE)
+@prepolicy(check_scoped_policy_delete, request, PolicyAction.POLICYDELETE)
 def delete_policy_api(name=None):
     """
     Delete the named policy.
@@ -432,7 +424,7 @@ def delete_policy_api(name=None):
 
 @policy_blueprint.route('/import/<filename>', methods=['POST'])
 @log_with(log)
-@prepolicy(check_base_action, request, PolicyAction.POLICYWRITE)
+@prepolicy(check_global_config_action, request, PolicyAction.POLICYWRITE)
 def import_policy_api(filename=None):
     """
     Import policies from a previously-exported ``.cfg`` file. The
@@ -449,9 +441,7 @@ def import_policy_api(filename=None):
     :formparam file: the file contents (required).
     :status 200: number of imported policies in ``result.value``.
     :status 400: the file is empty or its contents are not valid
-        text, or a policy in the file can not be imported. The other
-        policies are still imported, and the error message names the
-        failed and the imported policies.
+        text.
 
     **Example request**:
 
