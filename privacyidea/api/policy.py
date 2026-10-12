@@ -60,8 +60,7 @@ from ..lib.token import get_dynamic_policy_definitions
 from ..lib.error import (ParameterError)
 from privacyidea.lib.utils import is_true
 from privacyidea.lib.config import get_privacyidea_node_names
-from ..api.lib.prepolicy import (prepolicy, check_base_action, check_global_config_action,
-                                 check_scoped_policy_write, check_scoped_policy_delete)
+from ..api.lib.prepolicy import (prepolicy, check_base_action, check_scoped_policy_write, check_scoped_policy_delete)
 
 from flask import g
 from werkzeug.datastructures import FileStorage

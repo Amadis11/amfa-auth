@@ -205,8 +205,7 @@ from privacyidea.lib.utils import (check_time_in_range, check_pin_contents,
 from privacyidea.lib.utils.compare import COMPARATOR_DESCRIPTIONS
 from privacyidea.lib.utils.export import (register_import, register_export, get_import_names, import_entries)
 from .log import log_with
-from .policies.actions import (PolicyAction, PasskeyLoginButtonOptions, ADMIN_ACTIONS_WITHOUT_TARGET,
-                               policy_write_action)
+from .policies.actions import (PolicyAction, PasskeyLoginButtonOptions, policy_write_action)
 from .policies.conditions import PolicyConditionClass, ConditionCheck, ConditionSection
 from .policies.evaluators import EVALUATOR_FUNCTIONS
 from ..models import (Policy, db, save_config_timestamp, PolicyDescription, PolicyCondition)
