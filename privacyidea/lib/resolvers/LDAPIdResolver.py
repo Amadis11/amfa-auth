@@ -42,7 +42,8 @@ import ldap3
 import yaml
 from ldap3 import MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
 from ldap3 import Tls
-from ldap3.core.exceptions import LDAPOperationResult
+from ldap3.core.exceptions import (LDAPOperationResult, LDAPServerPoolExhaustedError,
+                                   LDAPSocketOpenError)
 from ldap3.core.results import RESULT_SIZE_LIMIT_EXCEEDED
 from ldap3.utils.conv import escape_bytes
 from passlib.hash import ldap_salted_sha1
@@ -342,6 +343,22 @@ class DirectoryPasswordState(ResolverError):
         self.result = result or {}
 
 
+class DirectoryUnavailable(ResolverError):
+    """Katalog (LDAP/DC) jest nieosiagalny - nie udalo sie nawet nawiazac polaczenia.
+
+    To NIE sa zle poswiadczenia: bind nie doszedl do skutku z powodu sieci albo wyczerpanej puli
+    serwerow, a nie dlatego, ze haslo jest bledne. Bez rozroznienia kazdy taki przypadek wyglada jak
+    zwykla pomylka poswiadczen ("wrong otp pin"), uzytkownik powtarza proby i wpada w blokade AD.
+    Sygnal idzie wyzej (do ``lib/user.py``), gdzie jest zapamietywany jako stan ``directory_unavailable``,
+    zeby odpowiedz /validate/check niosla go maszynowo i dostawca poswiadczen pokazal blad
+    polaczenia/konfiguracji, a nie zly kod jednorazowy.
+    """
+
+    def __init__(self, message: str, result: dict = None):
+        super().__init__(message)
+        self.result = result or {}
+
+
 def stan_hasla_z_odpowiedzi_katalogu(result: dict):
     """Zwraca nazwe stanu konta z odpowiedzi katalogu albo None.
 
@@ -485,6 +502,14 @@ class IdResolver(UserIdResolver):
             # `except Exception` zjada go jako zwykla pomylke poswiadczen (log 475 sasiadujacy z 484)
             # i cala informacja o wygaslym hasle albo wylaczonym koncie przepada (zgloszenie #222).
             raise
+        except DirectoryUnavailable:
+            # Katalog nieosiagalny ma wlasny typ i wlasna droge: to nie jest pomylka poswiadczen,
+            # wiec nie wolno jej zjadac jako `False` (uzytkownik zobaczylby "wrong otp pin" i
+            # powtarzal proby, az AD zablokuje konto). Sygnal idzie do lib/user.py.
+            raise
+        except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as e:
+            log.info(f"Katalog nieosiagalny przy sprawdzaniu hasla dla {uid!r}: {e!r}")
+            raise DirectoryUnavailable(f"Directory unavailable: {e}") from e
         except Exception as e:
             log.info(f"Failed to check password for {uid!r}/{bind_user!r}: {e}")
             log.debug(traceback.format_exc())
