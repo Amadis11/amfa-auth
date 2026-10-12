@@ -320,6 +320,90 @@ def test_stan_konta_zyje_tyle_co_zadanie() -> None:
     with aplikacja.test_request_context("/validate/check"):
         assert stany_katalogu_z_zadania() == []
 
+
+def test_katalog_niedostepny_to_nie_zle_poswiadczenia() -> None:
+    """Katalog nieosiagalny (LDAP/DC down) musi byc odrozniony od zlych poswiadczen.
+
+    Atrapa umie rzucic blad gniazda (`set_exception`). Resolver ma wtedy podniesc
+    `DirectoryUnavailable`, a NIE zwrocic `False`: bez tego kazdy przypadek niedostepnego katalogu
+    wyglada jak zwykla pomylka poswiadczen ("wrong otp pin"), uzytkownik powtarza proby i wpada
+    w blokade AD. Zle haslo i konto usuniete nadal zwracaja `False`, bez zadnego stanu konta.
+    """
+    import sys
+    sys.path.insert(0, str(KORZEN))
+    katalog_roboczy = os.getcwd()
+    os.chdir(KORZEN)
+    try:
+        from flask import Flask
+
+        from tests import ldap3mock
+        from privacyidea.lib.resolvers.LDAPIdResolver import (DirectoryPasswordState,
+                                                              DirectoryUnavailable,
+                                                              IdResolver as LDAPResolver)
+
+        dn = "cn=amfa-test-zmiana,ou=example,o=test"
+        aplikacja = Flask(__name__)
+        with aplikacja.app_context():
+            # (a) blad gniazda = katalog nieosiagalny -> wlasny wyjatek, nie False
+            with ldap3mock.mock:
+                ldap3mock.setLDAPDirectory(AD_STANY)
+                ldap3mock.set_exception()
+                resolver = LDAPResolver()
+                resolver.loadConfig(KONFIG_AD)
+                try:
+                    wynik = resolver.checkPass(dn, "jakiekolwiek-haslo")
+                    assert False, f"katalog nieosiagalny zwrocil {wynik!r} zamiast podniesc blad"
+                except DirectoryPasswordState as blad:
+                    assert False, f"katalog nieosiagalny zgloszony jako stan konta: {blad.state!r}"
+                except DirectoryUnavailable:
+                    pass
+                finally:
+                    ldap3mock.set_exception(False)
+
+            # (b) zle haslo to nadal zwykla odmowa (False), bez stanu konta
+            with ldap3mock.mock:
+                ldap3mock.setLDAPDirectory(AD_STANY)
+                resolver = LDAPResolver()
+                resolver.loadConfig(KONFIG_AD)
+                assert resolver.checkPass(dn, "zle-haslo") is False
+                # (c) konto usuniete (DN poza katalogiem) to tez zwykla odmowa, bez stanu
+                assert resolver.checkPass("cn=amfa-usuniete,ou=example,o=test", "x") is False
+    finally:
+        os.chdir(katalog_roboczy)
+
+    # Straznik drogi: resolver musi podniesc wlasny typ przy bledzie gniazda/puli (nie zwrocic False),
+    # a lib/user.py musi go zlapac i zapamietac stan `directory_unavailable` na czas zadania - inaczej
+    # odpowiedz /validate/check nie niesie go maszynowo i dostawca nie ma z czego zbudowac komunikatu.
+    resolver_zrodlo = (KORZEN / "privacyidea" / "lib" / "resolvers" / "LDAPIdResolver.py").read_text(encoding="utf-8")
+    assert "except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as e:" in resolver_zrodlo
+    assert "raise DirectoryUnavailable(" in resolver_zrodlo
+    uzytkownik = (KORZEN / "privacyidea" / "lib" / "user.py").read_text(encoding="utf-8")
+    assert "except DirectoryUnavailable:" in uzytkownik, "user.py nie lapie DirectoryUnavailable"
+    assert 'zapamietaj_stan_katalogu("directory_unavailable", self.login)' in uzytkownik
+
+
+def test_konto_usuniete_904_rozne_od_zlego_hasla() -> None:
+    """Konto usuniete w trakcie sesji (904) musi byc odroznione od zlego hasla.
+
+    Brak uzytkownika w katalogu to kod bledu `904` (`Error.USER`) - maszynowo rozroznialny i inny
+    niz odmowa poswiadczenia (`AUTHENTICATE_WRONG_CREDENTIALS`). Resolver przy usunietym koncie nie
+    zglasza zadnego stanu konta (patrz test wyzej), wiec 904 nie moze zostac zlane ze zlym haslem
+    ani z bledem OTP. Ksztalt odpowiedzi 904 na `/validate/check` pilnuje `tests/test_api_validate.py`.
+    """
+    import sys
+    sys.path.insert(0, str(KORZEN))
+    from privacyidea.lib.error import Error
+
+    assert Error.USER == 904, Error.USER
+    assert Error.USER != Error.AUTHENTICATE_WRONG_CREDENTIALS
+
+    # Straznik zrodla: nieznany uzytkownik konczy sie `UserError` (904), a nie `AuthError` zlych
+    # poswiadczen - te dwie drogi musza zostac rozdzielone.
+    dekoratory = (KORZEN / "privacyidea" / "lib" / "policydecorators.py").read_text(encoding="utf-8")
+    assert 'raise UserError(f"User {user_object} does not exist.")' in dekoratory
+    assert 'raise AuthError("", id=Error.AUTHENTICATE_WRONG_CREDENTIALS)' in dekoratory
+
+
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
     import sys as _sys
