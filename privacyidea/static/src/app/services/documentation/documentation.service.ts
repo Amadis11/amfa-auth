@@ -59,7 +59,10 @@ export class DocumentationService implements DocumentationServiceInterface {
    * every help entry point stays inert.
    */
   private get _baseUrl(): string {
-    return this._configService.config().documentation_url || "";
+    const configured = this._configService.config().documentation_url || "";
+    // Tylko http i https: adres idzie do window.open, wiec nieznany schemat (np. `javascript:`)
+    // traktujemy jak brak adresu, a nie jak adres do otwarcia (zgloszenie #34).
+    return /^https?:\/\//i.test(configured) ? configured : "";
   }
 
   /**
