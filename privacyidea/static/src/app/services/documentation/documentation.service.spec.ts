@@ -52,6 +52,15 @@ describe("DocumentationService", () => {
     windowOpenSpy.mockRestore();
   });
 
+  it("ignores an address whose scheme is not http or https", async () => {
+    const windowOpenSpy = jest.spyOn(window, "open").mockImplementation(() => null);
+    configService.config.set({ ...configService.config(), documentation_url: "javascript:alert(1)" });
+    await service.openDocumentation("tokens");
+    expect(windowOpenSpy).not.toHaveBeenCalled();
+    expect(service.getVersionUrl("some/page.html")).toBe("");
+    windowOpenSpy.mockRestore();
+  });
+
   it("builds page URLs from the configured address", () => {
     configService.config.set({ ...configService.config(), documentation_url: "https://docs.example/" });
     expect(service.getVersionUrl("some/page.html")).toBe("https://docs.example/some/page.html");
