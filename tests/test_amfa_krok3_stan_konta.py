@@ -291,7 +291,10 @@ def test_stan_konta_nie_jest_polykany_po_drodze() -> None:
     # na swiezo pobieranych obiektach tokenow (zgloszenie #222).
     assert "zapamietaj_stan_katalogu(stan.state, self.login)" in uzytkownik
     dekoratory = (KORZEN / "privacyidea" / "lib" / "policydecorators.py").read_text(encoding="utf-8")
-    assert 'token.auth_details["password_change_required"] = True' in dekoratory
+    # Warstwa polityk nie musi juz znac stanu na tokenie: konwersja na zwykla odmowe jest w
+    # `User.check_password`, a stan jedzie do odpowiedzi i rejestru przez `lib/amfa_stan_katalogu.py`
+    # (zgloszenie #32).
+    assert 'token.auth_details["password_change_required"] = True' not in dekoratory
     odpowiedz = (KORZEN / "privacyidea" / "lib" / "token" / "auth.py").read_text(encoding="utf-8")
     assert "stany_katalogu_z_zadania()" in odpowiedz, "odpowiedz nie czyta stanu zapisanego na czas zadania"
     # Stan konta nie moze juz trafiac do odpowiedzi bezwarunkowo: pola dokłada wspolna bramka
@@ -505,6 +508,39 @@ def test_klasyfikacja_stanu_konta_trafia_do_rejestru() -> None:
     with aplikacja.test_request_context("/validate/check"):
         record_directory_states({"account_locked"})
     record_directory_states({"account_locked"})
+
+
+def test_stan_konta_nie_ucieka_jako_wyjatek() -> None:
+    """Stan konta konczy sie zwykla odmowa, a nie wyjatkiem na sciezce logowania (zgloszenie #32).
+
+    `DirectoryPasswordState` dziedziczy po `ResolverError`, a sciezki logowania lapia tylko
+    `UserError`/`AuthError` - wyjatek wychodzil wiec jako odpowiedz bledu serwera, a przerwany
+    przeplyw pomijal inkrementacje licznika nieudanych prob (czyli oslabial blokade konta).
+    Konwersja jest w jednym miejscu: `User.check_password` zapamietuje stan na czas zadania i zwraca
+    `None`, wiec kazdy wolajacy widzi zwykla odmowe.
+    """
+    uzytkownik = (KORZEN / "privacyidea" / "lib" / "user.py").read_text(encoding="utf-8")
+    poczatek = uzytkownik.index("except DirectoryPasswordState as stan:")
+    galez = uzytkownik[poczatek:].split("except DirectoryUnavailable")[0]
+    assert "zapamietaj_stan_katalogu(stan.state, self.login)" in galez
+    assert "return None" in galez, "user.py nie konczy zwykla odmowa"
+    assert "raise" not in galez, "user.py przepuszcza stan konta jako wyjatek na sciezke logowania"
+
+    # Jedno miejsce konwersji: poza resolverem (ktory podnosi wyjatek wewnatrz siebie, zeby nie zjadl go
+    # jego wlasny `except Exception`) nikt go nie lapie - ani warstwa polityk, ani API.
+    zlapania = {}
+    for plik in sorted((KORZEN / "privacyidea").rglob("*.py")):
+        ile = plik.read_text(encoding="utf-8").count("except DirectoryPasswordState")
+        if ile:
+            zlapania[str(plik.relative_to(KORZEN))] = ile
+    assert zlapania == {"privacyidea/lib/resolvers/LDAPIdResolver.py": 1,
+                        "privacyidea/lib/user.py": 1}, zlapania
+
+    # Warstwa polityk (otppin=userstore) nie stempluje PASSWORD_FAIL, gdy katalog rozpoznal stan konta:
+    # haslo bylo wtedy poprawne, a PASSWORD_FAIL liczy sie w politykach progu nieudanych prob.
+    dekoratory = (KORZEN / "privacyidea" / "lib" / "policydecorators.py").read_text(encoding="utf-8")
+    assert "stany_katalogu_z_zadania()" in dekoratory
+    assert "except DirectoryPasswordState" not in dekoratory
 
 
 if __name__ == "__main__":
