@@ -8840,6 +8840,14 @@
           <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="token.offlineHotpNotRecommended" datatype="html">
+        <source>Not recommended for offline use: offline data for a HOTP token keeps the secret on the workstation and is not bound to the machine, so a copied file works on any hardware. The preferred offline path is a FIDO2 key.</source>
+        <target state="translated">Not recommended for offline use: offline data for a HOTP token keeps the secret on the workstation and is not bound to the machine, so a copied file works on any hardware. The preferred offline path is a FIDO2 key.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="token.filterOffline" datatype="html">
         <source>Filter Offline Applications...</source>
         <target>Фільтрувати офлайн-застосунки...</target>
