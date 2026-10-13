@@ -8,7 +8,8 @@ from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from privacyidea.lib import _
-from privacyidea.lib.amfa_stan_katalogu import stany_katalogu_z_zadania
+from privacyidea.lib.amfa_stan_katalogu import (directory_reply_keys, record_directory_states,
+                                                stany_katalogu_z_zadania)
 from privacyidea.lib.challengeresponsedecorators import (generic_challenge_response_reset_pin,
                                                          generic_challenge_response_resync)
 from privacyidea.lib.conditional_access.request_context import confirm_attempt_for_serials
@@ -739,18 +740,16 @@ def check_token_list(token_object_list: list[TokenClass], passw: str, user: User
         reply_dict["message"] = _("No suitable token found for authentication.")
 
     # Stan konta rozpoznany przez katalog (haslo wygasle, wymagana zmiana, konto wylaczone albo wygasle).
-    # Przekazujemy go jako pole rozpoznawalne maszynowo - nazwa jest wspolna z nasza brama i z dostawca
-    # poswiadczen, ktory buduje z niego ekran zmiany poswiadczen. Robimy to po calym lancuchu i niezaleznie
-    # od tego, na ktora liste trafil token, bo adnotacja na tokenie nie dochodzi do odpowiedzi: kontrola
-    # poswiadczenia i budowanie odpowiedzi pracuja na swiezo pobieranych obiektach tokenow (zgloszenie #222).
+    # Klasyfikacja idzie zawsze do rejestru zadania, a do odpowiedzi tylko zaufana sciezka (brama
+    # z sekretem w naglowku) - inaczej bylaby oracle poprawnosci hasla (zgloszenie #31).
     stany_katalogu = {t.auth_details.get("directory_password_state")
                       for t in invalid_token_list if t.auth_details.get("password_change_required")}
     stany_katalogu.update(stany_katalogu_z_zadania())
     stany_katalogu.discard(None)
     stany_katalogu.discard("")
     if stany_katalogu:
-        reply_dict["password_change_required"] = True
-        reply_dict["directory_password_state"] = sorted(stany_katalogu)
+        record_directory_states(stany_katalogu)
+        reply_dict.update(directory_reply_keys(stany_katalogu))
 
     # Reduce the per-token events collected during the walk to the single highest-precedence one for the
     # authentication log: no event means NO_USABLE_TOKEN if every owned token was unusable (revoked, disabled,
