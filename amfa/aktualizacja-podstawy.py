@@ -128,7 +128,11 @@ def najnowszy_znacznik() -> tuple[str, str]:
     Znaczniki rozwojowe (np. `v3.14dev4`) pomijamy: wydaniem jest dopiero `v3.14`/`v3.14.1`, a tylko
     wydanie jest tym, co chcemy miec na labie.
     """
-    uruchom("git", "fetch", "--tags", "--quiet", ZRODLO)
+    # Bez `--quiet` i z `--force`: `--quiet` ukrywalo powod nieudanego pobrania (raport mowil tylko
+    # "zwrocilo 1"), a lokalny tag o tej samej nazwie, ale innym commicie, przerywal pobranie
+    # ("would clobber existing tag"). Tag podstawy jest zrodlem prawdy, wiec nadpisujemy lokalny
+    # (zgloszenie #51).
+    uruchom("git", "fetch", "--tags", "--force", ZRODLO)
     wynik = uruchom("git", "tag", "--sort=-v:refname", "--list", "v*")
     for znacznik in wynik.stdout.split():
         if not czy_wydanie(znacznik):
