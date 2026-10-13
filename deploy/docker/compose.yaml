@@ -25,7 +25,9 @@ x-pi-common: &pi-common
   build:
     context: "../../"
     dockerfile: ./deploy/docker/Dockerfile
-    network: host
+    # Bez `network: host`: budowa potrzebuje tylko wyjscia do sieci (apk, pip, npm), a siec
+    # gospodarza to uprawnienie, ktorego nowszy BuildKit zada jawnie (`--allow=network.host`)
+    # i bez niego przerywa budowe — nocny przebieg padal na tym od 10 pazdziernika (zgloszenie #37).
   # image: privacyidea/privacyidea:<tag>   # use instead of build: once published
   secrets:
     - enckey
