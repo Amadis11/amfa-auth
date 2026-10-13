@@ -51,10 +51,9 @@ import json
 import logging
 import re
 import traceback
-from urllib.parse import quote
 
 from flask import g, current_app, Request
-from flask_babel import _, lazy_gettext
+from flask_babel import _
 
 from privacyidea.api.lib.utils import get_all_params, log_authentication, hardening_action_active
 from privacyidea.lib.conditional_access.authentication_event_types import (AuthEventType, AuthEventReason,
@@ -73,7 +72,7 @@ from privacyidea.lib.token import get_tokens, assign_token, get_one_token, init_
 from privacyidea.lib.tokenclass import ChallengeSession
 from privacyidea.lib.tokenrolloutstate import RolloutState
 from privacyidea.lib.tokens.passkeytoken import PasskeyTokenClass
-from privacyidea.lib.utils import (create_img, get_version, AUTH_RESPONSE,
+from privacyidea.lib.utils import (create_img, AUTH_RESPONSE,
                                    get_plugin_info_from_useragent)
 from .prepolicy import check_max_token_user, check_max_token_realm, fido2_enroll, rss_age, container_registration_config
 from ...lib.challenge import get_challenges
