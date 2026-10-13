@@ -197,11 +197,16 @@ def zbuduj_panel() -> tuple[bool, str]:
     katalog = KORZEN / "privacyidea" / "static"
     if not (katalog / "package.json").is_file():
         return True, "brak zrodel panelu w tej wersji podstawy — pomijam"
-    instalacja = subprocess.run(["npm", "ci", "--silent"], cwd=katalog, capture_output=True, text=True)
+    # Sciezka, nie nazwa: przy skazonym PATH nazwa uruchomi obcy plik (bandit B607/B603), a automat
+    # bywa uruchamiany takze recznie, poza workflowem.
+    npm = shutil.which("npm")
+    if npm is None:
+        return False, "brak programu 'npm' w PATH — nie moge zbudowac panelu"
+    instalacja = subprocess.run([npm, "ci", "--silent"], cwd=katalog, capture_output=True, text=True)
     if instalacja.returncode != 0:
         return False, "nie udalo sie zainstalowac zaleznosci panelu: " + \
             (instalacja.stderr.strip().split("\n")[-1] if instalacja.stderr.strip() else "")
-    budowa = subprocess.run(["npm", "run", "build"], cwd=katalog, capture_output=True, text=True)
+    budowa = subprocess.run([npm, "run", "build"], cwd=katalog, capture_output=True, text=True)
     if budowa.returncode != 0:
         ogon = (budowa.stdout + budowa.stderr).strip().split("\n")
         return False, "build panelu padl: " + (ogon[-1] if ogon else "")
@@ -221,7 +226,11 @@ def spakuj_panel(katalog: pathlib.Path) -> tuple[bool, str]:
     cel = KORZEN / "dist-amfa"
     cel.mkdir(exist_ok=True)
     nazwa = cel / f"amfa-panel-{podstawa_w_pliku()}.tar.gz"
-    pakowanie = subprocess.run(["tar", "czf", str(nazwa), "-C", str(zbudowany), "."],
+    # Jak przy npm: pelna sciezka, zeby PATH nie decydowal o tym, co sie uruchomi.
+    tar = shutil.which("tar")
+    if tar is None:
+        return False, "brak programu 'tar' w PATH — nie moge spakowac panelu"
+    pakowanie = subprocess.run([tar, "czf", str(nazwa), "-C", str(zbudowany), "."],
                                capture_output=True, text=True)
     if pakowanie.returncode != 0:
         return False, "nie udalo sie spakowac panelu: " + pakowanie.stderr.strip()

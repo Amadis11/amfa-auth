@@ -37,7 +37,7 @@ def test_automat_buduje_takze_panel() -> None:
     """
     skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
     assert "def zbuduj_panel(" in skrypt, "automat nie buduje panelu"
-    assert '"npm", "run", "build"' in skrypt, "automat nie uruchamia buildu panelu"
+    assert 'npm, "run", "build"' in skrypt, "automat nie uruchamia buildu panelu"
     assert 'zbuduj_panel()' in skrypt, "build panelu nie jest dolaczony do przebiegu"
 
     workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(encoding="utf-8")
@@ -215,6 +215,45 @@ def test_lista_kontrolna_mowi_o_testach_a_nie_o_decyzji() -> None:
     assert "kod == '5'" not in workflow, "workflow wciaz rozpoznaje kod recznej decyzji"
     assert "wymaga decyzji o zgodnosci z brama" not in workflow, "workflow wciaz zglasza decyzje o liscie wydan"
     assert "PIPESTATUS[0]" in workflow, "kod wyjscia musi byc brany ze skryptu, nie z tee"
+
+
+def test_automat_uruchamia_programy_po_sciezce() -> None:
+    """Programy wolane przez automat rozwiazujemy sciezka z PATH, nie nazwa (bandit B607/B603).
+
+    Przy skazonym PATH nazwa uruchomi obcy plik, a automat bywa uruchamiany takze recznie, poza
+    workflowem (zgloszenie #33).
+    """
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    assert 'shutil.which("npm")' in skrypt, "npm wolany nazwa, nie sciezka"
+    assert 'shutil.which("tar")' in skrypt, "tar wolany nazwa, nie sciezka"
+    assert '["npm"' not in skrypt, "zostalo wolanie npm po nazwie"
+    assert '["tar"' not in skrypt, "zostalo wolanie tar po nazwie"
+
+
+def test_automat_ma_akcje_przypiete_do_sha_i_waskie_uprawnienia() -> None:
+    """Akcje pinowane do pelnego SHA, a zapis do repozytorium tylko na poziomie zadania.
+
+    Akcja przypieta do ruchomego tagu to obcy kod uruchamiany z tokenem majacym prawo zapisu
+    (zgloszenie #33). Uprawnien per krok GitHub nie zna, wiec domyslnie ma byc odczyt, a zapis
+    zadeklarowany tam, gdzie naprawde jest potrzebny.
+    """
+    import re
+
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(
+        encoding="utf-8")
+    uzycia = re.findall(r"uses:\s*(\S+)", workflow)
+    assert uzycia, "workflow nie uzywa zadnej akcji"
+    for uzycie in uzycia:
+        assert re.fullmatch(r"[^@\s]+@[0-9a-f]{40}", uzycie), \
+            f"akcja nie jest przypieta do pelnego SHA: {uzycie}"
+
+    # Domyslnie tylko odczyt na poziomie workflowa...
+    assert re.search(r"^permissions:\n  contents: read\n", workflow, re.M), \
+        "workflow nie ma domyslnego 'contents: read'"
+    # ...a zapis zadeklarowany na poziomie zadania (tam, gdzie wypychana jest galaz i zgloszenie).
+    assert re.search(r"^    permissions:\n      contents: write\n", workflow, re.M), \
+        "zapis nie jest zadeklarowany na poziomie zadania"
+    assert "pull-requests: write" in workflow and "issues: write" in workflow
 
 
 if __name__ == "__main__":
