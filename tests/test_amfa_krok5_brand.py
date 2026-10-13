@@ -195,6 +195,35 @@ def test_ikona_karty_jest_nasza() -> None:
         assert skrot == skrot_oczekiwany, f"{nazwa} nie jest nasza (podstawa przyniosla wlasna?)"
 
 
+def test_adres_dokumentacji_tylko_http_i_https() -> None:
+    """Adres dokumentacji idzie do `window.open`, wiec wolno podac tylko `http` i `https` (#34).
+
+    `javascript:` albo `data:` w konfiguracji wykonalyby kod w kontekscie zalogowanej konsoli.
+    Silnik odsiewa nieznany schemat u zrodla, a konsola traktuje go jak brak adresu - takze wtedy,
+    gdy wartosc przyszla z innego zrodla niz `login.py`.
+    """
+    import sys
+    sys.path.insert(0, str(KORZEN))
+    from privacyidea.webui.login import is_safe_documentation_url
+
+    assert is_safe_documentation_url("https://docs.example/") is True
+    assert is_safe_documentation_url("http://docs.example/") is True
+    assert is_safe_documentation_url("HTTPS://docs.example/") is True
+    for zly in ("javascript:alert(1)", "data:text/html,<script>x</script>", "file:///etc/passwd", ""):
+        assert is_safe_documentation_url(zly) is False, zly
+    assert is_safe_documentation_url(None) is False
+
+    login = (KORZEN / "privacyidea" / "webui" / "login.py").read_text(encoding="utf-8")
+    assert "if not is_safe_documentation_url(documentation_url):" in login, \
+        "silnik nie odsiewa niedozwolonego schematu adresu dokumentacji"
+    assert 'SAFE_DOCUMENTATION_SCHEMES = ("http", "https")' in login
+
+    konsola = (KORZEN / "privacyidea" / "static" / "src" / "app" / "services" / "documentation"
+               / "documentation.service.ts").read_text(encoding="utf-8")
+    assert r"/^https?:\/\//i.test(configured)" in konsola, \
+        "konsola nie sprawdza schematu adresu przed window.open"
+
+
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
     import sys as _sys
