@@ -256,6 +256,21 @@ def test_automat_ma_akcje_przypiete_do_sha_i_waskie_uprawnienia() -> None:
     assert "pull-requests: write" in workflow and "issues: write" in workflow
 
 
+def test_pobranie_tagow_podstawy_nie_ukrywa_powodu() -> None:
+    """`git fetch` tagow podstawy nie tlumi powodu bledu i nie przewraca sie o lokalny tag (#51).
+
+    `--quiet` zostawial komunikat pusty (raport mowil "zwrocilo 1:" i nic wiecej), a bez `--force`
+    lokalny tag o tej samej nazwie, ale innym commicie, przerywal pobranie ("would clobber existing
+    tag"). Tag podstawy jest zrodlem prawdy, wiec lokalny jest nadpisywany.
+    """
+    skrypt = (KORZEN / "amfa" / "aktualizacja-podstawy.py").read_text(encoding="utf-8")
+    pobrania = [linia for linia in skrypt.splitlines() if '"fetch"' in linia]
+    assert pobrania, "automat nie pobiera tagow podstawy"
+    for linia in pobrania:
+        assert '"--quiet"' not in linia, "pobranie tagow ukrywa powod bledu"
+        assert '"--force"' in linia, "pobranie tagow przewroci sie o lokalny tag o tej samej nazwie"
+
+
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
     import sys as _sys
