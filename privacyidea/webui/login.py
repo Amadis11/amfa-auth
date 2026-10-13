@@ -30,6 +30,7 @@ __author__ = "Cornelius Kölbel <cornelius@privacyidea.org>"
 
 import logging
 import os
+from urllib.parse import urlparse
 
 from flask import (Blueprint, render_template, request,
                    current_app, g, redirect, abort, Response)
@@ -50,6 +51,15 @@ from privacyidea.lib.realm import get_realms
 from privacyidea.lib.utils import get_client_ip, get_version_number, get_plugin_info_from_useragent
 
 log = logging.getLogger(__name__)
+
+#: Schematy, ktore wolno podac jako adres dokumentacji konsoli. Adres idzie do `window.open`, wiec
+#: `javascript:` albo `data:` wykonalyby kod w kontekscie zalogowanej konsoli (zgloszenie #34).
+SAFE_DOCUMENTATION_SCHEMES = ("http", "https")
+
+
+def is_safe_documentation_url(address) -> bool:
+    """Czy adres dokumentacji wolno otworzyc w przegladarce (tylko `http` i `https`)."""
+    return urlparse(str(address or "")).scheme.lower() in SAFE_DOCUMENTATION_SCHEMES
 
 DEFAULT_THEME = "/static/contrib/css/bootstrap-theme.css"
 # Layout of the compiled WebUI below the static folder. It mirrors "outputPath" in
@@ -196,6 +206,12 @@ def get_render_context():
     # (``PI_DOCUMENTATION_URL``). Empty means the console shows no documentation links.
     documentation_url = get_from_config("documentation_url",
                                         current_app.config.get("PI_DOCUMENTATION_URL", ""))
+    # Tylko `http` i `https`: nieznany schemat (np. `javascript:`) traktujemy jak brak adresu, zeby
+    # konsola nie wykonala kodu podanego w konfiguracji (zgloszenie #34).
+    if not is_safe_documentation_url(documentation_url):
+        if documentation_url:
+            log.warning("documentation_url ma niedozwolony schemat — konsola nie pokaze odnosnika.")
+        documentation_url = ""
     # check if login with REMOTE_USER is allowed.
     remote_user = ""
     force_remote_user = False
