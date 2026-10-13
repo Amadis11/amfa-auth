@@ -568,23 +568,19 @@ def auth_otppin(wrapped_function, *args, **kwds):
                     return False
 
             if list(otppin_dict)[0] == ACTIONVALUE.USERSTORE:
-                # Import lokalny, zeby warstwa polityk nie ciagnela resolwera przy starcie.
-                from privacyidea.lib.resolvers.LDAPIdResolver import DirectoryPasswordState
-                try:
-                    authenticated_user = user.check_password(pin)
-                except DirectoryPasswordState as stan:
-                    # Katalog rozpoznal stan konta: to nie jest zwykly blad poswiadczen.
-                    # Przekazujemy go w szczegolach uwierzytelnienia, zeby dotarl do odpowiedzi
-                    # i zeby dostawca poswiadczen mogl pokazac ekran zmiany poswiadczen.
-                    if token:
-                        token.auth_details["password_change_required"] = True
-                        token.auth_details["directory_password_state"] = stan.state
-                    log.info(f"Katalog rozpoznal stan konta {stan.state!r} dla {user!r}.")
-                    return False
+                authenticated_user = user.check_password(pin)
 
                 if token:
                     if authenticated_user is None:
-                        token.auth_details[AUTH_EVENT_TYPE_KEY] = AuthEventType.PASSWORD_FAIL
+                        # Katalog moze rozpoznac stan konta (haslo wygasle, wymagana zmiana, konto
+                        # wylaczone) - wtedy haslo bylo poprawne, a odmowa ma inna przyczyne niz zle
+                        # haslo, wiec nie wolno stemplowac PASSWORD_FAIL: ta klasyfikacja liczy sie
+                        # w politykach progu nieudanych prob (zgloszenie #32). Stan konta jedzie do
+                        # odpowiedzi i do rejestru osobna droga (`lib/amfa_stan_katalogu.py`).
+                        from privacyidea.lib.amfa_stan_katalogu import stany_katalogu_z_zadania
+
+                        if not stany_katalogu_z_zadania():
+                            token.auth_details[AUTH_EVENT_TYPE_KEY] = AuthEventType.PASSWORD_FAIL
                     else:
                         # This password is right, so a failure stamped by an earlier check of the same token in this
                         # request does not describe the outcome and must not outlive it. check_pin runs more than

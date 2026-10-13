@@ -591,14 +591,19 @@ class User:
             elif not res:
                 log.error(f"The user {self!r} exists in NO resolver.")
         except DirectoryPasswordState as stan:
-            # Stan konta rozpoznany przez katalog musi dojsc do wywolujacego: dostawca
-            # poswiadczen buduje z niego ekran zmiany poswiadczen. Zapamietujemy go takze na czas
-            # zadania, bo odpowiedz /validate/check budowana jest na swiezo pobranych obiektach
-            # tokenow i adnotacja na tokenie nie dochodzi do odpowiedzi (zgloszenie #222).
+            # Stan konta rozpoznany przez katalog (haslo wygasle, wymagana zmiana, konto wylaczone
+            # albo wygasle) zapamietujemy na czas zadania i konczymy zwykla odmowa.
+            #
+            # Wyjatku NIE przepuszczamy wyzej (zgloszenie #32): jako `ResolverError` nie jest lapany
+            # przez sciezki logowania (`api/validate.py` lapie tylko `UserError`/`AuthError`), wiec
+            # konczyl sie odpowiedzia bledu serwera zamiast odmowy, a przerwany przeplyw pomijal
+            # inkrementacje licznika nieudanych prob - czyli oslabial blokade konta. Jedno miejsce
+            # konwersji na zwykla odmowe zamyka to dla wszystkich wolajacych `check_password`.
             from privacyidea.lib.amfa_stan_katalogu import zapamietaj_stan_katalogu
 
             zapamietaj_stan_katalogu(stan.state, self.login)
-            raise
+            log.info(f"Katalog rozpoznal stan konta {stan.state!r} dla {self.login!r}.")
+            return None
         except DirectoryUnavailable:
             # Katalog (LDAP/DC) jest nieosiagalny: nie udalo sie nawet nawiazac polaczenia. To nie jest
             # pomylka poswiadczen, wiec nie wolno jej zglosic jako zwyklej odmowy bez sladu. Zapamietujemy
