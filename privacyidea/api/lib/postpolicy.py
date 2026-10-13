@@ -53,10 +53,9 @@ import re
 import traceback
 from collections.abc import Collection
 from typing import NamedTuple, NoReturn
-from urllib.parse import quote
 
 from flask import g, current_app, Request, Response
-from flask_babel import _, lazy_gettext
+from flask_babel import _
 
 from privacyidea.api.lib.utils import get_all_params, get_optional, log_authentication, hardening_action_active
 from privacyidea.lib.conditional_access.authentication_event_types import (AuthEventType, AuthEventReason,
@@ -78,7 +77,7 @@ from privacyidea.lib.tokenclass import ChallengeSession, TokenClass
 from privacyidea.lib.tokenrolloutstate import RolloutState
 from privacyidea.lib.tokens.passkeytoken import PasskeyTokenClass
 from privacyidea.lib.user import User
-from privacyidea.lib.utils import (create_img, get_version, AUTH_RESPONSE,
+from privacyidea.lib.utils import (create_img, AUTH_RESPONSE,
                                    get_plugin_info_from_useragent, is_true)
 from .policyhelper import get_remember_device_duration, name_conflicting_action
 from .prepolicy import check_max_token_user, check_max_token_realm, fido2_enroll, rss_age, container_registration_config
