@@ -2617,6 +2617,31 @@ def get_policy_value_set(policy_action: str, scope: str, user: User | None = Non
     return list(set(value for policy in policies for value in policy.split()))
 
 
+def get_user_verification_requirement(scope: str, user: User | None = None) -> str:
+    """
+    Resolve the FIDO2 user verification requirement (webauthn_user_verification_requirement) for the given
+    scope and user. If no policy matches, DEFAULT_USER_VERIFICATION_REQUIREMENT is returned.
+
+    A configured value that is not one of USER_VERIFICATION_LEVELS also falls back to the default instead of
+    raising: the resolved value is handed out to clients (e.g. together with the offline data), and a
+    misconfigured policy must not turn an otherwise successful response into an error. The policy is resolved
+    without being written to the audit log, since it only enriches a response and does not restrict anything.
+
+    :param scope: the policy scope to resolve the action in, e.g. SCOPE.AUTH
+    :param user: the user used to match user, realm and resolver scoped policies
+    :return: "required", "preferred" or "discouraged"
+    """
+    policies = Match.user(g, scope=scope, action=FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT,
+                          user_object=user).action_values(unique=True, allow_white_space_in_action=True,
+                                                          write_to_audit_log=False)
+    policy_value = list(policies)[0] if policies else DEFAULT_USER_VERIFICATION_REQUIREMENT
+    if policy_value not in USER_VERIFICATION_LEVELS:
+        log.warning(f"Invalid value {policy_value!r} for {FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT} in "
+                    f"scope {scope!r}. Falling back to {DEFAULT_USER_VERIFICATION_REQUIREMENT!r}.")
+        policy_value = DEFAULT_USER_VERIFICATION_REQUIREMENT
+    return policy_value
+
+
 def fido2_enroll(request, action):
     """
     This is a token specific wrapper for FIDO2 token and the endpoint /token/init.
