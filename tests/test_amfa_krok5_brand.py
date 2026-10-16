@@ -224,6 +224,19 @@ def test_adres_dokumentacji_tylko_http_i_https() -> None:
         "konsola nie sprawdza schematu adresu przed window.open"
 
 
+def test_nie_brandujemy_cli_silnika() -> None:
+    """Nazwy narzedzi podstawy zostaja nazwami podstawy.
+
+    Przez jakis czas nasza linia dodawala aliasy `amfa-manage`/`amfa-tokenjanitor`. Nic nie wnosily
+    (to ta sama komenda pod inna nazwa), a ciagnely za soba dwa nasze wywolania w narzedziach
+    wdrozeniowych i wpis w delcie. Narzedzia maja wolac `pi-manage`, a gdy kiedys bedziemy chcieli
+    wlasne narzedzie, powstanie jako osobny program z wlasna funkcja, nie jako alias.
+    """
+    tresc = (KORZEN / "pyproject.toml").read_text(encoding="utf-8")
+    for nazwa in ("amfa-manage", "amfa-tokenjanitor"):
+        assert nazwa not in tresc, f"wrocil alias CLI {nazwa}"
+
+
 if __name__ == "__main__":
     # Bez pytest (na wezlach go nie ma) uruchamiamy wszystkie strazniki i konczymy kodem wyjscia.
     import sys as _sys
