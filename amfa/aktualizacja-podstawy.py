@@ -63,6 +63,9 @@ NASZE_STRAZNICY_WZORZEC = "tests/test_amfa_krok*.py"
 # (zadania okresowe po usunieciu statystyk).
 TESTY_PODSTAWY = [
     "tests/test_api_validate.py",
+    # Testy podstawy o licencji i liczniku: mechanizm zostaje w kodzie i jest przez nas wylaczany
+    # ustawieniem `PI_SUBSCRIPTION_ENFORCE`, wiec jego testy musza chodzic w bramce wydania.
+    "tests/test_lib_subscriptions.py",
     "tests/test_app.py",
     "tests/test_api_lib_policy.py",
     "tests/test_api_periodictask.py",

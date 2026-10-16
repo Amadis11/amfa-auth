@@ -94,6 +94,7 @@ from privacyidea.lib.error import (ParameterError, TokenAdminError,
 from privacyidea.lib.event import event
 from privacyidea.lib.importotp import (parseOATHcsv, parseSafeNetXML,
                                        parseYubicoCSV, parsePSKCdata, GPGImport)
+from privacyidea.lib.subscriptions import CheckSubscription
 from privacyidea.lib.tokenrolloutstate import RolloutState
 from .lib.utils import send_result, send_csv_result, get_optional, get_required
 from privacyidea.lib.params import get_pagination_params
@@ -193,6 +194,7 @@ overall policy concept.
 @postpolicy(save_pin_change, request)
 @event("token_init", request, g)
 @postpolicy(check_verify_enrollment, request)
+@CheckSubscription(request)
 @log_with(log, log_entry=False)
 def init():
     """
@@ -815,6 +817,7 @@ def list_api():
 @prepolicy(encrypt_pin, request)
 @prepolicy(check_otp_pin, request)
 @prepolicy(check_external, request, action="assign")
+@CheckSubscription(request)
 @event("token_assign", request, g)
 @log_with(log)
 def assign_api():
