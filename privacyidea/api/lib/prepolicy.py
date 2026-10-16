@@ -1536,7 +1536,7 @@ def check_scoped_policy_write(request=None, action=None, delete=False):
     """AMFA: write access to a policy — full right or a right scoped to the target policy's scope.
 
     The full right (``policywrite``/``policydelete``) is checked the way the base checks an object that
-    belongs to no realm (``check_global_config_action``). If the admin does not hold it, we accept
+    belongs to no realm. If the admin does not hold it, we accept
     ``policywrite_<scope>``/``policydelete_<scope>`` matching the scope of the policy the request touches:
 
     * ``POST /policy/<name>`` — scope from the request body (new policy) or from the stored policy
@@ -1548,28 +1548,45 @@ def check_scoped_policy_write(request=None, action=None, delete=False):
     cannot write an admin policy at all: the boundary lives in the engine instead of the client's
     code (see the engine repository's issue #40).
 
-    Both names go through the same rule the base applies to a realm-less configuration object — our
-    scope-limited names are listed in ``ADMIN_ACTIONS_WITHOUT_TARGET`` as well, so a permission
-    restricted to individual realms, resolvers or users does not cover them either.
+    Both the full and the scope-limited right go through the base's rule for a realm-less object
+    (:func:`check_global_config_action`): a permission restricted to individual realms, resolvers or
+    users does not cover a policy. Without the second step a scope-limited right would be weaker than
+    the full one — a target-restricted admin policy would grant what the full right refuses.
     """
     if action not in (PolicyAction.POLICYWRITE, PolicyAction.POLICYDELETE):
         # Not our path (a route that keeps the full right): the base's check for a realm-less object.
         return check_global_config_action(request=request, action=action)
 
-    def _holds(name):
-        try:
-            check_global_config_action(request=request, action=name)
-            return True
-        except PolicyError:
-            return False
+    def sprawdz(name: str) -> tuple[bool, PolicyError | None]:
+        """(czy prawo jest, blad do oddania gdy prawo jest, ale zawezone do realmu/resolvera/uzytkownika).
 
-    if _holds(action):
+        Kolejnosc i komunikat jak w ``check_global_config_action``: najpierw „czy prawo jest", potem
+        „czy nie jest zawezone do celu". Administrator ma odroznic brak prawa od prawa zawezonego —
+        to drugie jest w naszym przypadku regula bezpieczenstwa, nie brakiem uprawnienia.
+        """
+        try:
+            check_base_action(request=request, action=name)
+        except PolicyError:
+            return False, None
+        if get_policy_visibility_scopes(name) is not None:
+            return False, PolicyError(f"The action {name} changes a configuration that applies to all realms. "
+                                      "It requires an administrator permission that is not restricted to individual "
+                                      "realms, resolvers or users.")
+        return True, None
+
+    trzyma, blad = sprawdz(action)
+    if trzyma:
         return True
 
     scope = _policy_target_scope(request)
     scoped = policy_write_action(scope, delete=delete) if scope else None
-    if scoped and _holds(scoped):
-        return True
+    if scoped:
+        trzyma, blad_zawezonego = sprawdz(scoped)
+        if trzyma:
+            return True
+        blad = blad or blad_zawezonego
+    if blad is not None:
+        raise blad
     raise PolicyError(f"Admin actions are defined, but neither the action {action} nor "
                       f"{scoped or 'a scope-limited write right'} is allowed!")
 
