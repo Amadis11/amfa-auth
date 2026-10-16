@@ -40,9 +40,20 @@ naprawione:
 
 Nałożenie podstawy **przepisuje historię** naszej linii (rebase), więc gałąź wydania nie jest złączalna
 zwykłym scaleniem: GitHub pokaże konflikt i nie uruchomi na takim pull requescie zadań. Pull request
-i raport są do przeglądu; wydanie wprowadza się po przeglądzie jednym poleceniem:
+i raport są do przeglądu; wydanie wprowadza się po przeglądzie **force-pushem gałęzi na `amfa`**.
 
-    git fetch origin && git push origin --force-with-lease amfa-aktualizacja-<wydanie>:amfa
+**`amfa` jest gałęzią chronioną** (`allow_force_pushes=false`, `enforce_admins=true`), więc force-push
+zostanie odrzucony komunikatem `protected branch hook declined` — także dla administratora. Kolejność,
+która działa (zmierzone 16.10.2026 przy wprowadzaniu v3.14):
+
+    # 1) na czas wprowadzenia włącz force-push (pełny obiekt: pole samo się nie zaktualizuje)
+    gh api --method PUT repos/Amadis11/amfa-auth/branches/amfa/protection \
+      -F 'required_status_checks=null' -F 'enforce_admins=true' -F 'required_pull_request_reviews=null' \
+      -F 'restrictions=null' -F allow_force_pushes=true -F allow_deletions=false \
+      -F required_linear_history=false -F required_conversation_resolution=false
+    # 2) wprowadź linię (lease na poprzedni czub — chroni przed cudzą zmianą w międzyczasie)
+    git fetch origin && git push origin --force-with-lease=amfa:<poprzedni-czub> <gałąź-wydania>:amfa
+    # 3) wyłącz force-push z powrotem (ten sam pełny obiekt, allow_force_pushes=false)
 
 Konflikt w pull requescie jest więc **expected**, a nie sygnałem błędu. Zadania z harmonogramu
 (unit tests, build panelu) biegną po wypchnięciu na `amfa`; bramka automatu przed wydaniem jest
