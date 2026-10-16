@@ -24,7 +24,8 @@ def test_automat_aktualizacji_jest_na_miejscu() -> None:
     assert workflow.is_file(), "brak workflow automatu wydan"
     tresc = workflow.read_text(encoding="utf-8")
     assert "amfa/aktualizacja-podstawy.py --przygotuj" in tresc, "workflow nie wola skryptu"
-    assert "gh issue create" in tresc, "workflow nie zglosza konfliktu"
+    assert "repos/$GITHUB_REPOSITORY/issues" in tresc and "gh api --method POST" in tresc, \
+        "workflow nie zglosza konfliktu przez REST"
 
     podstawa = (KORZEN / "amfa" / "PODSTAWA").read_text(encoding="utf-8")
     assert "commit " in podstawa, "brak zapisu podstawy — automat nie wie, na czym stoi"
@@ -269,6 +270,65 @@ def test_pobranie_tagow_podstawy_nie_ukrywa_powodu() -> None:
     for linia in pobrania:
         assert '"--quiet"' not in linia, "pobranie tagow ukrywa powod bledu"
         assert '"--force"' in linia, "pobranie tagow przewroci sie o lokalny tag o tej samej nazwie"
+
+
+def test_krok_wydania_commituje_zapis_podstawy() -> None:
+    """Zapis podstawy jest w commicie galezi wydania, nie tylko w drzewie roboczym runnera.
+
+    Skrypt zapisuje `amfa/PODSTAWA` po testach i budowie, a krok wydania wypychal galaz bez `git add`.
+    Skutek: po scaleniu pull requestu linia dalej stala na starym commicie podstawy, automat co noc
+    widzial "jest nowe wydanie" i probowal wypchnac galaz o tej samej nazwie drugi raz — czyli
+    wydanie nigdy sie nie domykalo, a przebieg byl czerwony bez zwiazku z kodem.
+    """
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(
+        encoding="utf-8")
+    krok = workflow.split("name: Wydanie — galaz i pull request", 1)[1].split("\n      - name:", 1)[0]
+    assert "git add amfa/PODSTAWA" in krok, "krok wydania nie dodaje zapisu podstawy do commita"
+    assert "git commit" in krok and "-- amfa/PODSTAWA" in krok, \
+        "zapis podstawy nie trafia do commita (albo commitem weszlyby tez inne pliki)"
+
+
+def test_zgloszenia_i_pull_request_przez_rest() -> None:
+    """Zgloszenia i pull requesty przez REST, nie GraphQL.
+
+    `gh issue create` i `gh pr create` chodza po GraphQL, a mutacje GraphQL z tokenem `GITHUB_TOKEN`
+    sa odrzucane ("Resource not accessible by integration (createIssue)") mimo nadanego `issues: write`
+    — zmierzone 2026-10-16: konflikt wydania nie zostal zgloszony nigdzie, a raport zostal tylko
+    w artefakcie przebiegu. REST dziala i przyjmuje tresc z pliku.
+
+    Patrzymy na polecenia, nie na komentarze: ten sam zwrot w opisie kroku nie jest wywolaniem.
+    """
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(
+        encoding="utf-8")
+    polecenia = "\n".join(linia for linia in workflow.splitlines() if not linia.lstrip().startswith("#"))
+    assert "gh issue create" not in polecenia, "zgloszenie konfliktu wrocilo na GraphQL"
+    assert "gh pr create" not in polecenia, "pull request wrocil na GraphQL"
+    assert "repos/$GITHUB_REPOSITORY/issues" in polecenia, "brak zgloszenia konfliktu przez REST"
+    assert "repos/$GITHUB_REPOSITORY/pulls" in polecenia, "brak pull requestu przez REST"
+    for wzorzec, cialo in (("issues", "raport.txt"), ("pulls", "opis-pr.txt")):
+        assert f"-F body=@{cialo}" in polecenia.split(f"repos/$GITHUB_REPOSITORY/{wzorzec}", 1)[1][:600], \
+            f"{wzorzec}: tresc nie idzie z pliku ({cialo})"
+    # Etykiety dokladane przez REST nie zatrzymaja zgloszenia, gdy etykiety w repozytorium nie ma.
+    assert "--label" not in polecenia, "zgloszenie zalezy od etykiety, ktorej moze nie byc"
+
+
+def test_pull_request_wydania_mowi_jak_je_scalic() -> None:
+    """Cialo pull requestu i lista kontrolna mowia, jak wydanie wchodzi na linie.
+
+    Nalozenie podstawy przepisuje historie (rebase), wiec galaz wydania jest dla GitHuba
+    konfliktowa, a zadania na takim pull requescie **nie startuja** — bez instrukcji `--force-with-lease`
+    wygladaloby to na zepsute wydanie, a nie na oczekiwany skutek przepisania historii (zmierzone
+    przy v3.14: PR #60 dostal stan CONFLICTING i zero zadan).
+    """
+    workflow = (KORZEN / ".github" / "workflows" / "amfa-aktualizacja-podstawy.yml").read_text(
+        encoding="utf-8")
+    polecenia = "\n".join(linia for linia in workflow.splitlines() if not linia.lstrip().startswith("#"))
+    assert "opis-pr.txt" in polecenia, "cialo pull requestu nie zawiera instrukcji scalenia"
+    assert "--force-with-lease" in polecenia, "brak polecenia wprowadzenia wydania na linie"
+
+    lista = (KORZEN / "amfa" / "lista-kontrolna-wydania.md").read_text(encoding="utf-8")
+    assert "--force-with-lease" in lista, "lista kontrolna nie mowi, jak wydanie wchodzi na linie"
+    assert "expected" in lista, "lista kontrolna nie mowi, ze konflikt w pull requescie jest oczekiwany"
 
 
 if __name__ == "__main__":

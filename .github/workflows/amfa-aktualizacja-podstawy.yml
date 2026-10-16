@@ -26,8 +26,10 @@ permissions:
 jobs:
   aktualizacja:
     runs-on: ubuntu-latest
-    # Zapis potrzebny dwom ostatnim krokom: `git push` + `gh pr create` (contents, pull-requests)
-    # i `gh issue create` przy konflikcie (issues). Kroki wczesniejsze dzialaja na odczycie.
+    # Zapis potrzebny dwom ostatnim krokom: `git push` + zgloszenie pull requestu (contents,
+    # pull-requests) i zgloszenie konfliktu (issues). Kroki wczesniejsze dzialaja na odczycie.
+    # Oba zgloszenia ida przez REST (`gh api`), nie przez GraphQL: mutacje GraphQL z tokenem
+    # GITHUB_TOKEN sa odrzucane ("Resource not accessible by integration") mimo nadanego zapisu.
     permissions:
       contents: write
       pull-requests: write
@@ -100,16 +102,38 @@ jobs:
           ZNACZNIK=$(awk '/^tag /{print $2}' amfa/PODSTAWA)
           GALAZ="amfa-aktualizacja-${ZNACZNIK:-nowa}"
           git checkout -b "$GALAZ"
+          # Zapis podstawy musi wejsc do commita, nie zostac w drzewie roboczym: skrypt zapisuje go po
+          # testach i budowie, wiec bez tego kroku pull request niósłby samo nalozone wydanie, a po
+          # scaleniu automat dalej widzialby "jest nowe wydanie" i powtarzal galaz co noc.
+          git add amfa/PODSTAWA
+          git commit -m "AMFA: podstawa ${ZNACZNIK:-nowe wydanie} — zapis stanu automatu wydan" -- amfa/PODSTAWA
           git push -u origin "$GALAZ"
-          gh pr create --base amfa --head "$GALAZ" \
-            --title "AMFA: aktualizacja podstawy do ${ZNACZNIK:-nowego wydania}" \
-            --body-file raport.txt
+          # Cialo pull requestu to raport plus instrukcja scalenia: nalozenie przepisuje historie
+          # linii, wiec ta galaz nie jest zlaczalna zwyklym scaleniem (GitHub pokaze konflikt i nie
+          # uruchomi na takim pull requescie zadan) — wydanie wprowadza sie na linie jednym
+          # `--force-with-lease`, po przegladzie.
+          {
+            cat raport.txt
+            printf '\n---\n\n## Jak scalic to wydanie\n\n'
+            printf 'Nalozenie przepisuje historie naszej linii (rebase), wiec ta galaz **nie jest zlaczalna zwyklym scaleniem**: GitHub pokaze konflikt i nie uruchomi na tym pull requescie zadan. Do przegladu sluzy ten pull request i raport wyzej; wydanie wprowadza sie na linie po przegladzie jednym poleceniem:\n\n'
+            printf '    git fetch origin && git push origin --force-with-lease %s:amfa\n\n' "$GALAZ"
+            printf 'Zapis podstawy jest w commicie tej galezi, wiec po wypchnieciu kolejny przebieg automatu melduje brak aktualizacji. Zadania z harmonogramu (unit tests, build panelu) biegna po wypchnieciu na `amfa`.\n'
+          } > opis-pr.txt
+          # REST, nie `gh pr create`: mutacje GraphQL z tokenem GITHUB_TOKEN sa na tym repozytorium
+          # odrzucane komunikatem "Resource not accessible by integration" mimo nadanego prawa zapisu
+          # (zmierzone 2026-10-16, krok zgloszenia konfliktu). REST dziala, a tresc idzie z pliku raportu.
+          gh api --method POST "repos/$GITHUB_REPOSITORY/pulls" \
+            -f head="$GALAZ" \
+            -f base=amfa \
+            -f title="AMFA: aktualizacja podstawy do ${ZNACZNIK:-nowego wydania}" \
+            -F body=@opis-pr.txt
 
       - name: Konflikt — zgloszenie z lista plikow
         if: steps.nalozenie.outcome != 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue create \
-            --title "AMFA: nie udalo sie nalozyc naszych zmian na nowe wydanie podstawy" \
-            --body-file raport.txt
+          # REST, nie `gh issue create` — z tego samego powodu co przy pull requescie (wyzej).
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues" \
+            -f title="AMFA: nie udalo sie nalozyc naszych zmian na nowe wydanie podstawy" \
+            -F body=@raport.txt

@@ -26,6 +26,29 @@ gałęzi, ani pull requesta. Wydanie (gałąź + PR do `amfa`) powstaje tylko wt
 faktycznie się zmienił, a testy i budowa panelu przeszły. Konflikt albo padnięte testy kończą się
 zgłoszeniem z raportem, bez wydania.
 
+Dwa elementy, które przy pierwszym wydaniu (v3.14, 16.10.2026) okazały się pułapkami i są już
+naprawione:
+
+- raport idzie przez **REST** (`gh api --method POST repos/…/issues|pulls`), a nie przez GraphQL:
+  `gh issue create` i `gh pr create` padają na tokenie `GITHUB_TOKEN` komunikatem
+  `Resource not accessible by integration` mimo nadanego `issues: write`, więc alert nie docierał nigdzie;
+- `amfa/PODSTAWA` jest **w commicie** gałęzi wydania (`git add amfa/PODSTAWA`, commit tylko tej
+  ścieżki), nie tylko w drzewie roboczym runnera — inaczej po scaleniu linia stałaby dalej na starym
+  commicie podstawy i automat widziałby to samo wydanie co dobę.
+
+## Jak wydanie wchodzi na linię
+
+Nałożenie podstawy **przepisuje historię** naszej linii (rebase), więc gałąź wydania nie jest złączalna
+zwykłym scaleniem: GitHub pokaże konflikt i nie uruchomi na takim pull requescie zadań. Pull request
+i raport są do przeglądu; wydanie wprowadza się po przeglądzie jednym poleceniem:
+
+    git fetch origin && git push origin --force-with-lease amfa-aktualizacja-<wydanie>:amfa
+
+Konflikt w pull requescie jest więc **expected**, a nie sygnałem błędu. Zadania z harmonogramu
+(unit tests, build panelu) biegną po wypchnięciu na `amfa`; bramka automatu przed wydaniem jest
+własnym przebiegiem (strażnicy, testy podstawy, build panelu, pakiet). Konfliktów nie rozwiązuje
+automat — zatrzymuje się kodem `2` i zgłasza listę plików; nakłada je człowiek (jak przy v3.14).
+
 ## Dlaczego bez ręcznej decyzji
 
 Numer wydania wpisany w kod bramy byłby obietnicą zamiast sprawdzenia: dopisanie „3.15” niczego nie
