@@ -10,6 +10,10 @@ ladunku bez tego pola (np. przy przepisywaniu `get_authentication_item`) — wte
 zapalic sie w bramie wydania, a nie dopiero wtedy, gdy ktos policzy „sam klucz" jako drugi
 skladnik bez wymuszonego UV.
 
+Zgloszone do podstawy jako privacyidea/privacyidea#6126 (16.10.2026): jesli upstream przejmie
+przekazywanie wymogu UV w danych offline, nasz patch wypada, a wraz z nim ten straznik — sprawdz
+zgloszenie przy kolejnym nalorzeniu wydania, zanim uznasz plik za nadal potrzebny.
+
 Uruchamianie w drzewie privacyIDEA (potrzebne sa zaleznosci podstawy, m.in. `flask`):
     .venv/bin/python tests/test_amfa_krok10_uv-w-danych.py      # bez pytest, kod 0/1
     .venv/bin/python -m pytest tests/test_amfa_krok10_uv-w-danych.py -q

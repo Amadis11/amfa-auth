@@ -7,6 +7,10 @@ Uruchamianie w drzewie privacyIDEA (cwd = korzen podrepozytorium — atrapa LDAP
 względem katalogu roboczego):
     python -m pytest tests/test_amfa_krok3_stan_konta.py -q
     python tests/test_amfa_krok3_stan_konta.py            # bez pytest, wlasny runner nizej
+
+Zgloszone do podstawy jako privacyidea/privacyidea#6127 (16.10.2026): jesli upstream zacznie
+odroznian stan konta w katalogu, nasz patch (odwzorowanie kodow danych AD + sciezka zaufanego
+klienta) wypada razem z tym straznikiem — sprawdz zgloszenie przy kolejnym nalorzeniu wydania.
 """
 from __future__ import annotations
 
