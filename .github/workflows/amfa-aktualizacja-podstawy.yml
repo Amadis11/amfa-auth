@@ -117,7 +117,7 @@ jobs:
             printf '\n---\n\n## Jak scalic to wydanie\n\n'
             printf 'Nalozenie przepisuje historie naszej linii (rebase), wiec ta galaz **nie jest zlaczalna zwyklym scaleniem**: GitHub pokaze konflikt i nie uruchomi na tym pull requescie zadan. Do przegladu sluzy ten pull request i raport wyzej; wydanie wprowadza sie na linie po przegladzie jednym poleceniem:\n\n'
             printf '    git fetch origin && git push origin --force-with-lease %s:amfa\n\n' "$GALAZ"
-            printf 'Zapis podstawy jest w commicie tej galezi, wiec po wypchnieciu kolejny przebieg automatu melduje brak aktualizacji. Zadania z harmonogramu (unit tests, build panelu) biegna po wypchnieciu na `amfa`.\n'
+            printf 'Zapis podstawy jest w commicie tej galezi, wiec po wypchnieciu kolejny przebieg automatu melduje brak aktualizacji. Zadania z harmonogramu (unit tests, build panelu) biegna po wypchnieciu na `amfa`. Uwaga: `amfa` jest chroniona (force-push wylaczony), wiec push zostanie odrzucony komunikatem "protected branch hook declined" — na czas wprowadzenia wlacz flage `allow_force_pushes` i wylacz ja z powrotem (trzy komendy w `amfa/lista-kontrolna-wydania.md`, sekcja "Jak wydanie wchodzi na linie").\n'
           } > opis-pr.txt
           # REST, nie `gh pr create`: mutacje GraphQL z tokenem GITHUB_TOKEN sa na tym repozytorium
           # odrzucane komunikatem "Resource not accessible by integration" mimo nadanego prawa zapisu
