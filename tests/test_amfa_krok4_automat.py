@@ -185,6 +185,9 @@ def test_automat_sprawdza_testy_podstawy_dotkniete_naszymi_krokami() -> None:
     podstawa = set(automat.TESTY_PODSTAWY)
     assert "tests/test_ui_login.py" in podstawa, "bramka nie sprawdza testu podstawy o widocznej warstwie"
     assert "tests/cli/test_cli_cron.py" in podstawa, "bramka nie sprawdza testu podstawy o zadaniach okresowych"
+    # Licencja i licznik zostaja w kodzie podstawy i sa przez nas wylaczane ustawieniem, wiec ich
+    # testy podstawy musza byc w bramce: inaczej zmiana zachowania mechanizmu przejdzie niezauwazona.
+    assert "tests/test_lib_subscriptions.py" in podstawa, "bramka nie sprawdza testow podstawy o licencji"
 
 
 def test_automat_uruchamia_testy_pythonem_z_zaleznosciami() -> None:
