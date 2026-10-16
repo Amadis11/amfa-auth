@@ -879,6 +879,11 @@ an admin policy and grant themselves everything.
    (``POST /policy/import/<filename>``), require the full ``policywrite``: the scope-limited right
    is deliberately not enough for either of them.
 
+.. note:: The same restriction as for the full rights applies to these names: they count only in an
+   admin policy that does not restrict its target, see :ref:`admin_policies_global_configuration`.
+   A policy granted for individual realms, resolvers or users does not cover a policy, whichever
+   spelling of the right it names.
+
 .. _resolverwrite:
 .. _resolverread:
 .. _resolverdelete:
