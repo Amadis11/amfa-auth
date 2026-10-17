@@ -779,7 +779,7 @@
         <target state="new">Container Type</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit/container-template-edit.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-templates.component.ts</context>
@@ -1103,7 +1103,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">332</context>
+          <context context-type="linenumber">325</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/machines/machine-details/machine-details.component.html</context>
@@ -1359,11 +1359,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">123</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">474</context>
+          <context context-type="linenumber">467</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/machines/machine-details/machine-details.component.html</context>
@@ -1799,7 +1799,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">184</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/periodic-task/periodic-task-edit/periodic-task-edit.component.html</context>
@@ -2135,7 +2135,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit-page/container-template-edit-page.component.ts</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/machine-resolver/machine-resolver-details/machine-resolver-details.component.ts</context>
@@ -2267,11 +2267,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">106</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">459</context>
+          <context context-type="linenumber">452</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/periodic-task/periodic-task-edit/periodic-task-edit.component.html</context>
@@ -4287,7 +4287,7 @@
         <target state="new">Container creation failed. No container serial returned.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-create.component.ts</context>
-          <context context-type="linenumber">259</context>
+          <context context-type="linenumber">252</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.createContainer" datatype="html">
@@ -5923,7 +5923,7 @@
         <target state="new">There are invalid token configurations.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit-page/container-template-edit-page.component.ts</context>
-          <context context-type="linenumber">181</context>
+          <context context-type="linenumber">178</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.assignToUser" datatype="html">
@@ -5955,7 +5955,7 @@
         <target state="new">Another template with this name already exists.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit/container-template-edit.component.html</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.setAsDefaultTemplate" datatype="html">
@@ -5963,11 +5963,11 @@
         <target state="new">Set as default template</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit/container-template-edit.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit/container-template-edit.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.tokens" datatype="html">
@@ -5975,7 +5975,7 @@
         <target state="new">Tokens</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-template-edit/container-template-edit.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">67</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-templates/container-templates.component.ts</context>
@@ -10065,7 +10065,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">225</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/policies-table/policies-table.component.ts</context>
@@ -10705,7 +10705,7 @@
         <target state="new">Discard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">246</context>
+          <context context-type="linenumber">239</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/dialog/save-and-exit-dialog/save-and-exit-dialog.component.ts</context>
@@ -11725,7 +11725,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/table-utils/table-utils.service.ts</context>
@@ -11985,7 +11985,7 @@
         <target state="new">Count must be a positive integer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.rounds" datatype="html">
@@ -11993,7 +11993,7 @@
         <target state="new">Rounds</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
-          <context context-type="linenumber">43</context>
+          <context context-type="linenumber">50</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/table-utils/table-utils.service.ts</context>
@@ -12005,7 +12005,7 @@
         <target state="new">Rounds must be a positive integer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.assign" datatype="html">
@@ -14237,11 +14237,11 @@
         <target state="new">(De)activate</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">90</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">445</context>
+          <context context-type="linenumber">438</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-table/token-table-actions/token-table-actions.component.html</context>
@@ -15975,7 +15975,7 @@
         <target state="new">Possible tags: <x id="TAGS" equiv-text="tags"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.ts</context>
-          <context context-type="linenumber">356</context>
+          <context context-type="linenumber">426</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.connectionDetails" datatype="html">
@@ -17167,7 +17167,7 @@
         <target state="new">Container rollover completed successfully.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">360</context>
+          <context context-type="linenumber">362</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.containerRegisteredSuccessfully" datatype="html">
@@ -17175,7 +17175,7 @@
         <target state="new">Container registered successfully.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">364</context>
+          <context context-type="linenumber">366</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToAssignContainer" datatype="html">
@@ -17183,7 +17183,7 @@
         <target state="new">Failed to assign container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">657</context>
+          <context context-type="linenumber">659</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToUnassignContainer" datatype="html">
@@ -17191,7 +17191,7 @@
         <target state="new">Failed to unassign container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">675</context>
+          <context context-type="linenumber">677</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToSetContainerRealm" datatype="html">
@@ -17199,7 +17199,7 @@
         <target state="new">Failed to set container realm. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">694</context>
+          <context context-type="linenumber">696</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToSetContainerDescription" datatype="html">
@@ -17207,7 +17207,7 @@
         <target state="new">Failed to set container description. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">712</context>
+          <context context-type="linenumber">714</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.failedToToggleActive" datatype="html">
@@ -17215,7 +17215,7 @@
         <target state="new">Failed to toggle active. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">747</context>
+          <context context-type="linenumber">749</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/token/token.service.ts</context>
@@ -17227,7 +17227,7 @@
         <target state="new">Cannot save container states: at least one state must be selected.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">757</context>
+          <context context-type="linenumber">759</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToSetContainerStates" datatype="html">
@@ -17235,7 +17235,7 @@
         <target state="new">Failed to set container states. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">771</context>
+          <context context-type="linenumber">773</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.failedToUnassignUser" datatype="html">
@@ -17243,7 +17243,7 @@
         <target state="new">Failed to unassign user. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">794</context>
+          <context context-type="linenumber">796</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/token/token.service.ts</context>
@@ -17255,7 +17255,7 @@
         <target state="new">Failed to assign user. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">817</context>
+          <context context-type="linenumber">819</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/token/token.service.ts</context>
@@ -17267,7 +17267,7 @@
         <target state="new">Failed to save container infos. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">836</context>
+          <context context-type="linenumber">838</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToDeleteInfo" datatype="html">
@@ -17275,7 +17275,7 @@
         <target state="new">Failed to delete info. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">855</context>
+          <context context-type="linenumber">857</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToAddTokenTo" datatype="html">
@@ -17283,7 +17283,7 @@
         <target state="new">Failed to add token to container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">873</context>
+          <context context-type="linenumber">875</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToRemoveTokenFrom" datatype="html">
@@ -17291,7 +17291,7 @@
         <target state="new">Failed to remove token from container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">891</context>
+          <context context-type="linenumber">893</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.noValidTokensArrayFound" datatype="html">
@@ -17299,11 +17299,11 @@
         <target state="new">No valid tokens array found in data.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">903</context>
+          <context context-type="linenumber">905</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">939</context>
+          <context context-type="linenumber">941</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.noTokensForAction" datatype="html">
@@ -17311,7 +17311,7 @@
         <target state="new">No tokens for action.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">914</context>
+          <context context-type="linenumber">916</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToToggleAll" datatype="html">
@@ -17319,7 +17319,7 @@
         <target state="new">Failed to toggle all. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">926</context>
+          <context context-type="linenumber">928</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.noTokensToRemove" datatype="html">
@@ -17327,7 +17327,7 @@
         <target state="new">No tokens to remove.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">948</context>
+          <context context-type="linenumber">950</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToRemoveAll" datatype="html">
@@ -17335,7 +17335,7 @@
         <target state="new">Failed to remove all. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">963</context>
+          <context context-type="linenumber">965</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToDeleteContainer" datatype="html">
@@ -17343,7 +17343,7 @@
         <target state="new">Failed to delete container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">979</context>
+          <context context-type="linenumber">981</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToDeleteAllTokens" datatype="html">
@@ -17351,7 +17351,7 @@
         <target state="new">Failed to delete all tokens. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">997</context>
+          <context context-type="linenumber">999</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToRegisterContainer" datatype="html">
@@ -17359,7 +17359,7 @@
         <target state="new">Failed to register container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">1019</context>
+          <context context-type="linenumber">1021</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToUnregisterContainer" datatype="html">
@@ -17367,7 +17367,7 @@
         <target state="new">Failed to unregister container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">1038</context>
+          <context context-type="linenumber">1040</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToCreateContainer" datatype="html">
@@ -17375,7 +17375,7 @@
         <target state="new">Failed to create container. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">1069</context>
+          <context context-type="linenumber">1071</context>
         </context-group>
       </trans-unit>
       <trans-unit id="container.failedToCompare" datatype="html">
@@ -17383,7 +17383,7 @@
         <target state="new">Failed to compare: <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/container/container.service.ts</context>
-          <context context-type="linenumber">1107</context>
+          <context context-type="linenumber">1109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="event.failedToSaveEventHandler" datatype="html">
@@ -19963,7 +19963,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">360</context>
+          <context context-type="linenumber">353</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.enabled2" datatype="html">
@@ -19983,7 +19983,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">383</context>
+          <context context-type="linenumber">376</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.dryRun2" datatype="html">
@@ -21295,15 +21295,15 @@
         <target state="new">New Conditional Access</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="linenumber">82</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">424</context>
+          <context context-type="linenumber">417</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">438</context>
+          <context context-type="linenumber">431</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
@@ -21315,11 +21315,11 @@
         <target state="new">Toggle Dry Run</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">98</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">452</context>
+          <context context-type="linenumber">445</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.saveOrder" datatype="html">
@@ -21327,11 +21327,11 @@
         <target state="new">Save Order</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">115</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">467</context>
+          <context context-type="linenumber">460</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.reorderPriorities" datatype="html">
@@ -21339,11 +21339,11 @@
         <target state="new">Reorder Priorities</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">142</context>
+          <context context-type="linenumber">135</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">482</context>
+          <context context-type="linenumber">475</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.timeWindowS" datatype="html">
@@ -21351,7 +21351,7 @@
         <target state="new">Time Window (s)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">273</context>
+          <context context-type="linenumber">266</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.trackedEventTypes" datatype="html">
@@ -21359,7 +21359,7 @@
         <target state="new">Tracked Event Types</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">288</context>
+          <context context-type="linenumber">281</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.stages" datatype="html">
@@ -21367,7 +21367,7 @@
         <target state="new">Stages</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">303</context>
+          <context context-type="linenumber">296</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.threshold" datatype="html">
@@ -21375,7 +21375,7 @@
         <target state="new">Threshold</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">318</context>
+          <context context-type="linenumber">311</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.enabled3" datatype="html">
@@ -21383,7 +21383,7 @@
         <target state="new">Enabled</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">348</context>
+          <context context-type="linenumber">341</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.dryRun2" datatype="html">
@@ -21391,7 +21391,7 @@
         <target state="new">Dry Run</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">370</context>
+          <context context-type="linenumber">363</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.noConditionalAccessPolicies" datatype="html">
@@ -21399,7 +21399,7 @@
         <target state="new">No conditional-access policies yet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">410</context>
+          <context context-type="linenumber">403</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.createConditionalAccessPolicy2" datatype="html">
@@ -21407,7 +21407,7 @@
         <target state="new">Create a conditional-access policy to see it here.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.html</context>
-          <context context-type="linenumber">411</context>
+          <context context-type="linenumber">404</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.movePoliciesArrowsPriority" datatype="html">
@@ -21415,7 +21415,7 @@
         <target state="new">Move policies with the arrows in the Priority column to change the order they are evaluated in. Priority only decides which DENY policy is named when a request is refused; lock, block and email actions all run regardless of it.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">121</context>
+          <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.aboutRearrangingPriorities" datatype="html">
@@ -21423,7 +21423,7 @@
         <target state="new">About rearranging priorities</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.discardNewOrder" datatype="html">
@@ -21431,7 +21431,7 @@
         <target state="new">Discard the new order?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">244</context>
+          <context context-type="linenumber">237</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.rearrangedEvaluationOrderHas" datatype="html">
@@ -21439,7 +21439,7 @@
         <target state="new">The rearranged evaluation order has not been saved. Discard the changes?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">245</context>
+          <context context-type="linenumber">238</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.moveUpSoEvaluated" datatype="html">
@@ -21447,7 +21447,7 @@
         <target state="new">Move <x id="PH" equiv-text="policy.name"/> up, so it is evaluated earlier</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">301</context>
+          <context context-type="linenumber">294</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.moveDownSoEvaluated" datatype="html">
@@ -21455,7 +21455,7 @@
         <target state="new">Move <x id="PH" equiv-text="policy.name"/> down, so it is evaluated later</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">305</context>
+          <context context-type="linenumber">298</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.movedPosition" datatype="html">
@@ -21463,7 +21463,7 @@
         <target state="new"><x id="PH" equiv-text="policy.name"/> moved to position <x id="PH_1" equiv-text="position"/> of <x id="PH_2" equiv-text="total"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">325</context>
+          <context context-type="linenumber">318</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.policyHasConditionsNo" datatype="html">
@@ -21471,7 +21471,7 @@
         <target state="new">This policy has conditions that are no longer valid.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">372</context>
+          <context context-type="linenumber">365</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.deActivateSelectedPolicies" datatype="html">
@@ -21479,7 +21479,7 @@
         <target state="new">(De)activate Selected Policies</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">428</context>
+          <context context-type="linenumber">421</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.followingPoliciesWillToggled" datatype="html">
@@ -21487,7 +21487,7 @@
         <target state="new">The following policies will be toggled:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">429</context>
+          <context context-type="linenumber">422</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.enabled" datatype="html">
@@ -21495,7 +21495,7 @@
         <target state="new">enabled</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">430</context>
+          <context context-type="linenumber">423</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.disabled" datatype="html">
@@ -21503,7 +21503,7 @@
         <target state="new">disabled</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">431</context>
+          <context context-type="linenumber">424</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.toggleDryRunSelected" datatype="html">
@@ -21511,7 +21511,7 @@
         <target state="new">Toggle Dry Run For Selected Policies</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">460</context>
+          <context context-type="linenumber">453</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.dryRunModeFollowing" datatype="html">
@@ -21519,7 +21519,7 @@
         <target state="new">The dry-run mode of the following policies will be toggled:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">461</context>
+          <context context-type="linenumber">454</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.dryRun" datatype="html">
@@ -21527,7 +21527,7 @@
         <target state="new">dry-run</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">462</context>
+          <context context-type="linenumber">455</context>
         </context-group>
       </trans-unit>
       <trans-unit id="conditionalAccess.enforce" datatype="html">
@@ -21535,7 +21535,7 @@
         <target state="new">enforce</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/conditional-access/conditional-access.component.ts</context>
-          <context context-type="linenumber">463</context>
+          <context context-type="linenumber">456</context>
         </context-group>
       </trans-unit>
       <trans-unit id="uiSettings.landingPage" datatype="html">
