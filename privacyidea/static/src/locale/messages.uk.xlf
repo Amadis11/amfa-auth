@@ -4088,7 +4088,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target>Відскануйте QR-код за допомогою застосунку privacyIDEA Authenticator або натисніть це <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні, щоб завершити переніс вашого контейнера. Це надішле відсутні дані на налаштовану кінцеву точку.</target>
+        <target>Відскануйте QR-код за допомогою застосунку AMFA Authenticator або натисніть це <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні, щоб завершити переніс вашого контейнера. Це надішле відсутні дані на налаштовану кінцеву точку.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -4096,7 +4096,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target>Відскануйте QR-код за допомогою застосунку privacyIDEA Authenticator або натисніть це <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні, щоб зареєструвати ваш контейнер. Це надішле відсутні реєстраційні дані на налаштовану кінцеву точку.</target>
+        <target>Відскануйте QR-код за допомогою застосунку AMFA Authenticator або натисніть це <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні, щоб зареєструвати ваш контейнер. Це надішле відсутні реєстраційні дані на налаштовану кінцеву точку.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -9710,7 +9710,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>Використовувати двокрокову реєстрацію за допомогою застосунку privacyIDEA Authenticator.</target>
+        <target>Використовувати двокрокову реєстрацію за допомогою застосунку AMFA Authenticator.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -10382,7 +10382,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>Будь ласка, відскануйте QR-код за допомогою застосунку privacyIDEA Authenticator та введіть згенерований код нижче.</target>
+        <target>Будь ласка, відскануйте QR-код за допомогою застосунку AMFA Authenticator та введіть згенерований код нижче.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -10566,7 +10566,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target>Ваш токен із серійним номером <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ще не повністю зареєстровано. Відскануйте QR-код за допомогою застосунку privacyIDEA Authenticator або натисніть <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>це посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні. Це надішле відсутні реєстраційні дані на налаштовану кінцеву точку. Зверніть увагу, що вашому смартфону потрібен доступ до Інтернету під час процесу автентифікації.</target>
+        <target>Ваш токен із серійним номером <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ще не повністю зареєстровано. Відскануйте QR-код за допомогою застосунку AMFA Authenticator або натисніть <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>це посилання<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> на смартфоні. Це надішле відсутні реєстраційні дані на налаштовану кінцеву точку. Зверніть увагу, що вашому смартфону потрібен доступ до Інтернету під час процесу автентифікації.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -15080,7 +15080,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Токен HOTP — це токен на основі подій. За допомогою застосунку для смартфона, як-от privacyIDEA Authenticator, ви можете перетворити свій смартфон на пристрій автентифікації.</target>
+        <target>Токен HOTP — це токен на основі подій. За допомогою застосунку для смартфона, як-от AMFA Authenticator, ви можете перетворити свій смартфон на пристрій автентифікації.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -15088,7 +15088,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Токен TOTP — це токен на основі часу. За допомогою застосунку для смартфона, як-от privacyIDEA Authenticator, ви можете перетворити свій смартфон на пристрій автентифікації.</target>
+        <target>Токен TOTP — це токен на основі часу. За допомогою застосунку для смартфона, як-от AMFA Authenticator, ви можете перетворити свій смартфон на пристрій автентифікації.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>

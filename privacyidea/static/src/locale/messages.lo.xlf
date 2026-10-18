@@ -4132,7 +4132,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html" xml:space="preserve">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target state="translated">ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ privacyIDEA Authenticator ຫຼື ຄລິກ <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>ລີ້ງ<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ນີ້ເທິງສະມາດໂຟນຂອງທ່ານເພື່ອລົງທະບຽນ container ຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນການລົງທະບຽນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້.</target>
+        <target state="translated">ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ AMFA Authenticator ຫຼື ຄລິກ <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>ລີ້ງ<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ນີ້ເທິງສະມາດໂຟນຂອງທ່ານເພື່ອລົງທະບຽນ container ຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນການລົງທະບຽນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -5348,7 +5348,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html" xml:space="preserve">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target state="translated">ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ privacyIDEA Authenticator ຫຼື ຄລິກ <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>ລີ້ງ<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ນີ້ເທິງສະມາດໂຟນຂອງທ່ານເພື່ອເຮັດສຳເລັດການປ່ຽນແທນ (rollover) container ຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້.</target>
+        <target state="translated">ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ AMFA Authenticator ຫຼື ຄລິກ <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>ລີ້ງ<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ນີ້ເທິງສະມາດໂຟນຂອງທ່ານເພື່ອເຮັດສຳເລັດການປ່ຽນແທນ (rollover) container ຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -12190,7 +12190,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>ໃຊ້ການລົງທະບຽນແບບສອງຂັ້ນຕອນກັບແອັບ privacyIDEA Authenticator.</target>
+        <target>ໃຊ້ການລົງທະບຽນແບບສອງຂັ້ນຕອນກັບແອັບ AMFA Authenticator.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -12830,7 +12830,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ privacyIDEA Authenticator ແລະ ປ້ອນລະຫັດທີ່ສ້າງຂຶ້ນຢູ່ລຸ່ມນີ້.</target>
+        <target>ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ AMFA Authenticator ແລະ ປ້ອນລະຫັດທີ່ສ້າງຂຶ້ນຢູ່ລຸ່ມນີ້.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -12986,7 +12986,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html" xml:space="preserve">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target state="translated">ໂທເຄັນຂອງທ່ານທີ່ມີໝາຍເລກຊີຣຽວ (serial number) <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ຍັງບໍ່ໄດ້ລົງທະບຽນສຳເລັດສົມບູນເທື່ອ. ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ privacyIDEA Authenticator ຫຼື ຄລິກ<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>ລີ້ງນີ້<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ເທິງສະມາດໂຟນຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນການລົງທະບຽນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້. ກະລຸນາຮັບຊາບວ່າ ສະມາດໂຟນຂອງທ່ານຈຳເປັນຕ້ອງມີອິນເຕີເນັດໃນລະຫວ່າງຂະບວນການຢືນຢັນຕົວຕົນ.</target>
+        <target state="translated">ໂທເຄັນຂອງທ່ານທີ່ມີໝາຍເລກຊີຣຽວ (serial number) <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ຍັງບໍ່ໄດ້ລົງທະບຽນສຳເລັດສົມບູນເທື່ອ. ກະລຸນາສະແກນ QR code ດ້ວຍແອັບ AMFA Authenticator ຫຼື ຄລິກ<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>ລີ້ງນີ້<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ເທິງສະມາດໂຟນຂອງທ່ານ. ມັນຈະສົ່ງຂໍ້ມູນການລົງທະບຽນທີ່ຂາດຫາຍໄປໄປຍັງຈຸດປາຍທາງທີ່ຕັ້ງຄ່າໄວ້. ກະລຸນາຮັບຊາບວ່າ ສະມາດໂຟນຂອງທ່ານຈຳເປັນຕ້ອງມີອິນເຕີເນັດໃນລະຫວ່າງຂະບວນການຢືນຢັນຕົວຕົນ.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -18268,7 +18268,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>ໂທເຄັນ HOTP ແມ່ນໂທເຄັນທີ່ອີງໃສ່ເຫດການ (Event based). ດ້ວຍແອັບສະມາດໂຟນຄື privacyIDEA Authenticator, ເຈົ້າສາມາດປ່ຽນສະມາດໂຟນຂອງເຈົ້າໃຫ້ເປັນອຸປະກອນຢືນຢັນຕົວຕົນໄດ້.</target>
+        <target>ໂທເຄັນ HOTP ແມ່ນໂທເຄັນທີ່ອີງໃສ່ເຫດການ (Event based). ດ້ວຍແອັບສະມາດໂຟນຄື AMFA Authenticator, ເຈົ້າສາມາດປ່ຽນສະມາດໂຟນຂອງເຈົ້າໃຫ້ເປັນອຸປະກອນຢືນຢັນຕົວຕົນໄດ້.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -18276,7 +18276,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>ໂທເຄັນ TOTP ແມ່ນໂທເຄັນທີ່ອີງໃສ່ເວລາ (Time based). ດ້ວຍແອັບສະມາດໂຟນຄື privacyIDEA Authenticator, ເຈົ້າສາມາດປ່ຽນສະມາດໂຟນຂອງເຈົ້າໃຫ້ເປັນອຸປະກອນຢືນຢັນຕົວຕົນໄດ້.</target>
+        <target>ໂທເຄັນ TOTP ແມ່ນໂທເຄັນທີ່ອີງໃສ່ເວລາ (Time based). ດ້ວຍແອັບສະມາດໂຟນຄື AMFA Authenticator, ເຈົ້າສາມາດປ່ຽນສະມາດໂຟນຂອງເຈົ້າໃຫ້ເປັນອຸປະກອນຢືນຢັນຕົວຕົນໄດ້.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>

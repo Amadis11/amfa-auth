@@ -4088,7 +4088,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target>உங்கள் கொள்கலனின் ரோல்ஓவரை முடிக்க privacyIDEA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் இந்த <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட தரவை அனுப்பும்.</target>
+        <target>உங்கள் கொள்கலனின் ரோல்ஓவரை முடிக்க AMFA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் இந்த <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட தரவை அனுப்பும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -4096,7 +4096,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target>உங்கள் கொள்கலனைப் பதிவு செய்ய privacyIDEA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் இந்த <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட பதிவுத் தரவை அனுப்பும்.</target>
+        <target>உங்கள் கொள்கலனைப் பதிவு செய்ய AMFA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் இந்த <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட பதிவுத் தரவை அனுப்பும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -9710,7 +9710,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>privacyIDEA Authenticator செயலியுடன் இரண்டு-படி பதிவைப் பயன்படுத்தவும்.</target>
+        <target>AMFA Authenticator செயலியுடன் இரண்டு-படி பதிவைப் பயன்படுத்தவும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -10382,7 +10382,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>privacyIDEA Authenticator செயலியுடன் QR குறியீட்டை ஸ்கேன் செய்து கீழே உருவாக்கப்பட்ட குறியீட்டை உள்ளிடவும்.</target>
+        <target>AMFA Authenticator செயலியுடன் QR குறியீட்டை ஸ்கேன் செய்து கீழே உருவாக்கப்பட்ட குறியீட்டை உள்ளிடவும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -10566,7 +10566,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target>தொடர் எண் <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> கொண்ட உங்கள் டோக்கன் இன்னும் முழுமையாகப் பதிவு செய்யப்படவில்லை. privacyIDEA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>இந்த இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட பதிவுத் தரவை அனுப்பும். அங்கீகார செயல்முறையின் போது உங்கள் ஸ்மார்ட்போனுக்கு இணைய அணுகல் தேவை என்பதைக் கவனிக்கவும்.</target>
+        <target>தொடர் எண் <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> கொண்ட உங்கள் டோக்கன் இன்னும் முழுமையாகப் பதிவு செய்யப்படவில்லை. AMFA Authenticator App மூலம் QR குறியீட்டை ஸ்கேன் செய்யவும் அல்லது உங்கள் ஸ்மார்ட்போனில் <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>இந்த இணைப்பை<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> கிளிக் செய்யவும். இது உள்ளமைக்கப்பட்ட இறுதிப்புள்ளிக்கு விடுபட்ட பதிவுத் தரவை அனுப்பும். அங்கீகார செயல்முறையின் போது உங்கள் ஸ்மார்ட்போனுக்கு இணைய அணுகல் தேவை என்பதைக் கவனிக்கவும்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -15080,7 +15080,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>HOTP டோக்கன் என்பது நிகழ்வு அடிப்படையிலான டோக்கன். privacyIDEA Authenticator போன்ற ஸ்மார்ட்போன் செயலியின் மூலம் உங்கள் ஸ்மார்ட்போனை அங்கீகார சாதனமாக மாற்றலாம்.</target>
+        <target>HOTP டோக்கன் என்பது நிகழ்வு அடிப்படையிலான டோக்கன். AMFA Authenticator போன்ற ஸ்மார்ட்போன் செயலியின் மூலம் உங்கள் ஸ்மார்ட்போனை அங்கீகார சாதனமாக மாற்றலாம்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -15088,7 +15088,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>TOTP டோக்கன் என்பது நேர அடிப்படையிலான டோக்கன். privacyIDEA Authenticator போன்ற ஸ்மார்ட்போன் செயலியின் மூலம் உங்கள் ஸ்மார்ட்போனை அங்கீகார சாதனமாக மாற்றலாம்.</target>
+        <target>TOTP டோக்கன் என்பது நேர அடிப்படையிலான டோக்கன். AMFA Authenticator போன்ற ஸ்மார்ட்போன் செயலியின் மூலம் உங்கள் ஸ்மார்ட்போனை அங்கீகார சாதனமாக மாற்றலாம்.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>

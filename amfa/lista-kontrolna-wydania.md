@@ -80,8 +80,13 @@ podstawy, co nie jest tłumaczeniem, a puchnie naszą deltę i gryzie się przy 
 
 Po scaleniu (i tylko wtedy) uruchom w linii:
 
-    python3 amfa/restore-translation-locations.py          # przywraca lokalizacje z podstawy
+    python3 amfa/restore-translation-locations.py          # lokalizacje z podstawy + nazwy podstawy
     python3 tests/test_amfa_krok11_lokalizacje-w-katalogu.py   # strażnik: lokalizacje z podstawy
+
+Narzędzie robi dwie rzeczy: przywraca bloki lokalizacji z podstawy **oraz** podmienia nazwy podstawy
+(`privacyIDEA` → `AMFA`, `NetKnights` → `AMITRONIC`) w tłumaczeniach, które zostają z podstawy — inaczej
+czerwienieje `tests/test_amfa_krok5_brand.py::test_panel_nie_mowi_o_podstawie`, bo tłumaczenie podstawy
+nadaje się do widocznego tekstu panelu.
 
 Strażnik (`test_amfa_krok11_lokalizacje-w-katalogu.py`) pilnuje tego samego i **mówi wprost, gdy nie mógł
 ocenić** (brak gałęzi podstawy w klonie), zamiast dawać zielony werdykt bez podstawy. PR-a bota nie

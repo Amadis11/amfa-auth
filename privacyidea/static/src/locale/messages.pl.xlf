@@ -4132,7 +4132,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target>Zeskanuj kod QR w aplikacji privacyIDEA Authenticator lub otwórz ten <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie, aby zarejestrować kontener. Brakujące dane rejestracji zostaną wysłane do skonfigurowanego endpointu.</target>
+        <target>Zeskanuj kod QR w aplikacji AMFA Authenticator lub otwórz ten <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie, aby zarejestrować kontener. Brakujące dane rejestracji zostaną wysłane do skonfigurowanego endpointu.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -5348,7 +5348,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target>Zeskanuj kod QR w aplikacji privacyIDEA Authenticator lub otwórz ten <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie, aby ponownie zarejestrować kontener. Brakujące dane zostaną wysłane do skonfigurowanego endpointu.</target>
+        <target>Zeskanuj kod QR w aplikacji AMFA Authenticator lub otwórz ten <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie, aby ponownie zarejestrować kontener. Brakujące dane zostaną wysłane do skonfigurowanego endpointu.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -12190,7 +12190,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>Użyj dwuetapowej rejestracji z aplikacją privacyIDEA Authenticator.</target>
+        <target>Użyj dwuetapowej rejestracji z aplikacją AMFA Authenticator.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -12830,7 +12830,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>Zeskanuj kod QR w aplikacji privacyIDEA Authenticator i wprowadź poniżej wygenerowany kod.</target>
+        <target>Zeskanuj kod QR w aplikacji AMFA Authenticator i wprowadź poniżej wygenerowany kod.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -12986,7 +12986,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target>Token o numerze seryjnym <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> nie został jeszcze w pełni zarejestrowany. Zeskanuj kod QR w aplikacji privacyIDEA Authenticator albo otwórz <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>ten link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie. Brakujące dane rejestracji zostaną wysłane do skonfigurowanego endpointu. Podczas uwierzytelniania smartfon wymaga dostępu do internetu.</target>
+        <target>Token o numerze seryjnym <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> nie został jeszcze w pełni zarejestrowany. Zeskanuj kod QR w aplikacji AMFA Authenticator albo otwórz <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>ten link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> na smartfonie. Brakujące dane rejestracji zostaną wysłane do skonfigurowanego endpointu. Podczas uwierzytelniania smartfon wymaga dostępu do internetu.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -18268,7 +18268,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Token HOTP generuje kody na podstawie licznika zdarzeń. Aplikacja privacyIDEA Authenticator pozwala używać smartfona jako urządzenia uwierzytelniającego.</target>
+        <target>Token HOTP generuje kody na podstawie licznika zdarzeń. Aplikacja AMFA Authenticator pozwala używać smartfona jako urządzenia uwierzytelniającego.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -18276,7 +18276,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Token TOTP generuje kody zależne od czasu. Aplikacja privacyIDEA Authenticator pozwala używać smartfona jako urządzenia uwierzytelniającego.</target>
+        <target>Token TOTP generuje kody zależne od czasu. Aplikacja AMFA Authenticator pozwala używać smartfona jako urządzenia uwierzytelniającego.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>

@@ -4088,7 +4088,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target>請使用 privacyIDEA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊此<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>以完成容器的轉換。它會將缺少的資料傳送至已設定的端點。</target>
+        <target>請使用 AMFA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊此<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>以完成容器的轉換。它會將缺少的資料傳送至已設定的端點。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -4096,7 +4096,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target>請使用 privacyIDEA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊此<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>以註冊您的容器。它會將缺少的註冊資料傳送至已設定的端點。</target>
+        <target>請使用 AMFA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊此<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>以註冊您的容器。它會將缺少的註冊資料傳送至已設定的端點。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -9710,7 +9710,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>使用 privacyIDEA Authenticator 應用程式進行兩步驟註冊。</target>
+        <target>使用 AMFA Authenticator 應用程式進行兩步驟註冊。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -10382,7 +10382,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>請使用 privacyIDEA Authenticator 應用程式掃描 QR 碼，並在下方輸入產生的代碼。</target>
+        <target>請使用 AMFA Authenticator 應用程式掃描 QR 碼，並在下方輸入產生的代碼。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -10566,7 +10566,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target>您序號為 <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> 的令牌尚未完全註冊。請使用 privacyIDEA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>此連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>。它會將缺少的註冊資料傳送至已設定的端點。請注意，您的智慧型手機在驗證過程中需要網際網路存取。</target>
+        <target>您序號為 <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> 的令牌尚未完全註冊。請使用 AMFA Authenticator App 掃描 QR 碼，或在您的智慧型手機上點擊<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>此連結<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>。它會將缺少的註冊資料傳送至已設定的端點。請注意，您的智慧型手機在驗證過程中需要網際網路存取。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -15080,7 +15080,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>HOTP 權杖是一種以事件為基礎的權杖。透過像 privacyIDEA Authenticator 這樣的智慧型手機應用程式，您可以將手機變成驗證裝置。</target>
+        <target>HOTP 權杖是一種以事件為基礎的權杖。透過像 AMFA Authenticator 這樣的智慧型手機應用程式，您可以將手機變成驗證裝置。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -15088,7 +15088,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>TOTP 權杖是一種以時間為基礎的權杖。透過像 privacyIDEA Authenticator 這樣的智慧型手機應用程式，您可以將手機變成驗證裝置。</target>
+        <target>TOTP 權杖是一種以時間為基礎的權杖。透過像 AMFA Authenticator 這樣的智慧型手機應用程式，您可以將手機變成驗證裝置。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>
