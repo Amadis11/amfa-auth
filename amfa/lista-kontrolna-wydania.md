@@ -69,3 +69,20 @@ koperty odpowiedzi (JSON-RPC, obiekt `result`, wersja w formacie privacyIDEA, a 
 `versionnumber` — ta sama linia co w `version`), a zgodność kontraktu potwierdza cała regresja
 (punkt 2) i przebieg na żywym labie (punkt 3). Jeśli nowa linia zmieni coś w kontrakcie, widać to jako
 czerwony test **przed** wdrożeniem, a nie jako numer do dopisania w kodzie.
+
+## Po nocnym PR-ze i18n (katalogi tłumaczeń)
+
+Automat podstawy (`.github/workflows/webui-i18n-extract.yml`, nocny, z podstawy) uruchamia
+`npm run i18n:extract` i commituje wynik na `chore/i18n-extract`, otwierając jeden trwały PR. Ekstrakcja
+czytuje **nasz** kod, więc wypisuje na nowo numery linii w `privacyidea/static/src/locale/messages*.xlf`
+dla każdej jednostki — po scaleniu takiego PR-a katalogi mają ok. 12 tys. jednostek z lokalizacjami spoza
+podstawy, co nie jest tłumaczeniem, a puchnie naszą deltę i gryzie się przy podniesieniu podstawy.
+
+Po scaleniu (i tylko wtedy) uruchom w linii:
+
+    python3 amfa/restore-translation-locations.py          # przywraca lokalizacje z podstawy
+    python3 tests/test_amfa_krok11_lokalizacje-w-katalogu.py   # strażnik: lokalizacje z podstawy
+
+Strażnik (`test_amfa_krok11_lokalizacje-w-katalogu.py`) pilnuje tego samego i **mówi wprost, gdy nie mógł
+ocenić** (brak gałęzi podstawy w klonie), zamiast dawać zielony werdykt bez podstawy. PR-a bota nie
+scalaj, jeśli nie chcesz przechodzić tej ścieżki — nowe napisy są wtedy tylko w angielskim.
