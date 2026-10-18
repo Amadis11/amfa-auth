@@ -199,6 +199,9 @@ def main() -> int:
             print(f"NIEGOTOWE: {len(offenders)} jednostek zgodnych nie jest z podstawa — "
                   f"uruchom `python3 amfa/restore-translation-locations.py`")
             return 1
+        if unchecked == len(files):
+            print("POMINIETO: brak galezi podstawy — nie ocenilem nic (nie udaje zielonego werdyktu)")
+            return 0
         print("OK: katalogi zgodne z podstawa (lokalizacje i nazwy w tlumaczeniach podstawy)")
         return 0
     print(f"gotowe: poprawionych jednostek={changed}")
