@@ -1,0 +1,139 @@
+name: AMFA — aktualizacja podstawy
+
+# Sprawdza, czy privacyIDEA wydala nowa wersje, naklada nasze zmiany na nowa podstawe,
+# uruchamia testy (nasze strazniki pierwsze), buduje pakiet i zglasza wynik:
+#  - udalo sie  -> galaz + pull request do linii amfa (do przegladu i scalenia),
+#  - konflikt   -> zgloszenie z lista plikow, ktore sie zderzyly,
+#  - testy padly-> zgloszenie z raportem, bez wydania.
+# Logika jest w amfa/aktualizacja-podstawy.py, zeby dalo sie ja uruchomic i sprawdzic lokalnie.
+# Lista kontrolna wydania (co musi byc zielone przed wdrozeniem na lab): amfa/lista-kontrolna-wydania.md.
+#
+# Wazne: `schedule` i `workflow_dispatch` uruchamiaja workflow **tylko z galezi domyslnej** repozytorium.
+# Galaz domyslna `amfa-auth` jest `amfa` (nasza linia), a `master` to lustro podstawy — przy domyslnej
+# `master` ten plik lezy w repozytorium, ale automat nie uruchamia sie nigdy.
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+# Domyslnie tylko odczyt: token ma dokladnie tyle praw, ile wymaga krok, ktory go uzywa. GitHub zna
+# uprawnienia na poziomie workflowa i zadania, nie kroku - dlatego zapis jest na poziomie zadania
+# (wypchniecie galezi i zgloszenie to dwa ostatnie kroki), a nie calego workflowa.
+permissions:
+  contents: read
+
+jobs:
+  aktualizacja:
+    runs-on: ubuntu-latest
+    # Zapis potrzebny dwom ostatnim krokom: `git push` + zgloszenie pull requestu (contents,
+    # pull-requests) i zgloszenie konfliktu (issues). Kroki wczesniejsze dzialaja na odczycie.
+    # Oba zgloszenia ida przez REST (`gh api`), nie przez GraphQL: mutacje GraphQL z tokenem
+    # GITHUB_TOKEN sa odrzucane ("Resource not accessible by integration") mimo nadanego zapisu.
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      # Akcje przypiete do pelnego SHA (nie do tagu): podmiana tagu u dostawcy akcji nie moze
+      # uruchomic obcego kodu z tokenem majacym prawo zapisu. Wersja w komentarzu.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Wpiecie podstawy
+        run: |
+          git remote add upstream https://github.com/privacyidea/privacyidea.git
+          git config user.name "AMFA automat"
+          git config user.email "automat@amitronic.local"
+
+      - name: Zaleznosci
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e ".[test]" || true
+          pip install -r tests/requirements.txt || true
+
+      - name: Sprawdzenie stanu
+        id: sprawdzenie
+        run: |
+          python amfa/aktualizacja-podstawy.py --sprawdz | tee raport.txt
+          echo "---" >> raport.txt
+
+      - name: Nalozenie naszych zmian na nowa podstawe
+        id: nalozenie
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          PODSTAWA_PRZED=$(cat amfa/PODSTAWA)
+          python amfa/aktualizacja-podstawy.py --przygotuj 2>&1 | tee -a raport.txt
+          KOD=${PIPESTATUS[0]}
+          # Bez nowego wydania skrypt konczy sie kodem 0 i **nie** rusza pliku podstawy. Bez tego
+          # rozroznienia krok wydania robilby galaz i pull request przy kazdym przebiegu.
+          PODSTAWA_PO=$(cat amfa/PODSTAWA)
+          if [ "$PODSTAWA_PRZED" = "$PODSTAWA_PO" ]; then
+            echo "zmiana=nie" >> "$GITHUB_OUTPUT"
+          else
+            echo "zmiana=tak" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$KOD"
+
+      - name: Wyslanie raportu
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: raport-aktualizacji
+          path: |
+            raport.txt
+            dist-amfa/*
+          if-no-files-found: ignore
+
+      - name: Wydanie — galaz i pull request
+        if: steps.nalozenie.outcome == 'success' && steps.nalozenie.outputs.zmiana == 'tak'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ZNACZNIK=$(awk '/^tag /{print $2}' amfa/PODSTAWA)
+          GALAZ="amfa-aktualizacja-${ZNACZNIK:-nowa}"
+          git checkout -b "$GALAZ"
+          # Zapis podstawy musi wejsc do commita, nie zostac w drzewie roboczym: skrypt zapisuje go po
+          # testach i budowie, wiec bez tego kroku pull request niósłby samo nalozone wydanie, a po
+          # scaleniu automat dalej widzialby "jest nowe wydanie" i powtarzal galaz co noc.
+          git add amfa/PODSTAWA
+          git commit -m "AMFA: podstawa ${ZNACZNIK:-nowe wydanie} — zapis stanu automatu wydan" -- amfa/PODSTAWA
+          git push -u origin "$GALAZ"
+          # Cialo pull requestu to raport plus instrukcja scalenia: nalozenie przepisuje historie
+          # linii, wiec ta galaz nie jest zlaczalna zwyklym scaleniem (GitHub pokaze konflikt i nie
+          # uruchomi na takim pull requescie zadan) — wydanie wprowadza sie na linie jednym
+          # `--force-with-lease`, po przegladzie.
+          {
+            cat raport.txt
+            printf '\n---\n\n## Jak scalic to wydanie\n\n'
+            printf 'Nalozenie przepisuje historie naszej linii (rebase), wiec ta galaz **nie jest zlaczalna zwyklym scaleniem**: GitHub pokaze konflikt i nie uruchomi na tym pull requescie zadan. Do przegladu sluzy ten pull request i raport wyzej; wydanie wprowadza sie na linie po przegladzie jednym poleceniem:\n\n'
+            printf '    git fetch origin && git push origin --force-with-lease %s:amfa\n\n' "$GALAZ"
+            printf 'Zapis podstawy jest w commicie tej galezi, wiec po wypchnieciu kolejny przebieg automatu melduje brak aktualizacji. Zadania z harmonogramu (unit tests, build panelu) biegna po wypchnieciu na `amfa`. Uwaga: `amfa` jest chroniona (force-push wylaczony), wiec push zostanie odrzucony komunikatem "protected branch hook declined" — na czas wprowadzenia wlacz flage `allow_force_pushes` i wylacz ja z powrotem (trzy komendy w `amfa/lista-kontrolna-wydania.md`, sekcja "Jak wydanie wchodzi na linie").\n'
+          } > opis-pr.txt
+          # REST, nie `gh pr create`: mutacje GraphQL z tokenem GITHUB_TOKEN sa na tym repozytorium
+          # odrzucane komunikatem "Resource not accessible by integration" mimo nadanego prawa zapisu
+          # (zmierzone 2026-10-16, krok zgloszenia konfliktu). REST dziala, a tresc idzie z pliku raportu.
+          gh api --method POST "repos/$GITHUB_REPOSITORY/pulls" \
+            -f head="$GALAZ" \
+            -f base=amfa \
+            -f title="AMFA: aktualizacja podstawy do ${ZNACZNIK:-nowego wydania}" \
+            -F body=@opis-pr.txt
+
+      - name: Konflikt — zgloszenie z lista plikow
+        if: steps.nalozenie.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # REST, nie `gh issue create` — z tego samego powodu co przy pull requescie (wyzej).
+          gh api --method POST "repos/$GITHUB_REPOSITORY/issues" \
+            -f title="AMFA: nie udalo sie nalozyc naszych zmian na nowe wydanie podstawy" \
+            -F body=@raport.txt

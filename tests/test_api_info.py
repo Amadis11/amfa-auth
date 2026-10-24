@@ -3,6 +3,7 @@ from .base import MyApiTestCase
 from urllib.parse import urlencode, quote
 from privacyidea.lib.policy import set_policy, delete_policy, SCOPE
 from privacyidea.lib.policies.actions import PolicyAction
+from privacyidea.lib.utils import get_plugin_info_from_useragent
 import mock
 
 
@@ -110,3 +111,27 @@ class IntegrationsTest(MyApiTestCase):
             self.assertEqual(401, res.status_code, res)
             # AUTHENTICATE_MISSING_RIGHT
             self.assertEqual(4306, res.json.get("result").get("error").get("code"))
+
+    def test_03_webui_entry_matches_the_console_user_agent(self):
+        # The console sends ``AMFA-WebUI/<version>`` as its User-Agent header. The policy
+        # ``user_agents`` condition matches the parsed agent name against the stored
+        # ``policy_value`` verbatim, so the catalog's WebUI entry has to carry ``AMFA-WebUI``
+        # as both its policy value and one of its known agent names, or a policy restricting
+        # the console to itself never matches the console. The old, unbranded header stays
+        # recognised for backward compatibility.
+        with self.app.test_request_context('/info/integrations',
+                                           method='GET',
+                                           headers={'Authorization': self.at}):
+            res = self.app.full_dispatch_request()
+            self.assertTrue(res.status_code == 200, res)
+            by_id = {entry["id"]: entry for entry in res.json.get("result").get("value")}
+            webui = by_id["privacyidea-webui"]
+            self.assertEqual("AMFA WebUI", webui["label"])
+            self.assertEqual("AMFA-WebUI", webui["policy_value"])
+            # The exact header the console sends, run through the same parser the request
+            # handler uses, must land on the entry's agent names and policy value.
+            agent_name, _version, _comment = get_plugin_info_from_useragent("AMFA-WebUI/3.14+g1f03ef713")
+            self.assertEqual("AMFA-WebUI", agent_name)
+            self.assertIn(agent_name, webui["agent_names"])
+            self.assertEqual(agent_name, webui["policy_value"])
+            self.assertIn("privacyIDEA-WebUI", webui["agent_names"])

@@ -18,7 +18,7 @@
  **/
 import { NgClass, NgOptimizedImage, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, ElementRef, inject, OnDestroy, signal, ViewChild } from "@angular/core";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatIcon, MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { MatToolbar } from "@angular/material/toolbar";
@@ -73,7 +73,6 @@ export interface SubNavSection {
   host: { "[class.has-custom-logo]": "customLogo()" },
   imports: [
     MatToolbar,
-    MatIconButton,
     MatIconModule,
     NgOptimizedImage,
     MatIcon,
@@ -130,12 +129,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
       section: "users"
     },
     { icon: "gavel", label: $localize`:@@common.policies:Policies`, route: ROUTE_PATHS.POLICIES, section: "policies" },
-    {
-      icon: "event_repeat",
-      label: $localize`:@@nav.subscription:Subscription`,
-      route: ROUTE_PATHS.SUBSCRIPTION,
-      section: "subscription"
-    },
     // The "logs" umbrella section still carries several sub-pages (see the "logs" secondary toolbar in the
     // template: Audit, Known Clients, Authentication Log, Locked Users, IP Blocklist) that master's own "audit"
     // rename does not know about, so this keeps routing to ROUTE_PATHS.LOGS/section "logs" rather than master's
@@ -164,7 +157,7 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
   });
   versionPrefix = computed(() => {
     if (this.customLogo()) {
-      return "privacyIDEA ";
+      return "AMFA ";
     }
     return "";
   });
@@ -173,7 +166,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     if (url.startsWith(ROUTE_PATHS.DASHBOARD) || url.startsWith(ROUTE_PATHS.NEWS)) return "dashboard";
     if (url.startsWith(ROUTE_PATHS.USERS)) return "users";
     if (url.startsWith(ROUTE_PATHS.POLICIES) || url.startsWith(ROUTE_PATHS.EVENTS)) return "policies";
-    if (url.startsWith(ROUTE_PATHS.SUBSCRIPTION)) return "subscription";
     if (url.startsWith(ROUTE_PATHS.LOGS)) return "logs";
     if (url.startsWith(ROUTE_PATHS.EXTERNAL_SERVICES)) return "external_services";
     if (url.startsWith(ROUTE_PATHS.CONFIGURATION)) return "config";
@@ -248,10 +240,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     this.pendingChanges.clearAllRegistrations();
   }
 
-  openSupport(): void {
-    window.open("https://netknights.it/support_link_admin", "_blank");
-  }
-
   openExternalLink(url: string): void {
     window.open(url, "_blank");
   }
@@ -267,8 +255,6 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
           return this.authService.actionAllowed("userlist");
         case "policies":
           return this.authService.actionAllowed("policyread") || this.authService.actionAllowed("eventhandling_read");
-        case "subscription":
-          return this.authService.actionAllowed("managesubscription");
         case "logs":
           return this.authService.oneActionAllowed([
             "auditlog",

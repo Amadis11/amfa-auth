@@ -1,7 +1,7 @@
 {
   "enroll_tokenlabel": "Set the tokenlabel of a Google Authenticator to a sensible value during enrollment.",
   "selfservice1": "Some sensible actions for users in the WebUI.",
-  "webui1": "Users need to authenticate against privacyIDEA.",
+  "webui1": "Users need to authenticate against AMFA.",
   "webui2": "Users need to authenticate against their userstore.",
   "superuser": "An administrator, who is allowed to do everything.",
   "helpdesk": "A helpdesk user, who is allowed to manage all token stuff.",

@@ -70,7 +70,6 @@ export const ROUTE_PATHS = {
   CONFIGURATION_PERIODIC_TASKS_DETAILS: "/configuration/periodic-tasks/details/",
   CONFIGURATION_SYSTEM: "/configuration/system",
   CONFIGURATION_TOKENTYPES: "/configuration/tokens",
-  SUBSCRIPTION: "/configuration/subscription",
   EVENTS: "/events",
   EVENTS_NEW: "/events/new",
   EVENTS_DETAILS: "/events/details/",

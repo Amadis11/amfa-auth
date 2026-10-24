@@ -557,6 +557,9 @@ class User:
         # the duration of the request.
         password_hash = hashlib.sha3_512(password.encode("utf-8")).hexdigest()
 
+        # Import lokalny: warstwa uzytkownika nie moze ciagnac resolwera LDAP przy starcie.
+        from privacyidea.lib.resolvers.LDAPIdResolver import DirectoryPasswordState, DirectoryUnavailable
+
         try:
             log.info(f"User {self.login} from realm {self.realm} tries to authenticate")
             # If the password was already checked, return the known result
@@ -587,6 +590,32 @@ class User:
 
             elif not res:
                 log.error(f"The user {self!r} exists in NO resolver.")
+        except DirectoryPasswordState as stan:
+            # Stan konta rozpoznany przez katalog (haslo wygasle, wymagana zmiana, konto wylaczone
+            # albo wygasle) zapamietujemy na czas zadania i konczymy zwykla odmowa.
+            #
+            # Wyjatku NIE przepuszczamy wyzej (zgloszenie #32): jako `ResolverError` nie jest lapany
+            # przez sciezki logowania (`api/validate.py` lapie tylko `UserError`/`AuthError`), wiec
+            # konczyl sie odpowiedzia bledu serwera zamiast odmowy, a przerwany przeplyw pomijal
+            # inkrementacje licznika nieudanych prob - czyli oslabial blokade konta. Jedno miejsce
+            # konwersji na zwykla odmowe zamyka to dla wszystkich wolajacych `check_password`.
+            from privacyidea.lib.amfa_stan_katalogu import zapamietaj_stan_katalogu
+
+            zapamietaj_stan_katalogu(stan.state, self.login)
+            log.info(f"Katalog rozpoznal stan konta {stan.state!r} dla {self.login!r}.")
+            return None
+        except DirectoryUnavailable:
+            # Katalog (LDAP/DC) jest nieosiagalny: nie udalo sie nawet nawiazac polaczenia. To nie jest
+            # pomylka poswiadczen, wiec nie wolno jej zglosic jako zwyklej odmowy bez sladu. Zapamietujemy
+            # osobny stan na czas zadania, zeby odpowiedz /validate/check niosla go maszynowo
+            # (`directory_password_state`) i dostawca poswiadczen pokazal blad polaczenia/konfiguracji,
+            # a nie "zly kod jednorazowy". Wyjatku nie przepuszczamy wyzej: zadanie ma skonczyc sie
+            # zwykla odmowa z tym stanem, a nie bledem serwera.
+            from privacyidea.lib.amfa_stan_katalogu import zapamietaj_stan_katalogu
+
+            zapamietaj_stan_katalogu("directory_unavailable", self.login)
+            log.info(f"Katalog nieosiagalny przy sprawdzaniu hasla dla {self.login!r}.")
+            return None
         except UserError as e:  # pragma: no cover
             log.error(f"Error while trying to verify the username: {e}")
         except Exception as e:  # pragma: no cover

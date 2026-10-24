@@ -24,9 +24,9 @@ import { MockHttpResourceRef, MockPiResponse } from "./mock-utils";
 
 export class MockInfoService implements InfoServiceInterface {
   static readonly MOCK_NEWS_CHANNELS: NewsChannels = {
-    "privacyIDEA Blog": [
+    "AMFA Blog": [
       {
-        title: "privacyIDEA 3.12 released",
+        title: "AMFA 3.12 released",
         link: "https://example.com/release",
         pub_date: "Mon, 20 Jul 2026 10:00:00 +0000",
         summary: "<p>New features and fixes.</p>"
@@ -57,9 +57,9 @@ export class MockInfoService implements InfoServiceInterface {
       date: new Date("2026-07-22T08:00:00Z")
     },
     {
-      title: "privacyIDEA 3.12 released",
+      title: "AMFA 3.12 released",
       link: "https://example.com/release",
-      channel: "privacyIDEA Blog",
+      channel: "AMFA Blog",
       summary: "<p>New features and fixes.</p>",
       date: new Date("2026-07-20T10:00:00Z")
     }
