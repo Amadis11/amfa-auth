@@ -32,11 +32,20 @@ TRUST_MARKER_HEADER = "X-AMFA-Trusted-Client"
 # konto wymaga dzialania (zmiana hasla, wygasle haslo), oraz zablokowane i wylaczone (decyzja
 # wlasciciela 2026-10-13, zgloszenie #31). `user_not_found` i `account_expired` nie sa ujawniane:
 # pierwszy jest enumeracja kont, drugi nie rozni sie dla uzytkownika od zwyklego niepowodzenia.
+#
+# `directory_unavailable` (decyzja wlasciciela 2026-10-24): katalogu/DC nie udalo sie osiagnac, wiec
+# hasla nie dalo sie w ogole sprawdzic. Stan nie jest oracle poprawnosci hasla — powstaje niezaleznie
+# od tego, jakie haslo przyszlo — a bez niego zaufany klient (dostawca poswiadczen) nie ma z czego
+# zbudowac komunikatu i pokazuje uzytkownikowi "zly kod jednorazowy", co jest nieprawda i prowadzi do
+# powtarzanych prob oraz blokady konta w AD. Pole `password_change_required` idzie razem ze stanem,
+# jak dla pozostalych stanow (kontrakt: fixture `validate-directory-unavailable.json` w
+# `tests/windows/credential-provider/` produktu).
 REVEALED_STATES = frozenset({
     "password_change_required",
     "password_expired",
     "account_locked",
     "account_disabled",
+    "directory_unavailable",
 })
 
 
