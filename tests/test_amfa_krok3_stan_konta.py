@@ -3,6 +3,10 @@
 Plik nalezy do jednego kroku i zaden inny krok go nie dotyka: dzieki temu nakladanie naszych
 zmian na nowe wydanie podstawy nie konfliktuje o wspolny plik testow. Patrz AMFA-ZMIANY.md.
 
+Straznik samego **kanalu** stanu konta (co dokladnie wychodzi w odpowiedzi i komu) przeniosl sie do
+pliku kroku, ktory te regule zmienil: `tests/test_amfa_krok13_stan-konta-bez-znacznika.py`
+(zgloszenie #1030, wariant D). Tutaj zostaje droga katalog -> stan i to, ze sygnal nie ginie po drodze.
+
 Uruchamianie w drzewie privacyIDEA (cwd = korzen podrepozytorium — atrapa LDAP trzyma katalog
 względem katalogu roboczego):
     python -m pytest tests/test_amfa_krok3_stan_konta.py -q
@@ -297,8 +301,9 @@ def test_stan_konta_nie_jest_polykany_po_drodze() -> None:
     assert 'token.auth_details["password_change_required"] = True' not in dekoratory
     odpowiedz = (KORZEN / "privacyidea" / "lib" / "token" / "auth.py").read_text(encoding="utf-8")
     assert "stany_katalogu_z_zadania()" in odpowiedz, "odpowiedz nie czyta stanu zapisanego na czas zadania"
-    # Stan konta nie moze juz trafiac do odpowiedzi bezwarunkowo: pola dokłada wspolna bramka
-    # `directory_reply_keys`, ktora przepuszcza je tylko zaufana sciezka (zgloszenie #31).
+    # Stan konta nie moze trafiac do odpowiedzi bezposrednio: pola dokłada wspolna bramka
+    # `directory_reply_keys` pod regula neutralnosci (zgloszenie #1030, wariant D; do 25.10.2026
+    # przepuszczala je tylko zaufana sciezka z sekretem w naglowku, zgloszenie #31).
     assert 'reply_dict["password_change_required"] = True' not in odpowiedz, \
         "stan konta trafia do odpowiedzi bez bramki zaufanej sciezki"
     assert "reply_dict.update(directory_reply_keys(stany_katalogu))" in odpowiedz
@@ -411,69 +416,6 @@ def test_konto_usuniete_904_rozne_od_zlego_hasla() -> None:
     dekoratory = (KORZEN / "privacyidea" / "lib" / "policydecorators.py").read_text(encoding="utf-8")
     assert 'raise UserError(f"User {user_object} does not exist.")' in dekoratory
     assert 'raise AuthError("", id=Error.AUTHENTICATE_WRONG_CREDENTIALS)' in dekoratory
-
-
-def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
-    """Stan konta wychodzi z silnika wylacznie zaufana sciezka (zgloszenie #31).
-
-    Stany `password_expired` i `password_change_required` wystepuja tylko po poprawnym hasle, wiec
-    w ogolnej odpowiedzi `/validate/check` byly oracle poprawnosci hasla. Teraz pola doklada
-    `directory_reply_keys`, ktore przepuszcza je tylko wtedy, gdy zadanie przyszlo z sekretem
-    zaufanego klienta; bez skonfigurowanego sekretu nie ma sygnalu nigdzie (fail-closed).
-    """
-    import sys
-    sys.path.insert(0, str(KORZEN))
-    from flask import Flask
-
-    from privacyidea.lib import amfa_stan_katalogu as modul
-    from privacyidea.lib.amfa_stan_katalogu import (REVEALED_STATES, TRUST_MARKER_HEADER,
-                                                    directory_reply_keys, is_trusted_client_request,
-                                                    states_to_reveal)
-    from privacyidea.lib.config import SYSCONF
-
-    # Klucz ustawienia jest kontraktem z wdrozeniem (ustawienia.cfg na wezle).
-    assert SYSCONF.TRUSTED_CLIENT_SECRET == "TrustedClientSecret"
-
-    # Decyzja wlasciciela (13.10.2026): po poprawnym hasle pokazujemy wymagana zmiane, wygasle haslo,
-    # konto zablokowane i wylaczone; nieistniejace i wygasle konto zostaja bez sygnalu.
-    assert REVEALED_STATES == {"password_change_required", "password_expired",
-                               "account_locked", "account_disabled"}
-    assert states_to_reveal(["account_locked", "user_not_found", "password_expired"]) == \
-        ["account_locked", "password_expired"]
-    assert states_to_reveal(["user_not_found", "account_expired"]) == []
-
-    # Zrodlem sekretu jest konfiguracja silnika, ktora w tym strazniku podstawiamy: poza aplikacja
-    # privacyIDEA czytanie konfiguracji idzie do bazy, a straznik nie stawia bazy.
-    oryginalne_czytanie = modul.get_from_config
-    konfiguracja: dict[str, str] = {}
-    modul.get_from_config = lambda klucz, domyslne=None, **_k: konfiguracja.get(klucz, domyslne)
-    try:
-        aplikacja = Flask(__name__)
-        # Bez sekretu w konfiguracji nie ma zaufanej sciezki — takze dla poprawnego hasla na wygaslym koncie.
-        with aplikacja.test_request_context("/validate/check"):
-            assert is_trusted_client_request() is False
-            assert directory_reply_keys({"password_expired"}) == {}
-            assert directory_reply_keys({"account_locked"}) == {}
-
-        konfiguracja["TrustedClientSecret"] = "sekret-labu"
-        # Zly naglowek i brak naglowka nie wystarczaja.
-        with aplikacja.test_request_context("/validate/check",
-                                            headers={TRUST_MARKER_HEADER: "nie-ten"}):
-            assert is_trusted_client_request() is False
-            assert directory_reply_keys({"account_locked"}) == {}
-        with aplikacja.test_request_context("/validate/check"):
-            assert directory_reply_keys({"account_locked"}) == {}
-
-        # Zaufany klient dostaje tylko to, co wolno: nieistniejace konto nie jest zdradzane.
-        with aplikacja.test_request_context("/validate/check",
-                                            headers={TRUST_MARKER_HEADER: "sekret-labu"}):
-            assert is_trusted_client_request() is True
-            assert directory_reply_keys({"account_locked", "user_not_found"}) == {
-                "password_change_required": True,
-                "directory_password_state": ["account_locked"]}
-            assert directory_reply_keys({"user_not_found"}) == {}
-    finally:
-        modul.get_from_config = oryginalne_czytanie
 
 
 def test_klasyfikacja_stanu_konta_trafia_do_rejestru() -> None:
