@@ -2,6 +2,7 @@
 This testcase is used to test the REST API  in api/machines.py
 to fetch machine information and to attach token to machines
 """
+import mock
 import passlib
 
 from privacyidea.lib.user import User
@@ -582,6 +583,12 @@ class APIMachinesTestCase(MyApiTestCase):
             self.assertEqual(response,
                              "93235fc7d1d444d0ec014ea9eafcc44fc65b73eb")
 
+    # Bramka toru offline HOTP (krok 12, zgloszenie #425) jest tu otwarta JAWNIE: ten test mierzy
+    # wydawanie danych, a nie dopuszczenie konta, a konto testu (resolver `passwd`) nie ma grup
+    # katalogu, wiec zadny dokument by go nie dopuscil. Reguly bramki i kazda droge jej odmowy
+    # pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`.
+    @mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                lambda token: True)
     def test_12_auth_items_offline(self):
         # Create HOTP token for offline usage
         self.setUp_user_realms()
@@ -705,6 +712,12 @@ class APIMachinesTestCase(MyApiTestCase):
 
         remove_token(serial)
 
+    # Bramka toru offline HOTP (krok 12, zgloszenie #425) jest tu otwarta JAWNIE: ten test mierzy
+    # wydawanie danych, a nie dopuszczenie konta, a konto testu (resolver `passwd`) nie ma grup
+    # katalogu, wiec zadny dokument by go nie dopuscil. Reguly bramki i kazda droge jej odmowy
+    # pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`.
+    @mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                lambda token: True)
     def test_30_detach_old_offline_token(self):
         # Old offline tokens are attached to a distinct machine in a resolver.
         # We need to ensure, that the new code can also detach these old tokens.

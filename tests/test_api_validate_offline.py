@@ -92,6 +92,20 @@ class AValidateOfflineTestCase(MyApiTestCase):
         finally:
             delete_policy("hide_specific_error_message")
 
+    def _otworz_tor_offline_hotp(self):
+        """Otwiera na czas testu bramke toru offline HOTP (zgloszenie #425, wariant B).
+
+        Od kroku 12 silnik wydaje dane offline HOTP wylacznie kontu dopuszczonemu podpisanym dokumentem
+        wdrozeniowym. Konto tych testow (resolver `passwd`) nie ma grup katalogu, wiec zadny dokument by
+        go nie dopuscil — a te testy mierza wydawanie i odnawianie danych, nie sama bramke. Wlasne reguly
+        bramki i kazda droge jej odmowy pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`,
+        a jej domkniecie na powierzchni API — `test_05_hotp_offline_zamkniety_bez_dokumentu` nizej.
+        """
+        otwarcie = mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                              lambda token: True)
+        otwarcie.start()
+        self.addCleanup(otwarcie.stop)
+
     def test_00_create_realms(self):
         self.setUp_user_realms()
         self.setUp_user_realm2()
@@ -107,6 +121,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
         self.assertEqual(token.token.first_owner.user_id, "1000")
 
     def test_01_validate_offline(self):
+        self._otworz_tor_offline_hotp()
         # create offline app
         # tokenobj = get_tokens(self.serials[0])[0]
         mr_obj = save_machine_resolver({"name": "testresolver",
@@ -305,6 +320,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
 
     def test_02_empty_pass_hotp_refill(self):
         """An HOTP refill with empty ``pass`` cannot be split into PIN+OTP and is rejected."""
+        self._otworz_tor_offline_hotp()
         serial = "SE_OFFLINE_EMPTY"
         init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
                    user=User("cornelius", self.realm1))
@@ -348,6 +364,63 @@ class AValidateOfflineTestCase(MyApiTestCase):
                              res.json["result"]["error"]["message"])
         remove_token(serial)
 
+    def test_04a_hotp_offline_closed_for_a_non_admitted_account(self):
+        """Konto bez dopuszczenia nie dostaje danych offline HOTP — ani partii, ani dopelnienia (#425).
+
+        A. Swiezy token konta niedopuszczonego: `/validate/check` przechodzi (kod jest poprawny), ale
+           odpowiedz nie niesie `auth_items`, licznik rusza tylko o wykorzystany kod, a `refilltoken`
+           nie powstaje — nie ma czego zapisac na stacji.
+        B. Konto dopuszczone bierze partie, a gdy przestaje byc dopuszczone (dokument zmieniony albo
+           wygasl), dopelnienie konczy sie zwykla odmowa, a zapisany `refilltoken` zostaje na miejscu:
+           stacja nie dostaje pustej partii zamiast danych i nie traci zapasu, ktory ma.
+        """
+        serial = "SE_OFFLINE_CLOSED"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        attach_token(serial, "offline", hostname="pippin",
+                     resolver_name="testresolver", options={"count": 100})
+        licznik = get_tokens(serial=serial)[0].token.count
+        with self.app.test_request_context('/validate/check',
+                                           method='POST',
+                                           data={"serial": serial, "pass": "pin755224"},
+                                           environ_base={'REMOTE_ADDR': '192.168.0.2'}):
+            res = self.app.full_dispatch_request()
+            self.assertEqual(200, res.status_code, res)
+            self.assertTrue(res.json["result"]["value"], res.json)
+            self.assertNotIn("auth_items", res.json, res.json)
+        token = get_tokens(serial=serial)[0]
+        self.assertEqual(licznik + 1, token.token.count,
+                         "licznik HOTP ruszyl mimo zamknietego toru offline")
+        self.assertFalse(token.get_tokeninfo("refilltoken"), "refilltoken powstalo mimo zamknietego toru")
+        remove_token(serial)
+
+        serial = "SE_OFFLINE_DEADMITTED"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        attach_token(serial, "offline", hostname="pippin",
+                     resolver_name="testresolver", options={"count": 100})
+        with mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                        lambda token: True):
+            with self.app.test_request_context('/validate/check',
+                                               method='POST',
+                                               data={"serial": serial, "pass": "pin755224"},
+                                               environ_base={'REMOTE_ADDR': '192.168.0.2'}):
+                res = self.app.full_dispatch_request()
+                self.assertEqual(200, res.status_code, res)
+                refilltoken = res.json["auth_items"]["offline"][0]["refilltoken"]
+        with self.app.test_request_context('/validate/offlinerefill',
+                                           method='POST',
+                                           data={"serial": serial, "pass": "pin755224",
+                                                 "refilltoken": refilltoken},
+                                           environ_base={'REMOTE_ADDR': '192.168.0.2'}):
+            res = self.app.full_dispatch_request()
+            self.assertEqual(400, res.status_code, res)
+            self.assertEqual("ERR905: Offline HOTP data are not available for this account.",
+                             res.json["result"]["error"]["message"])
+        self.assertEqual(refilltoken, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"),
+                         "odmowa dopelnienia nadpisala refilltoken stacji")
+        remove_token(serial)
+
     def test_04_multiple_offline_attachments_share_one_refilltoken(self):
         """With two offline attachments (HOTP), the response contains one ``auth_items.offline``
         entry per machine, each with a distinct ``refilltoken`` in the JSON — but
@@ -356,6 +429,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
         Earlier entries are silently invalidated. Pins down current (buggy) behavior;
         a proper fix would key the refilltoken per machine or de-duplicate attachments.
         """
+        self._otworz_tor_offline_hotp()
         serial = "SE_OFFLINE_MULTI"
         init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
                    user=User("cornelius", self.realm1))

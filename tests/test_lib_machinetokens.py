@@ -1,6 +1,8 @@
 """
 This test file tests the lib/machine.py for attaching and detaching tokens
 """
+import mock
+
 from sqlalchemy import update
 
 from privacyidea.lib.crypto import encryptPassword
@@ -195,6 +197,12 @@ class MachineTokenTestCase(MyTestCase):
         tokenlist = list_machine_tokens(serial=self.serialHotp, application="offline")
         self.assertEqual(len(tokenlist), 1)
 
+    # Bramka toru offline HOTP (krok 12, zgloszenie #425) jest tu otwarta JAWNIE: ten test mierzy
+    # wydawanie danych, a nie dopuszczenie konta, a konto testu (resolver `passwd`) nie ma grup
+    # katalogu, wiec zadny dokument by go nie dopuscil. Reguly bramki i kazda droge jej odmowy
+    # pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`.
+    @mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                lambda token: True)
     def test_13_get_authitems_without_machine(self):
         # fetch the auth_items for application offline and token serialHotp
         ai = get_auth_items(application="offline", serial=self.serialHotp)

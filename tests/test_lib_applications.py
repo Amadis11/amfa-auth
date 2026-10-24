@@ -134,6 +134,12 @@ class OfflineApplicationTestCase(MyTestCase):
         self.assertEqual("str", hotpoptions.get("count").get("type"))
         self.assertEqual("str", hotpoptions.get("rounds").get("type"))
 
+    # Bramka toru offline HOTP (krok 12, zgloszenie #425) jest tu otwarta JAWNIE: ten test mierzy
+    # wydawanie danych, a nie dopuszczenie konta, a konto testu (resolver `passwd`) nie ma grup
+    # katalogu, wiec zadny dokument by go nie dopuscil. Reguly bramki i kazda droge jej odmowy
+    # pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`.
+    @mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                lambda token: True)
     def test_02_get_auth_item(self):
         serial = "OATH1"
         # create realm
@@ -214,6 +220,12 @@ class OfflineApplicationUserVerificationTestCase(MyTestCase):
     offline data, so that the client can enforce it offline as well.
     """
 
+    # Bramka toru offline HOTP (krok 12, zgloszenie #425) jest tu otwarta JAWNIE: ten test mierzy
+    # wydawanie danych, a nie dopuszczenie konta, a konto testu (resolver `passwd`) nie ma grup
+    # katalogu, wiec zadny dokument by go nie dopuscil. Reguly bramki i kazda droge jej odmowy
+    # pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`.
+    @mock.patch("privacyidea.lib.applications.offline.offline_hotp_allowed_for_token",
+                lambda token: True)
     def test_01_hotp_has_no_user_verification(self):
         serial = "UVHOTP1"
         self.setUp_user_realms()
