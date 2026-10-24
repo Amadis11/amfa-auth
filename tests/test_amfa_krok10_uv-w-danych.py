@@ -69,10 +69,15 @@ def _ladunek_offline(typ: str, user_verification, challenge=None):
     sys.path.insert(0, str(KORZEN))
     from privacyidea.lib.applications import offline as modul
 
+    # Bramke toru offline HOTP (krok 12, zgloszenie #425) otwieramy jawnie: jej wlasne reguly — w tym
+    # kazda droge odmowy — pilnuje `tests/test_amfa_krok12_offline-hotp-z-dokumentu.py`, a ten plik
+    # mierzy ksztalt ladunku (pole polityki UV), nie dopuszczenie konta. Atrapa tokenu nie ma konta,
+    # wiec bez tego otwarcia kazdy ladunek bylby pusty i straznik kroku 10 nie mialby czego sprawdzic.
     with mock.patch.object(modul, "get_one_token", return_value=_AtrapaTokenu(typ)), \
             mock.patch.object(modul.MachineApplication, "generate_new_refilltoken",
                               return_value="a" * 2 * modul.REFILLTOKEN_LENGTH), \
-            mock.patch.object(modul.MachineApplication, "get_offline_otps", return_value={"1": "hash"}):
+            mock.patch.object(modul.MachineApplication, "get_offline_otps", return_value={"1": "hash"}), \
+            mock.patch.object(modul, "offline_hotp_allowed_for_token", return_value=True):
         return modul.MachineApplication.get_authentication_item(typ, "AMFA0001", challenge=challenge,
                                                                 user_agent=UA_DOSTAWCY,
                                                                 user_verification=user_verification)
