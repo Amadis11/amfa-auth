@@ -436,11 +436,18 @@ def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
 
     # Decyzja wlasciciela (13.10.2026): po poprawnym hasle pokazujemy wymagana zmiane, wygasle haslo,
     # konto zablokowane i wylaczone; nieistniejace i wygasle konto zostaja bez sygnalu.
+    # Decyzja z 24.10.2026 doklada `directory_unavailable`: katalogu nie udalo sie osiagnac, wiec
+    # dostawca poswiadczen musi miec z czego zbudowac komunikat ("katalog nieosiagalny"), a nie
+    # pokazywac "zly kod jednorazowy" za awarie polaczenia.
     assert REVEALED_STATES == {"password_change_required", "password_expired",
-                               "account_locked", "account_disabled"}
+                               "account_locked", "account_disabled", "directory_unavailable"}
     assert states_to_reveal(["account_locked", "user_not_found", "password_expired"]) == \
         ["account_locked", "password_expired"]
     assert states_to_reveal(["user_not_found", "account_expired"]) == []
+    # Stan awarii katalogu przechodzi bramke, a stany spoza listy nadal nie.
+    assert states_to_reveal(["directory_unavailable"]) == ["directory_unavailable"]
+    assert states_to_reveal(["directory_unavailable", "user_not_found", "account_expired"]) == \
+        ["directory_unavailable"]
 
     # Zrodlem sekretu jest konfiguracja silnika, ktora w tym strazniku podstawiamy: poza aplikacja
     # privacyIDEA czytanie konfiguracji idzie do bazy, a straznik nie stawia bazy.
@@ -454,6 +461,8 @@ def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
             assert is_trusted_client_request() is False
             assert directory_reply_keys({"password_expired"}) == {}
             assert directory_reply_keys({"account_locked"}) == {}
+            # Awaria katalogu bez sekretu tez nie wychodzi: sciezka jawna jest jedyna droga do stanu.
+            assert directory_reply_keys({"directory_unavailable"}) == {}
 
         konfiguracja["TrustedClientSecret"] = "sekret-labu"
         # Zly naglowek i brak naglowka nie wystarczaja.
@@ -472,6 +481,12 @@ def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
                 "password_change_required": True,
                 "directory_password_state": ["account_locked"]}
             assert directory_reply_keys({"user_not_found"}) == {}
+            # Awaria katalogu dochodzi do zaufanego klienta w ksztalcie, ktory pinuje fixture
+            # dostawcy poswiadczen (`validate-directory-unavailable.json`) — inaczej dostawca
+            # pokazuje "zly kod jednorazowy" za niedostepny katalog.
+            assert directory_reply_keys({"directory_unavailable"}) == {
+                "password_change_required": True,
+                "directory_password_state": ["directory_unavailable"]}
     finally:
         modul.get_from_config = oryginalne_czytanie
 
