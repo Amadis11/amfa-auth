@@ -11,22 +11,25 @@ dokładnie tyle, co żądanie `/validate/check`.
 
 Zapis robi `lib/user.py` (jedno miejsce, w którym stan z katalogu jest podnoszony, niezależnie od tego,
 kto sprawdza hasło), a odczytuje `lib/token/auth.py` przy budowaniu odpowiedzi.
+
+**Reguła neutralności (zgłoszenie #1030, wariant D).** Silnik ujawnia stan katalogu **sam**: bez
+znacznika od klienta i bez nowego sekretu wdrożeniowego. Do 25.10.2026 pola przechodziły tylko wtedy, gdy
+żądanie przyszło zaufaną ścieżką (nagłówek `X-AMFA-Trusted-Client` z sekretem `TrustedClientSecret`,
+zgłoszenie #31) — tyle że **odbiorcy tego znacznika nigdy nie było w produkcie**: brama go nie dokłada,
+żaden węzeł nie ustawiał sekretu, więc stan nie opuszczał silnika, a naprawa po stronie stacji
+wymagałaby wdrożenia nowego sekretu na każdej z nich. Neutralność zostaje tam, gdzie była i gdzie
+należy: brama odpowiada na powierzchni publicznej ogólną odmową i zapisuje stan w dzienniku (#428,
+kryterium 4; #563), a stacja ma własne, neutralne komunikaty (#131/#428) i pokazuje stan konta tylko
+wtedy, gdy potwierdził go katalog. Sam silnik nie zmienia przy tym niczego poza **danymi** w `detail`:
+komunikat i kod odpowiedzi zostają takie same jak przy zwykłej odmowie, a nieistniejące i wygasłe konto
+nadal nie mają żadnego sygnału (to byłaby enumeracja kont).
 """
 
 from __future__ import annotations
 
-import hmac
-
-from flask import g, has_request_context, request
-
-from privacyidea.lib.config import SYSCONF, get_from_config
+from flask import g, has_request_context
 
 KLUCZ_W_ZADANIU = "amfa_stany_katalogu"
-
-# Naglowek, ktorym zaufany klient (nasza brama) znaczy swoje wlasne wywolanie silnika. Nazwa jest
-# wspolna z brama - ona go dokłada, a OpenResty usuwa wejsciowe `X-AMFA-*` od klienta, wiec nikt
-# z zewnatrz nie moze go podrobic.
-TRUST_MARKER_HEADER = "X-AMFA-Trusted-Client"
 
 # Stany, ktore wolno pokazac uzytkownikowi: te, ktore wystepuja tylko po poprawnym hasle i mowia, ze
 # konto wymaga dzialania (zmiana hasla, wygasle haslo), oraz zablokowane i wylaczone (decyzja
@@ -39,20 +42,10 @@ REVEALED_STATES = frozenset({
     "account_disabled",
 })
 
-
-def is_trusted_client_request() -> bool:
-    """Czy zadanie przyszlo zaufana sciezka (nasza brama z sekretem w naglowku)?
-
-    Bez skonfigurowanego sekretu odpowiedz brzmi "nie" - domyslnie stan konta nie opuszcza silnika
-    (fail-closed), a nie odwrotnie.
-    """
-    if not has_request_context():
-        return False
-    sekret = get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET, "")
-    if not sekret:
-        return False
-    przedstawiony = request.headers.get(TRUST_MARKER_HEADER, "")
-    return bool(przedstawiony) and hmac.compare_digest(str(przedstawiony), str(sekret))
+#: Pola, ktore silnik dokłada do odpowiedzi, gdy katalog potwierdzil stan konta. Wypisane jako lista,
+#: a nie dwa literaly w kodzie, zeby regula neutralnosci miala jeden punkt do trzymania: ujawniamy
+#: **dane**, nigdy komunikat, kod odpowiedzi ani cokolwiek, co zalezy od poprawnosci hasla.
+DIRECTORY_REPLY_KEYS = ("password_change_required", "directory_password_state")
 
 
 def states_to_reveal(states) -> list[str]:
@@ -61,19 +54,31 @@ def states_to_reveal(states) -> list[str]:
 
 
 def directory_reply_keys(states) -> dict:
-    """Pola odpowiedzi o stanie konta albo nic.
+    """Pola odpowiedzi o stanie konta albo nic - regula neutralnosci (zgloszenie #1030, wariant D).
 
     Stan konta jest nasza funkcja, ale nie moze byc oracle poprawnosci hasla: `password_expired`
     i `password_change_required` wystepuja tylko po poprawnym hasle, wiec w ogolnej odpowiedzi
-    `/validate/check` zdradzalyby, ze zgadniete haslo bylo dobre (zgloszenie #31). Dlatego pola
-    dokladamy wylacznie wtedy, gdy zadanie przyszlo zaufana sciezka.
+    `/validate/check` zdradzalyby, ze zgadniete haslo bylo dobre (zgloszenie #31). Rozwiazaniem jest
+    neutralnosc powierzchni, a nie znakowanie wolajacego:
+
+      * pola dokladamy **zawsze i kazdemu** - ten sam stan wychodzi tak samo do bramy, do stacji
+        i do kazdego innego wolajacego (brak rozgalezienia po naglowku jest tu regula, nie przypadkiem),
+      * dokladamy **wylacznie dane** (`DIRECTORY_REPLY_KEYS`): komunikat ostrzezenia i kod odpowiedzi
+        zostaja takie, jakie bylyby bez stanu konta,
+      * ujawniamy wylacznie stan **potwierdzony przez katalog** i tylko z listy `REVEALED_STATES`
+        (nieistniejace i wygasle konto zostaja bez sygnalu - to bylaby enumeracja kont),
+      * o tym, co z tym zrobic, decyduje powierzchnia: brama zwraca ogolna odmowe i zapisuje stan
+        w dzienniku (#428/#563), a stacja rozstrzyga ekran wlasnymi regulami (#131).
+
+    Poza zadaniem nie ma komu pokazac stanu, wiec funkcja nic nie robi.
     """
-    if not is_trusted_client_request():
+    if not has_request_context():
         return {}
     do_ujawnienia = states_to_reveal(states)
     if not do_ujawnienia:
         return {}
-    return {"password_change_required": True, "directory_password_state": do_ujawnienia}
+    odpowiedz = {"password_change_required": True, "directory_password_state": do_ujawnienia}
+    return {klucz: odpowiedz[klucz] for klucz in DIRECTORY_REPLY_KEYS}
 
 
 def record_directory_states(states) -> None:
