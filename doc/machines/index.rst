@@ -178,6 +178,14 @@ The format has 4 parts: the algorithm, the number of iterations, the salt and th
 After a successful verification, clients should remove all values from the list between the first counter and the one
 that matches the input.
 
+The server hands out HOTP offline values only to an account that the **signed deployment document** admits to the
+HOTP offline path (``flags.offline_hotp_allowed`` true and the account in one of the ``flags.offline_hotp_groups``
+groups). A missing document, a bad signature, an unknown signing key, an expired document, an unknown field, an
+empty group list and an account outside the listed groups all mean the same: no HOTP offline values are issued
+(fail-closed), and the response simply carries no ``auth_items``. The document is the same signed file the Windows
+credential provider reads; the engine reads it from the path in the ``AMFADeploymentFlagsFile`` setting
+(``/etc/amfa/konfiguracja-stacji.json`` by default). The WebAuthn/Passkey path is not covered by this rule.
+
 .. _fido_offline:
 
 WebAuthn/Passkey
@@ -195,7 +203,9 @@ If a client with offline HOTP values runs out of OTP values, it can request a re
 This is done using :http:post:`/validate/offlinerefill`
 
 If that endpoints returns an error, it indicates that the token has been unmarked for offline use, or the refilltoken
-is out of sync. Therefore, clients managing WebAuthn/Passkey offline data should also call this endpoint regularly.
+is out of sync. For HOTP tokens an error is also the answer when the signed deployment document does not admit the
+account to the HOTP offline path (see above): a refill is issuing offline values too.
+Therefore, clients managing WebAuthn/Passkey offline data should also call this endpoint regularly.
 
 
 Managing in the WebUI

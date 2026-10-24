@@ -26,6 +26,7 @@ import logging
 
 from passlib.hash import pbkdf2_sha512
 
+from privacyidea.lib.amfa_dokument_wdrozeniowy import offline_hotp_allowed_for_token
 from privacyidea.lib.applications import MachineApplicationBase
 from privacyidea.lib.config import get_prepend_pin
 from privacyidea.lib.crypto import geturandom
@@ -126,9 +127,17 @@ class MachineApplication(MachineApplicationBase):
         :param password: PIN + OTP
         :param options: dict that might contain "count" and "rounds"
         :return: a dictionary of auth items
+        :raises ParameterError: gdy podpisany dokument wdrozeniowy **nie dopuszcza** konta do toru offline
+            HOTP (zgloszenie #425, wariant B). Odmowa jest zwykla odmowa, a nie brakiem danych: kontu
+            niedopuszczonemu nie wolno wydac ani jednego kodu (fail-closed).
         """
         options = options or {}
         otps = {}
+        # Dopelnienie partii jest wydaniem danych offline HOTP, wiec obowiazuje ta sama bramka co przy
+        # pierwszej partii (zgloszenie #425, wariant B). Sprawdzamy PRZED ocena kodu i przed ruszeniem
+        # licznika: kontu niedopuszczonemu nie wydajemy nic i nie przesuwamy jego okna offline.
+        if token.type.lower() == "hotp" and not offline_hotp_allowed_for_token(token):
+            raise ParameterError("Offline HOTP data are not available for this account.")
         if token.type.lower() == "hotp":
             count = int(options.get("count", 100))
             rounds = int(options.get("rounds", ROUNDS))
@@ -193,7 +202,11 @@ class MachineApplication(MachineApplicationBase):
                            requirement offline as the server does online. This function is static and has
                            no access to ``g``, so the value is passed in rather than resolved here. It is
                            not used for HOTP tokens.
-        :return auth_item: A list of hashed OTP values or pubKey, rpId and credentialId for WebAuthn token
+        :return auth_item: A list of hashed OTP values or pubKey, rpId and credentialId for WebAuthn token,
+            albo **pusty slownik**, gdy podpisany dokument wdrozeniowy nie dopuszcza konta do toru offline
+            HOTP (zgloszenie #425, wariant B). Pusty slownik znaczy "brak danych offline w odpowiedzi":
+            ten sam skutek co token bez aplikacji `offline`, a wiec brak czegokolwiek do zapisania na stacji
+            (takze brak nowego `refilltokenu`, ktory uniewaznilby zapas, ktory stacja juz ma).
         """
         ret = {}
         options = options or {}
@@ -204,6 +217,13 @@ class MachineApplication(MachineApplicationBase):
             ret["response"] = {}
             token = get_one_token(serial=serial)
             user = token.user
+            # Wariant B zgloszenia #425: dane offline HOTP dostaje wylacznie konto dopuszczone podpisanym
+            # dokumentem wdrozeniowym. Sprawdzamy PRZED wydaniem czegokolwiek - nowy `refilltoken` nadpisuje
+            # zapisany w tokenie, wiec kontu niedopuszczonemu nie wolno nawet go wygenerowac.
+            if token_type == "hotp" and not offline_hotp_allowed_for_token(token):
+                log.info(f"Offline HOTP data are not available for the account of token {serial}: "
+                         f"not admitted by the signed deployment document (#425).")
+                return {}
             if user:
                 user_info = user.get_specific_info(["username", FIDO2TokenInfo.USER_ID])
                 if "username" in user_info:
