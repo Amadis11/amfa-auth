@@ -26,6 +26,7 @@ import logging
 
 from passlib.hash import pbkdf2_sha512
 
+from privacyidea.lib.amfa_dokument_wdrozeniowy import offline_hotp_allowed_for_token
 from privacyidea.lib.applications import MachineApplicationBase
 from privacyidea.lib.config import get_prepend_pin
 from privacyidea.lib.crypto import geturandom
@@ -126,9 +127,17 @@ class MachineApplication(MachineApplicationBase):
         :param password: PIN + OTP
         :param options: dict that might contain "count" and "rounds"
         :return: a dictionary of auth items
+        :raises ParameterError: gdy podpisany dokument wdrozeniowy **nie dopuszcza** konta do toru offline
+            HOTP (zgloszenie #425, wariant B). Odmowa jest zwykla odmowa, a nie brakiem danych: kontu
+            niedopuszczonemu nie wolno wydac ani jednego kodu (fail-closed).
         """
         options = options or {}
         otps = {}
+        # Dopelnienie partii jest wydaniem danych offline HOTP, wiec obowiazuje ta sama bramka co przy
+        # pierwszej partii (zgloszenie #425, wariant B). Sprawdzamy PRZED ocena kodu i przed ruszeniem
+        # licznika: kontu niedopuszczonemu nie wydajemy nic i nie przesuwamy jego okna offline.
+        if token.type.lower() == "hotp" and not offline_hotp_allowed_for_token(token):
+            raise ParameterError("Offline HOTP data are not available for this account.")
         if token.type.lower() == "hotp":
             count = int(options.get("count", 100))
             rounds = int(options.get("rounds", ROUNDS))
@@ -157,7 +166,25 @@ class MachineApplication(MachineApplicationBase):
         return otps
 
     @staticmethod
-    def get_authentication_item(token_type, serial, challenge=None, options=None, filter_param=None, user_agent=None):
+    def _add_user_verification(response, user_verification):
+        """
+        Add the resolved FIDO2 user verification requirement to the ``response`` part of an offline auth item.
+
+        The field is only added if a value was provided. The client entry type detection keys on the fields
+        ``credentialId``, ``rpId`` and ``pubKey`` only, and clients that do not know the field ignore it, so
+        adding it keeps the offline data contract backwards compatible for existing clients.
+
+        :param response: the ``response`` dictionary of the offline auth item
+        :type response: dict
+        :param user_verification: the user verification requirement or None
+        :type user_verification: basestring
+        """
+        if user_verification:
+            response["userVerification"] = user_verification
+
+    @staticmethod
+    def get_authentication_item(token_type, serial, challenge=None, options=None, filter_param=None, user_agent=None,
+                                user_verification=None):
         """
         :param token_type: the type of the token. At the moment
                            we support HOTP and WebAuthn/Passkey tokens.
@@ -168,7 +195,18 @@ class MachineApplication(MachineApplicationBase):
         :param options: options
         :param filter_param: parameters
         :param user_agent: The user agent of the request
-        :return auth_item: A list of hashed OTP values or pubKey, rpId and credentialId for WebAuthn token
+        :param user_verification: The FIDO2 user verification requirement ("required", "preferred" or
+                           "discouraged") resolved from the policy by the caller, which has the policy
+                           context. It is handed to the client together with the offline data of WebAuthn
+                           and Passkey tokens, so that the machine enforces the same user verification
+                           requirement offline as the server does online. This function is static and has
+                           no access to ``g``, so the value is passed in rather than resolved here. It is
+                           not used for HOTP tokens.
+        :return auth_item: A list of hashed OTP values or pubKey, rpId and credentialId for WebAuthn token,
+            albo **pusty slownik**, gdy podpisany dokument wdrozeniowy nie dopuszcza konta do toru offline
+            HOTP (zgloszenie #425, wariant B). Pusty slownik znaczy "brak danych offline w odpowiedzi":
+            ten sam skutek co token bez aplikacji `offline`, a wiec brak czegokolwiek do zapisania na stacji
+            (takze brak nowego `refilltokenu`, ktory uniewaznilby zapas, ktory stacja juz ma).
         """
         ret = {}
         options = options or {}
@@ -179,6 +217,13 @@ class MachineApplication(MachineApplicationBase):
             ret["response"] = {}
             token = get_one_token(serial=serial)
             user = token.user
+            # Wariant B zgloszenia #425: dane offline HOTP dostaje wylacznie konto dopuszczone podpisanym
+            # dokumentem wdrozeniowym. Sprawdzamy PRZED wydaniem czegokolwiek - nowy `refilltoken` nadpisuje
+            # zapisany w tokenie, wiec kontu niedopuszczonemu nie wolno nawet go wygenerowac.
+            if token_type == "hotp" and not offline_hotp_allowed_for_token(token):
+                log.info(f"Offline HOTP data are not available for the account of token {serial}: "
+                         f"not admitted by the signed deployment document (#425).")
+                return {}
             if user:
                 user_info = user.get_specific_info(["username", FIDO2TokenInfo.USER_ID])
                 if "username" in user_info:
@@ -197,6 +242,7 @@ class MachineApplication(MachineApplicationBase):
                     "credentialId": token.decrypt_otpkey(),
                     "rpId": token.get_tokeninfo("relying_party_id")
                 })
+                MachineApplication._add_user_verification(ret["response"], user_verification)
             elif token_type == "hotp":
                 if password:
                     success, otppin, _ = token.split_pin_pass(password)
@@ -215,6 +261,7 @@ class MachineApplication(MachineApplicationBase):
                     "rpId": token.get_tokeninfo("relying_party_id"),
                     "credentialId": token.token.get_otpkey().getKey().decode("utf-8")
                 })
+                MachineApplication._add_user_verification(ret["response"], user_verification)
         else:
             log.info(f"Token {serial} of type {token_type} is not supported by OFFLINE application module")
 

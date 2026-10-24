@@ -49,8 +49,6 @@ import { ResolverService } from "@services/resolver/resolver.service";
 import { ServiceIdService } from "@services/service-id/service-id.service";
 import { SmsGatewayService } from "@services/sms-gateway/sms-gateway.service";
 import { SmtpService } from "@services/smtp/smtp.service";
-import { SubscriptionExpiryService } from "@services/subscription/subscription-expiry.service";
-import { SubscriptionService } from "@services/subscription/subscription.service";
 import { SystemService } from "@services/system/system.service";
 import { TableUtilsService } from "@services/table-utils/table-utils.service";
 import { TokengroupService } from "@services/tokengroup/tokengroup.service";
@@ -94,8 +92,6 @@ export const routes: Routes = [
       ServiceIdService,
       SmsGatewayService,
       SmtpService,
-      SubscriptionExpiryService,
-      SubscriptionService,
       SystemService,
       TableUtilsService,
       TokengroupService,

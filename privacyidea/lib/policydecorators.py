@@ -572,7 +572,15 @@ def auth_otppin(wrapped_function, *args, **kwds):
 
                 if token:
                     if authenticated_user is None:
-                        token.auth_details[AUTH_EVENT_TYPE_KEY] = AuthEventType.PASSWORD_FAIL
+                        # Katalog moze rozpoznac stan konta (haslo wygasle, wymagana zmiana, konto
+                        # wylaczone) - wtedy haslo bylo poprawne, a odmowa ma inna przyczyne niz zle
+                        # haslo, wiec nie wolno stemplowac PASSWORD_FAIL: ta klasyfikacja liczy sie
+                        # w politykach progu nieudanych prob (zgloszenie #32). Stan konta jedzie do
+                        # odpowiedzi i do rejestru osobna droga (`lib/amfa_stan_katalogu.py`).
+                        from privacyidea.lib.amfa_stan_katalogu import stany_katalogu_z_zadania
+
+                        if not stany_katalogu_z_zadania():
+                            token.auth_details[AUTH_EVENT_TYPE_KEY] = AuthEventType.PASSWORD_FAIL
                     else:
                         # This password is right, so a failure stamped by an earlier check of the same token in this
                         # request does not describe the outcome and must not outlive it. check_pin runs more than

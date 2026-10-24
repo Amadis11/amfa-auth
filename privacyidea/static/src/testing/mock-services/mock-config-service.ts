@@ -33,6 +33,7 @@ export class MockConfigService implements ConfigServiceInterface {
     has_job_queue: "false",
     login_text: "",
     gdpr_link: "",
+    documentation_url: "",
     translation_warning: false,
     passkey_login: "show"
   });

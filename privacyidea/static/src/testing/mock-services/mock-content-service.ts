@@ -99,7 +99,6 @@ export class MockContentService implements ContentServiceInterface {
   );
   onUsersResolvers = computed(() => this.matchesPath(ROUTE_PATHS.USERS_RESOLVERS));
   onConfigurationPeriodicTasks = computed(() => this.matchesPath(ROUTE_PATHS.CONFIGURATION_PERIODIC_TASKS));
-  onSubscription = computed(() => this.matchesPath(ROUTE_PATHS.SUBSCRIPTION));
   onMachineResolver = computed(() => this.matchesPath(ROUTE_PATHS.MACHINE_RESOLVER));
 
   matchesPath(path: string): boolean {

@@ -61,7 +61,7 @@ const VALUE_VOCABULARY: Record<string, string> = {
   lost: $localize`:@@valueLabelLost:Lost`,
   none: $localize`:@@valueLabelNone:None`,
   pending: $localize`:@@valueLabelPending:Pending`,
-  privacyidea: "privacyIDEA",
+  privacyidea: "AMFA",
   reject: $localize`:@@valueLabelReject:Reject`,
   revoked: $localize`:@@valueLabelRevoked:Revoked`,
   sha1: "SHA-1",

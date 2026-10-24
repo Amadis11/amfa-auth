@@ -23,6 +23,13 @@
   i18n-title="@@token.attachOffline"
   (actionTriggered)="onAction($event)"
   [actions]="[assignAction]">
+  <p
+    class="inline-warning"
+    i18n="@@token.offlineHotpNotRecommended"
+    >Not recommended for offline use: offline data for a HOTP token keeps the secret on the workstation and
+    is not bound to the machine, so a copied file works on any hardware. The preferred offline path is a
+    FIDO2 key.</p
+  >
   <!-- number input field for countForm and roundsForm -->
   <mat-form-field
     appearance="fill"
