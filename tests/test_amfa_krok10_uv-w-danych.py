@@ -123,6 +123,37 @@ def test_pomocnik_polityki_uv_ma_bezpieczna_domyslna_wartosc() -> None:
     assert DEFAULT_USER_VERIFICATION_REQUIREMENT in WARTOSCI_UV
 
 
+def test_konflikt_polityk_uv_nie_wywraca_odpowiedzi() -> None:
+    """Sprzeczne polityki UV to blad konfiguracji — rozstrzygniecie schodzi do wartosci domyslnej.
+
+    `action_values(unique=True)` rzuca `PolicyError`, gdy dwie polityki podaja rozne wartosci. Wyjatek
+    podniesiony w pomocniku polyka szeroki `except` wyzej (`offline_info`) razem z **calym** ladunkiem
+    offline — klient dostawal wtedy nic zamiast danych z polityka domyslna. Zachowanie przeniesione
+    z podstawy (privacyIDEA #6194, zmierzone 24.10.2026 na galezi `pr-6194`: `test_api_validate_webauthn`,
+    `test_api_validate_offline` i `test_api_passkey` zielone).
+    """
+    from unittest import mock
+
+    sys.path.insert(0, str(KORZEN))
+    from privacyidea.api.lib import prepolicy as modul
+    from privacyidea.lib.error import PolicyError
+    from privacyidea.lib.tokens.webauthntoken import DEFAULT_USER_VERIFICATION_REQUIREMENT
+
+    # `g` poza kontekstem aplikacji nie istnieje, a tu sprawdzamy zachowanie przy bledzie konfiguracji.
+    konflikt = PolicyError("conflicting values of webauthn_user_verification_requirement")
+    with mock.patch.object(modul, "g", mock.Mock()), \
+            mock.patch.object(modul.Match, "user", side_effect=konflikt):
+        wynik = modul.get_user_verification_requirement("authentication")
+    assert wynik == DEFAULT_USER_VERIFICATION_REQUIREMENT, \
+        f"konflikt polityk nie schodzi do wartosci domyslnej: {wynik!r}"
+    assert wynik in WARTOSCI_UV, f"wartosc po konflikcie nie jest poziomem UV: {wynik!r}"
+
+    # Zrodlo musi lapac ten wyjatek, zanim sprawdzi dopuszczalne wartosci.
+    zrodlo = PREPOLICY.read_text(encoding="utf-8")
+    blok = zrodlo.split("def get_user_verification_requirement(", 1)[1].split("\ndef ", 1)[0]
+    assert "except PolicyError" in blok, "pomocnik UV nie lapie konfliktu polityk"
+
+
 def test_obie_sciezki_offline_przekazuja_wartosc_polityki() -> None:
     """Wartosc liczy sie tam, gdzie jest kontekst polityki, i jest przekazana do ladunku offline."""
     postpolicy = POSTPOLICY.read_text(encoding="utf-8")
