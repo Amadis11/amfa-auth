@@ -413,6 +413,26 @@ def test_konto_usuniete_904_rozne_od_zlego_hasla() -> None:
     assert 'raise AuthError("", id=Error.AUTHENTICATE_WRONG_CREDENTIALS)' in dekoratory
 
 
+def test_wygasle_konto_jak_w_windows() -> None:
+    """Wygasle konto jest ujawniane — tak jak robi to Windows (decyzja wlasciciela 2026-10-25).
+
+    Windows rozroznia `STATUS_ACCOUNT_EXPIRED` (`0xC0000193`, „The user account has expired.”) od
+    `STATUS_PASSWORD_EXPIRED` (`0xC0000071`) i od zwyklego niepowodzenia, a ekran logowania nazywa
+    wygasle konto wprost. Katalog zwraca kod `701` dopiero po poprawnym hasle, wiec ujawnienie tego
+    stanu nie jest lżejsze ani cięższe od ujawnianego od poczatku `password_expired`.
+
+    Ten przypadek pilnuje **decyzji**: kazda zmiana listy wymaga jej zmiany tutaj, razem z powodem.
+    """
+    import sys
+    sys.path.insert(0, str(KORZEN))
+    from privacyidea.lib.amfa_stan_katalogu import REVEALED_STATES, states_to_reveal
+
+    assert "account_expired" in REVEALED_STATES, "wygasle konto znowu bez sygnalu — patrz powod wyzej"
+    assert "user_not_found" not in REVEALED_STATES, "nieistniejace konto to enumeracja — nie ujawniamy"
+    # Kolejnosc jest posortowana, wiec wynik jest deterministyczny takze przy kilku stanach naraz.
+    assert states_to_reveal(["account_expired", "account_disabled"]) == ["account_disabled", "account_expired"]
+
+
 def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
     """Stan konta wychodzi z silnika wylacznie zaufana sciezka (zgloszenie #31).
 
@@ -434,19 +454,22 @@ def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
     # Klucz ustawienia jest kontraktem z wdrozeniem (ustawienia.cfg na wezle).
     assert SYSCONF.TRUSTED_CLIENT_SECRET == "TrustedClientSecret"
 
-    # Decyzja wlasciciela (13.10.2026): po poprawnym hasle pokazujemy wymagana zmiane, wygasle haslo,
-    # konto zablokowane i wylaczone; nieistniejace i wygasle konto zostaja bez sygnalu.
+    # Decyzja wlasciciela (13.10.2026, rozszerzona 24.10 i 25.10.2026): po poprawnym hasle pokazujemy
+    # wymagana zmiane, wygasle haslo, WYGASLE KONTO, konto zablokowane i wylaczone; nieistniejace konto
+    # zostaje bez sygnalu. Powod dla `account_expired`: `test_wygasle_konto_jak_w_windows` (Windows
+    # rozroznia ten stan natywnie).
     # Decyzja z 24.10.2026 doklada `directory_unavailable`: katalogu nie udalo sie osiagnac, wiec
     # dostawca poswiadczen musi miec z czego zbudowac komunikat ("katalog nieosiagalny"), a nie
     # pokazywac "zly kod jednorazowy" za awarie polaczenia.
-    assert REVEALED_STATES == {"password_change_required", "password_expired",
+    assert REVEALED_STATES == {"password_change_required", "password_expired", "account_expired",
                                "account_locked", "account_disabled", "directory_unavailable"}
     assert states_to_reveal(["account_locked", "user_not_found", "password_expired"]) == \
         ["account_locked", "password_expired"]
-    assert states_to_reveal(["user_not_found", "account_expired"]) == []
+    # Wygasle konto JEST ujawniane, nieistniejace NIE — obie strony w jednej asercji.
+    assert states_to_reveal(["user_not_found", "account_expired"]) == ["account_expired"]
     # Stan awarii katalogu przechodzi bramke, a stany spoza listy nadal nie.
     assert states_to_reveal(["directory_unavailable"]) == ["directory_unavailable"]
-    assert states_to_reveal(["directory_unavailable", "user_not_found", "account_expired"]) == \
+    assert states_to_reveal(["directory_unavailable", "user_not_found"]) == \
         ["directory_unavailable"]
 
     # Zrodlem sekretu jest konfiguracja silnika, ktora w tym strazniku podstawiamy: poza aplikacja
