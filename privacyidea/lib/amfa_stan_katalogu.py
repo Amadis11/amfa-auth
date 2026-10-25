@@ -29,9 +29,17 @@ KLUCZ_W_ZADANIU = "amfa_stany_katalogu"
 TRUST_MARKER_HEADER = "X-AMFA-Trusted-Client"
 
 # Stany, ktore wolno pokazac uzytkownikowi: te, ktore wystepuja tylko po poprawnym hasle i mowia, ze
-# konto wymaga dzialania (zmiana hasla, wygasle haslo), oraz zablokowane i wylaczone (decyzja
-# wlasciciela 2026-10-13, zgloszenie #31). `user_not_found` i `account_expired` nie sa ujawniane:
-# pierwszy jest enumeracja kont, drugi nie rozni sie dla uzytkownika od zwyklego niepowodzenia.
+# konto wymaga dzialania (zmiana hasla, wygasle haslo, wygasle konto), oraz zablokowane i wylaczone.
+# `user_not_found` nie jest ujawniany nigdy: to enumeracja kont.
+#
+# Dlaczego `account_expired` JEST ujawniane (decyzja wlasciciela 2026-10-25, zgloszenie #31):
+# Windows rozroznia te stany natywnie — `STATUS_ACCOUNT_EXPIRED` (`0xC0000193`, „The user account has
+# expired.”) to inny wynik niz `STATUS_PASSWORD_EXPIRED` (`0xC0000071`) i inny niz zwykle niepowodzenie,
+# a ekran logowania mowi wprost, ze konto wygaslo. Katalog zwraca `701` dopiero po POPRAWNYM hasle
+# (mapa kodow AD w `tests/test_amfa_krok3_stan_konta.py`), wiec klasa ryzyka jest ta sama, co przy
+# ujawnianym od poczatku `password_expired`. Wczesniejsze uzasadnienie („dla uzytkownika nie rozni sie
+# od zwyklego niepowodzenia”) bylo niezgodne z zachowaniem Windows.
+#
 #
 # `directory_unavailable` (decyzja wlasciciela 2026-10-24): katalogu/DC nie udalo sie osiagnac, wiec
 # hasla nie dalo sie w ogole sprawdzic. Stan nie jest oracle poprawnosci hasla — powstaje niezaleznie
@@ -43,6 +51,7 @@ TRUST_MARKER_HEADER = "X-AMFA-Trusted-Client"
 REVEALED_STATES = frozenset({
     "password_change_required",
     "password_expired",
+    "account_expired",
     "account_locked",
     "account_disabled",
     "directory_unavailable",
