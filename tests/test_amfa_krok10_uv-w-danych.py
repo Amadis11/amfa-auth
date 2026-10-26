@@ -69,7 +69,12 @@ def _ladunek_offline(typ: str, user_verification, challenge=None):
     sys.path.insert(0, str(KORZEN))
     from privacyidea.lib.applications import offline as modul
 
+    # Krok 13 (#audyt plaster 04, Z4) czyta zapisany refilltoken ZANIM go zalozy: nazwa maszyny
+    # liczy sie z `get_computer_name_from_user_agent`, ktore siega konfiguracji aplikacji. Harness
+    # jest celowo bez kontekstu aplikacji i bez bazy, wiec nazwe maszyny podstawiamy tak samo jak
+    # `generate_new_refilltoken` nizej — inaczej krok 10 padalby na cudzej zmianie.
     with mock.patch.object(modul, "get_one_token", return_value=_AtrapaTokenu(typ)), \
+            mock.patch.object(modul, "get_computer_name_from_user_agent", return_value="PC-LAB"), \
             mock.patch.object(modul.MachineApplication, "generate_new_refilltoken",
                               return_value="a" * 2 * modul.REFILLTOKEN_LENGTH), \
             mock.patch.object(modul.MachineApplication, "get_offline_otps", return_value={"1": "hash"}):
