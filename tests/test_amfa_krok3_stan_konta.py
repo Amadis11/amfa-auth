@@ -510,6 +510,26 @@ def test_kanal_stanu_konta_tylko_zaufana_sciezka() -> None:
             assert directory_reply_keys({"directory_unavailable"}) == {
                 "password_change_required": True,
                 "directory_password_state": ["directory_unavailable"]}
+
+        # Rotacja sekretu (#1030): w okresie przejsciowym dziala BIEZACY i POPRZEDNI.
+        konfiguracja["TrustedClientSecretPrevious"] = "sekret-poprzedni"
+        with aplikacja.test_request_context("/validate/check",
+                                            headers={TRUST_MARKER_HEADER: "sekret-poprzedni"}):
+            assert is_trusted_client_request() is True
+            assert directory_reply_keys({"account_locked"}) == {
+                "password_change_required": True,
+                "directory_password_state": ["account_locked"]}
+        # Po wyczyszczeniu pola poprzedniego stary sekret nie daje juz stanu (ale logowanie trwa —
+        # znacznik nie jest warunkiem uwierzytelnienia).
+        del konfiguracja["TrustedClientSecretPrevious"]
+        with aplikacja.test_request_context("/validate/check",
+                                            headers={TRUST_MARKER_HEADER: "sekret-poprzedni"}):
+            assert is_trusted_client_request() is False
+            assert directory_reply_keys({"account_locked"}) == {}
+        # Biezacy sekret dziala nadal po zakonczeniu rotacji.
+        with aplikacja.test_request_context("/validate/check",
+                                            headers={TRUST_MARKER_HEADER: "sekret-labu"}):
+            assert is_trusted_client_request() is True
     finally:
         modul.get_from_config = oryginalne_czytanie
 
