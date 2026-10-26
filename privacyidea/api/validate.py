@@ -92,6 +92,7 @@ import threading
 
 from flask import (Blueprint, request, g, Response)
 from flask_babel import _
+from sqlalchemy import select
 
 from privacyidea.api.auth import admin_required
 from privacyidea.api.lib.decorators import add_serial_from_response_to_g
@@ -145,6 +146,7 @@ from privacyidea.lib.tokens.webauthntoken import WebAuthnTokenClass
 from privacyidea.lib.user import log_used_user, User, split_user
 from privacyidea.lib.utils import get_plugin_info_from_useragent, AUTH_RESPONSE
 from privacyidea.lib.utils import is_true, get_computer_name_from_user_agent
+from privacyidea.models import db, Token
 from .lib.policyhelper import check_last_auth_policy, get_realm_for_authentication
 from .lib.utils import (get_required, get_auth_error_status_code, send_error, send_result,
                         log_authentication, pop_auth_event_reason, pop_auth_event_serials)
@@ -281,6 +283,18 @@ def offlinerefill():
             raise ParameterError(_("The token is not valid."))
         token_attachments = list_machine_tokens(serial=serial, application="offline")
         if token_attachments:
+            # Serializacja refillu offline (audyt 26.10.2026, plaster 04, Z5): porownanie refilltokenu,
+            # wydanie partii i rotacja tokenu musza byc jedna sekcja krytyczna. Bez zamka dwa rownolegle
+            # zadania z tym samym refilltokenem czytaja ten sam licznik, oba wydaja kody i oba go
+            # inkrementuja (`get_refill` -> `get_multi_otp`), wiec powstaja dwa zestawy o pokrywajacych
+            # sie licznikach. `with_for_update` to ten sam idiom, co w `lib/token/lifecycle.py`; blokuje
+            # wiersz do konca transakcji zadania, a `refresh` sprawia, ze porownanie nizej widzi
+            # refilltoken zapisany przez zadanie, ktore skonczylo sie przed nami.
+            # Uwaga: to blad OGOLNY privacyIDEA, nie nasza funkcja — kandydat do upstreamu.
+            # `token` to klasa tokenu (opakowanie), wiersz bazy siedzi w `token.token`; serial jest
+            # unikalny, wiec lock trafia w ten sam wiersz co `SELECT ... FOR UPDATE` w cyklu zycia.
+            db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+            db.session.refresh(token.token)
             # TODO: Currently we do not distinguish, if a token had more than one offline attachment
             # check refill token depending on token type
             refilltoken_stored = None
