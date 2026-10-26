@@ -143,6 +143,10 @@ class SubscriptionApplicationTestCase(MyTestCase):
         self.assertTrue(s)
 
     def test_03_check_subscription(self):
+        # AMFA: zaczynamy od czystego stanu subskrypcji. Test podstawy zaklada, ze w bazie nie ma
+        # niczego po poprzednim przebiegu — a baza testowa zyje dluzej niz jeden przebieg, wiec
+        # pozostawiona wygasla subskrypcja decydowala o wyniku (ten sam kod, raz zielony, raz czerwony).
+        delete_subscription("demo_application")
         # A valid subscription
         r = save_subscription(SUBSCRIPTION1)
         self.assertTrue(r)
@@ -182,10 +186,12 @@ class SubscriptionApplicationTestCase(MyTestCase):
             mock_random.return_value = 3
             self.assertTrue(check_subscription("demo_application"))
         # succeed subscription check
-        with mock.patch("random.randrange") as mock_random:
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 2
             self.assertTrue(check_subscription("demo_application"))
-        with mock.patch("random.randrange") as mock_random:
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 1
             self.assertTrue(check_subscription("demo_application"))
 
