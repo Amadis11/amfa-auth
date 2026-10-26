@@ -58,19 +58,32 @@ REVEALED_STATES = frozenset({
 })
 
 
+def trusted_secrets() -> list[str]:
+    """Sekrety, ktore wolno przedstawic w znaczniku: biezacy i poprzedni (okres rotacji, #1030).
+
+    Dwa sekrety obok siebie znacza "trwa rotacja": stacja zaktualizowana uzywa biezacego, stara jeszcze
+    dziala na poprzednim. Po wyczyszczeniu pola poprzedniego stary sekret przestaje dawac **stan konta**
+    - ale znacznik nigdy nie jest warunkiem logowania, wiec logowanie dziala dalej.
+    """
+    wartosci = (
+        get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET, ""),
+        get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET_PREVIOUS, ""),
+    )
+    return [str(wartosc) for wartosc in wartosci if wartosc]
+
+
 def is_trusted_client_request() -> bool:
-    """Czy zadanie przyszlo zaufana sciezka (nasza brama z sekretem w naglowku)?
+    """Czy zadanie przyszlo zaufana sciezka (nasza brama albo stacja z sekretem w naglowku)?
 
     Bez skonfigurowanego sekretu odpowiedz brzmi "nie" - domyslnie stan konta nie opuszcza silnika
     (fail-closed), a nie odwrotnie.
     """
     if not has_request_context():
         return False
-    sekret = get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET, "")
-    if not sekret:
+    przedstawiony = str(request.headers.get(TRUST_MARKER_HEADER, ""))
+    if not przedstawiony:
         return False
-    przedstawiony = request.headers.get(TRUST_MARKER_HEADER, "")
-    return bool(przedstawiony) and hmac.compare_digest(str(przedstawiony), str(sekret))
+    return any(hmac.compare_digest(przedstawiony, sekret) for sekret in trusted_secrets())
 
 
 def states_to_reveal(states) -> list[str]:
