@@ -86,6 +86,41 @@ class MachineApplication(MachineApplicationBase):
         return new_refilltoken
 
     @staticmethod
+    def existing_refilltoken(token, user_agent=None):
+        """Zapisany refilltoken dla tego tokenu (a dla FIDO2 — dla tej maszyny) albo None."""
+        if token.type.lower() in ["webauthn", "passkey"]:
+            # Bez `user_agent` nie wiadomo, ktorej maszyny dotyczy zapisany token — a pytanie
+            # `get_computer_name_from_user_agent(None)` siega `request` i wymaga kontekstu aplikacji.
+            # Wtedy nie ma czego odnawiac: refilltoken powstaje jak dotad (pierwsze logowanie).
+            if not user_agent:
+                return None
+            computer_name = get_computer_name_from_user_agent(user_agent)
+            if not computer_name:
+                return None
+            key = "refilltoken_" + computer_name
+        else:
+            key = "refilltoken"
+        return token.get_tokeninfo(key)
+
+    @staticmethod
+    def existing_or_new_refilltoken(token, user_agent=None):
+        """Stabilny refilltoken miedzy logowaniami (audyt 26.10.2026, plaster 04, Z4).
+
+        Kazde udane `/validate/check` wolalo `generate_new_refilltoken`, co **nadpisywalo** zapisany
+        refilltoken. Klient, ktory zapisal pierwsza partie i nie zapisal drugiej (dwa kafle tego samego
+        konta, dwa rownolegle kroki), trzymal token, ktorym nie mogl dociagnac zapasu (`ERR905`) —
+        i nie mial zadnego sygnalu, ze jest martwy.
+
+        Teraz refilltoken powstaje **raz** (przy pierwszym logowaniu bez zapisanego tokenu), a odnawia
+        go dopiero udany refill w `offlinerefill`. Odpowiedzi logowania sa wiec wzgledem niego
+        idempotentne, a powtorzone zadanie nie unieważnia tego, co klient juz zapisal.
+        """
+        istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+        if istniejacy:
+            return istniejacy
+        return MachineApplication.generate_new_refilltoken(token, user_agent)
+
+    @staticmethod
     def get_offline_otps(token, otppin, amount, rounds=ROUNDS):
         """
         Retrieve the desired number of passwords (= PIN + OTP), hash them
@@ -211,7 +246,10 @@ class MachineApplication(MachineApplicationBase):
                 if token_type in ["webauthn", "passkey"] and FIDO2TokenInfo.USER_ID in user_info:
                     ret["response"].update({"userId": user_info[FIDO2TokenInfo.USER_ID]})
 
-            ret["refilltoken"] = MachineApplication.generate_new_refilltoken(token, user_agent)
+            # Refilltoken stabilny miedzy logowaniami (audyt 26.10.2026, plaster 04, Z4): rotacja przy
+            # kazdym udanym `/validate/check` uniewazniala token, ktory klient juz zapisal. Odnawia go
+            # dopiero udany refill w `offlinerefill`.
+            ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)
 
             # Gather offline data depending on the token type
             if token_type == "webauthn":
