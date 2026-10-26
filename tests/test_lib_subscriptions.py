@@ -175,7 +175,10 @@ class SubscriptionApplicationTestCase(MyTestCase):
         # subskrypcji, licznika i telefonu do domu). Podstawa losowala, ktore konto przekracza limit;
         # u nas limit nie istnieje, wiec kontrola przechodzi — trzy konta z tokenami przy subskrypcji
         # na dwa nie koncza sie bledem. Reszta pliku (podpis, data, dostawca) zostaje bez zmian.
-        with mock.patch("random.randrange") as mock_random:
+        # Wylacznik ustawiamy wprost: zalezy od konfiguracji instalacji (lokalnie inna niz w CI),
+        # a test ma mierzyc zachowanie naszego produktu, nie cudza konfiguracje.
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 3
             self.assertTrue(check_subscription("demo_application"))
         # succeed subscription check
