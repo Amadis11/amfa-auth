@@ -349,12 +349,16 @@ class AValidateOfflineTestCase(MyApiTestCase):
         remove_token(serial)
 
     def test_04_multiple_offline_attachments_share_one_refilltoken(self):
-        """With two offline attachments (HOTP), the response contains one ``auth_items.offline``
-        entry per machine, each with a distinct ``refilltoken`` in the JSON — but
-        ``generate_new_refilltoken`` is called once per attachment and writes the same
-        ``refilltoken`` tokeninfo key, so only the LAST refilltoken is actually stored.
-        Earlier entries are silently invalidated. Pins down current (buggy) behavior;
-        a proper fix would key the refilltoken per machine or de-duplicate attachments.
+        """Dwa przylaczenia offline (HOTP) dostaja **ten sam** refilltoken (AMFA: #1156, plaster 04, Z4).
+
+        Zachowanie podstawy: kazde udane `/validate/check` wolalo `generate_new_refilltoken`, wiec
+        kazde przylaczenie w odpowiedzi nioslo **inny** token, a przezywal tylko ostatni — wczesniejsze
+        byly po cichu uniewazniane (test przypinal to jako `current (buggy) behavior`). Klient, ktory
+        zapisal pierwsza partie i nie zdazyl zapisac drugiej, trzymal martwy token i dostawal `ERR905`
+        bez zadnego sygnalu.
+
+        W naszej linii refilltoken jest **stabilny miedzy logowaniami** i odnawia go dopiero udany
+        refill, wiec oba przylaczenia widza ten sam token, zapisany w tokeninfo, i refill nim przechodzi.
         """
         serial = "SE_OFFLINE_MULTI"
         init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
@@ -371,20 +375,23 @@ class AValidateOfflineTestCase(MyApiTestCase):
             self.assertEqual(200, res.status_code, res)
             offline_entries = res.json["auth_items"]["offline"]
         self.assertEqual(2, len(offline_entries))
-        refilltoken_first = offline_entries[0]["refilltoken"]
-        refilltoken_last = offline_entries[-1]["refilltoken"]
-        self.assertNotEqual(refilltoken_first, refilltoken_last)
-        # Only the LAST issued refilltoken survives in tokeninfo
-        self.assertEqual(refilltoken_last, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
-        # The earlier refilltoken is therefore already stale — a refill request with it is
-        # rejected with the generic 'not an offline token or refill token is incorrect' error
+        tokeny = {entry["refilltoken"] for entry in offline_entries}
+        self.assertEqual(1, len(tokeny), "przylaczenia dostaly rozne refilltokeny — wracamy do rotacji przy logowaniu")
+        refilltoken = tokeny.pop()
+        self.assertEqual(refilltoken, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
+        # Ten sam token jest przyjmowany przez refill: w podstawie pierwszy wpis byl juz martwy
+        # (ERR905 „refill token is incorrect”), bo drugie przylaczenie nadpisalo tokeninfo. Teraz
+        # jedyne, co moze odrzucic zadanie, to sam kod — i tu jest zly (licznik HOTP po logowaniu),
+        # wiec odpowiedz mowi o kodzie, a nie o tokenie. To jest dowod, ze token przechodzi bramke.
         with self.app.test_request_context('/validate/offlinerefill',
                                            method='POST',
                                            data={"serial": serial, "pass": "pin254676",
-                                                 "refilltoken": refilltoken_first},
+                                                 "refilltoken": refilltoken},
                                            environ_base={'REMOTE_ADDR': '192.168.0.2'}):
             res = self.app.full_dispatch_request()
-            self.assertEqual(400, res.status_code, res)
-            self.assertEqual("ERR905: Token is not an offline token or refill token is incorrect",
-                             res.json["result"]["error"]["message"])
+            komunikat = res.json["result"]["error"]["message"]
+            self.assertNotIn("refill token is incorrect", komunikat,
+                             "refilltoken odrzucony jako nieaktualny — stabilnosc tokenu nie dziala")
+            self.assertIn("OTP", komunikat, komunikat)
         remove_token(serial)
+

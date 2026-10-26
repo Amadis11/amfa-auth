@@ -27,7 +27,7 @@ import unittest
 VALIDATE = pathlib.Path(__file__).resolve().parents[1] / "privacyidea" / "api" / "validate.py"
 
 LOCK = "with_for_update()"
-REFRESH = "db.session.refresh(token)"
+REFRESH = "db.session.refresh(token.token)"
 STORE_READ = 'token.get_tokeninfo("refilltoken")'
 
 
@@ -58,7 +58,7 @@ def problemy(text: str) -> list[str]:
     if i_lock < 0:
         wynik.append("offlinerefill nie bierze zamka na wierszu tokenu (`with_for_update`)")
     if i_refresh < 0:
-        wynik.append("po zamku nie ma `db.session.refresh(token)` — porownanie widzialoby stary refilltoken")
+        wynik.append("po zamku nie ma `db.session.refresh(token.token)` — porownanie widzialoby stary refilltoken")
     if i_lock >= 0 and i_read >= 0 and i_lock > i_read:
         wynik.append("zamek stoi PO odczytaniu zapisanego refilltokenu — kolejnosc jest istota poprawki")
     if i_lock >= 0 and i_refresh >= 0 and i_refresh < i_lock:
@@ -75,7 +75,7 @@ class RefillLockTests(unittest.TestCase):
 
     def test_negative_control_without_the_lock(self) -> None:
         zlamane = zrodlo().replace(
-            "db.session.execute(select(Token.id).where(Token.id == token.id).with_for_update()).first()", ""
+            "db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()", ""
         )
         self.assertNotEqual(problemy(zlamane), [], "regula musi zapalic sie po zdjeciu zamka")
 
@@ -85,7 +85,7 @@ class RefillLockTests(unittest.TestCase):
 
     def test_negative_control_with_the_lock_after_the_read(self) -> None:
         linia_zamka = (
-            "db.session.execute(select(Token.id).where(Token.id == token.id).with_for_update()).first()"
+            "db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()"
         )
         cialo = cialo_funkcji(zrodlo(), "offlinerefill")
         # zamek przeniesiony ZA pierwszy odczyt zapisanego refilltokenu — kolejnosc jest istota poprawki

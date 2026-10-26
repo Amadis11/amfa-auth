@@ -291,8 +291,10 @@ def offlinerefill():
             # wiersz do konca transakcji zadania, a `refresh` sprawia, ze porownanie nizej widzi
             # refilltoken zapisany przez zadanie, ktore skonczylo sie przed nami.
             # Uwaga: to blad OGOLNY privacyIDEA, nie nasza funkcja — kandydat do upstreamu.
-            db.session.execute(select(Token.id).where(Token.id == token.id).with_for_update()).first()
-            db.session.refresh(token)
+            # `token` to klasa tokenu (opakowanie), wiersz bazy siedzi w `token.token`; serial jest
+            # unikalny, wiec lock trafia w ten sam wiersz co `SELECT ... FOR UPDATE` w cyklu zycia.
+            db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+            db.session.refresh(token.token)
             # TODO: Currently we do not distinguish, if a token had more than one offline attachment
             # check refill token depending on token type
             refilltoken_stored = None
