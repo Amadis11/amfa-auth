@@ -171,9 +171,13 @@ class SubscriptionApplicationTestCase(MyTestCase):
         init_token({"type": "spass"}, user=User("nopw", self.realm1))
         # Now we have three users with tokens, but only two are allowed. We fail with a probabiliy of 1/3
         # Fail subscription check
+        # AMFA: silnik nie liczy tokenow i nie blokuje subskrypcja (krok 2 z #199, usuniecie
+        # subskrypcji, licznika i telefonu do domu). Podstawa losowala, ktore konto przekracza limit;
+        # u nas limit nie istnieje, wiec kontrola przechodzi — trzy konta z tokenami przy subskrypcji
+        # na dwa nie koncza sie bledem. Reszta pliku (podpis, data, dostawca) zostaje bez zmian.
         with mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 3
-            self.assertRaises(SubscriptionError, check_subscription, "demo_application")
+            self.assertTrue(check_subscription("demo_application"))
         # succeed subscription check
         with mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 2
