@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """AMFA signed offline batch v1 (#1156).
 
 Never put a signing key in source control. Set AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE
