@@ -1,0 +1,26 @@
+name: AMFA Ed25519 offline batch regression
+
+on:
+  pull_request:
+    paths:
+      - 'privacyidea/lib/amfa_offline_signatures.py'
+      - 'tests/test_amfa_offline_ed25519_batches.py'
+      - '.github/workflows/amfa-offline-ed25519.yml'
+  push:
+    branches: [amfa]
+    paths:
+      - 'privacyidea/lib/amfa_offline_signatures.py'
+      - 'tests/test_amfa_offline_ed25519_batches.py'
+
+permissions:
+  contents: read
+
+jobs:
+  signed-offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install isolated signature test dependencies
+        run: python3 -m pip install --quiet --break-system-packages cryptography pytest
+      - name: Verify signed offline bytes, expiry and refusal contracts
+        run: python3 -m pytest -q tests/test_amfa_offline_ed25519_batches.py
