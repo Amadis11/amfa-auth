@@ -323,6 +323,16 @@ def offlinerefill():
                                "response": otps,
                                "serial": serial,
                                "username": token.user.login if token.user else ""}
+                if token.type.lower() in ("webauthn", "passkey"):
+                    # FIDO refills rotate the refill token but still require a
+                    # *complete* signed snapshot: otherwise a client that
+                    # replaces the previous signed record loses the pubkey/rpId.
+                    refill_item = MachineApplication.get_authentication_item(
+                        token.type, serial, user_agent=request.user_agent.string,
+                        user_verification="required")
+                    refill_item.update({"refilltoken": refilltoken_new,
+                                        "serial": serial,
+                                        "username": token.user.login if token.user else ""})
                 content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                 response.set_data(json.dumps(content))
                 return response
