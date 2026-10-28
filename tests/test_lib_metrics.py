@@ -105,12 +105,17 @@ class IncTest(MyTestCase):
         self.assertEqual(results[0]["labels"], {})
 
     def test_repeated_inc_accumulates_in_same_row(self):
-        for _ in range(5):
-            inc("test_counter", {"channel": "push"})
+        # Freeze the clock in this test: otherwise the five increments may
+        # straddle a genuine 5-minute boundary on a loaded CI runner and
+        # correctly produce TWO rows. Window-boundary behavior is tested
+        # separately in WindowStartTest; here we measure aggregation.
+        fixed_now = datetime.datetime(2026, 10, 28, 17, 2, 0)
+        with patch.object(metrics, "_utc_now", return_value=fixed_now):
+            for _ in range(5):
+                inc("test_counter", {"channel": "push"})
         rows = db.session.execute(
             select(MetricAggregate).where(MetricAggregate.metric_name == "test_counter")
         ).scalars().all()
-        # All five increments in the current 5-minute window collapse to one row.
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0].count, 5)
 
