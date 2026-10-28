@@ -179,7 +179,12 @@ class SubscriptionApplicationTestCase(MyTestCase):
         save_subscription(SUBSCRIPTION4)
 
         # We have only one user with tokens, so having a subscription of 3 is fine!
-        s = check_subscription("demo_application")
+        # SUBSCRIPTION4 uses the same immutable signed date_till=2026-10-22
+        # as SUBSCRIPTION1. Check this VALID branch under the same historical
+        # clock, without weakening production expiry enforcement. On the real
+        # clock it correctly expires and cannot be used for a valid-branch test.
+        with mock.patch.object(subscriptions_module.datetime, "datetime", FixtureDateTime):
+            s = check_subscription("demo_application")
         self.assertTrue(s)
 
         init_token({"type": "spass"}, user=User("shadow", self.realm1))
