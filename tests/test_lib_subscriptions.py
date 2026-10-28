@@ -147,10 +147,21 @@ class SubscriptionApplicationTestCase(MyTestCase):
         # niczego po poprzednim przebiegu — a baza testowa zyje dluzej niz jeden przebieg, wiec
         # pozostawiona wygasla subskrypcja decydowala o wyniku (ten sam kod, raz zielony, raz czerwony).
         delete_subscription("demo_application")
-        # A valid subscription
+        # The signed fixture is immutable (its signature covers date_till)
+        # and expires on 2026-10-22. Test the VALID branch at a frozen date
+        # within the signed subscription's actual range. Otherwise this
+        # test started failing after 2026-10-22 with no product code change.
+        # Production expiry enforcement is deliberately NOT mocked away.
         r = save_subscription(SUBSCRIPTION1)
         self.assertTrue(r)
-        s = check_subscription("demo_application")
+
+        class FixtureDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return datetime(2026, 10, 1, tzinfo=tz)
+
+        with mock.patch.object(subscriptions_module.datetime, "datetime", FixtureDateTime):
+            s = check_subscription("demo_application")
         self.assertTrue(s)
 
         # A subscription, that has expired
