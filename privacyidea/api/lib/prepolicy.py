@@ -2648,10 +2648,21 @@ def get_user_verification_requirement(scope: str, user: User | None = None) -> s
     :param user: the user used to match user, realm and resolver scoped policies
     :return: "required", "preferred" or "discouraged"
     """
-    policies = Match.user(g, scope=scope, action=FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT,
-                          user_object=user).action_values(unique=True, allow_white_space_in_action=True,
-                                                          write_to_audit_log=False)
-    policy_value = list(policies)[0] if policies else DEFAULT_USER_VERIFICATION_REQUIREMENT
+    try:
+        policies = Match.user(g, scope=scope, action=FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT,
+                              user_object=user).action_values(unique=True, allow_white_space_in_action=True,
+                                                              write_to_audit_log=False)
+        policy_value = list(policies)[0] if policies else DEFAULT_USER_VERIFICATION_REQUIREMENT
+    except PolicyError as exx:
+        # Sprzeczne polityki to blad konfiguracji: `action_values(unique=True)` rzuca wtedy PolicyError.
+        # Rozstrzygniecie polityki UV tylko wzbogaca odpowiedz, wiec nie moze jej wywrocic — a wyjatek
+        # podniesiony tutaj polyka szeroki `except` wyzej (u nas w `offline_info`) razem z calym ladunkiem
+        # offline, czyli klient nie dostaje niczego zamiast danych z polityka domyslna. Zachowanie
+        # przeniesione z podstawy (privacyIDEA #6194).
+        log.warning(f"Ignoring the policy action {FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT} "
+                    f"because of a conflict: {exx}. "
+                    f"Falling back to {DEFAULT_USER_VERIFICATION_REQUIREMENT!r}.")
+        policy_value = DEFAULT_USER_VERIFICATION_REQUIREMENT
     if policy_value not in USER_VERIFICATION_LEVELS:
         log.warning(f"Invalid value {policy_value!r} for {FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT} in "
                     f"scope {scope!r}. Falling back to {DEFAULT_USER_VERIFICATION_REQUIREMENT!r}.")
