@@ -327,7 +327,7 @@ def offlinerefill():
                         matched, otp_pin, _otp_value = token.split_pin_pass(password)
                         if not matched:
                             raise ParameterError(_("Could not split offline refill password"))
-                        rounds = int((options or {}).get("rounds", MachineApplication.ROUNDS)) if hasattr(MachineApplication, "ROUNDS") else int((options or {}).get("rounds", 6549))
+                        rounds = int((options or {}).get("rounds", 6549))
                         otps.update(MachineApplication.get_offline_otps(
                             token, otp_pin, requested - len(otps), rounds))
                 refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
