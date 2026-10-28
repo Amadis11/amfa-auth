@@ -340,13 +340,17 @@ def offlinerefill():
                                "response": otps,
                                "serial": serial,
                                "username": token.user.login if token.user else ""}
-                if token.type.lower() in ("webauthn", "passkey"):
-                    # FIDO refills rotate the refill token but still require a
-                    # *complete* signed snapshot: otherwise a client that
-                    # replaces the previous signed record loses the pubkey/rpId.
+                if signing_enabled() and token.type.lower() in ("webauthn", "passkey"):
+                    # Only the Ed25519 format replaces the whole local entry.
+                    # With signing disabled retain privacyIDEA's original
+                    # refill contract (response={}) for old clients.
+                    # Resolve UV from the actual user policy; a hard-coded
+                    # "required" contradicts a configured "discouraged".
+                    uv_policy = get_user_verification_requirement(
+                        SCOPE.AUTH, user=token.user if token.user else None)
                     refill_item = MachineApplication.get_authentication_item(
                         token.type, serial, user_agent=request.user_agent.string,
-                        user_verification="required")
+                        user_verification=uv_policy)
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
