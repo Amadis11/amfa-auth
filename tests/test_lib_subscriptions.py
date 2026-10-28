@@ -178,8 +178,13 @@ class SubscriptionApplicationTestCase(MyTestCase):
 
         save_subscription(SUBSCRIPTION4)
 
-        # We have only one user with tokens, so having a subscription of 3 is fine!
-        s = check_subscription("demo_application")
+        # SUBSCRIPTION4 has the same immutable signed expiry (2026-10-22).
+        # Keep this one count-behavior assertion within its legitimate signed
+        # period, just like the SUBSCRIPTION1 assertion above. This is a test
+        # fixture clock only: production expiration checks stay unchanged.
+        # We have only one user with tokens, so two permitted users suffice.
+        with mock.patch.object(subscriptions_module.datetime, "datetime", FixtureDateTime):
+            s = check_subscription("demo_application")
         self.assertTrue(s)
 
         init_token({"type": "spass"}, user=User("shadow", self.realm1))
