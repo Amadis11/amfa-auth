@@ -21,6 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install isolated signature test dependencies
-        run: python3 -m pip install --quiet --break-system-packages cryptography pytest
+        run: python3 -m pip install --quiet --break-system-packages cryptography
       - name: Verify signed offline bytes, expiry and refusal contracts
-        run: python3 -m pytest -q tests/test_amfa_offline_ed25519_batches.py
+        run: python3 tests/test_amfa_offline_ed25519_batches.py
