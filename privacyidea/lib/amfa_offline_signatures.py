@@ -15,6 +15,7 @@ import base64
 import json
 import logging
 import os
+import time
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -45,6 +46,14 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
         raise OfflineSigningError("invalid signing key identifier")
     if not isinstance(private_key, Ed25519PrivateKey):
         raise OfflineSigningError("offline signing key must be Ed25519")
+    # Server time limits the signed batch. The workstation must NEVER infer a
+    # longer validity from its own clock for a signed payload.
+    validity = int(os.environ.get("AMFA_OFFLINE_ED25519_TTL_SECONDS", "3888000"))
+    if not 60 <= validity <= 45 * 24 * 3600:
+        raise OfflineSigningError("signed offline TTL must be between 60 seconds and 45 days")
+    item = dict(item)
+    item["expiration"] = int(time.time()) + validity
+    item["format_version"] = 1
     payload = canonical_item(item)
     signature = private_key.sign(SIGNING_CONTEXT + payload)
     return {
