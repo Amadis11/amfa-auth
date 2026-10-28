@@ -313,6 +313,23 @@ def offlinerefill():
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
                 otps = MachineApplication.get_refill(token, password, options)
+                # Signed snapshots REPLACE the previous local record; a
+                # traditional refill contains only the number of newly used
+                # counters and is meant to be MERGED. In signed mode emit a
+                # full fresh HOTP window instead, otherwise a user would be
+                # left with one code and need a refill on every login.
+                from privacyidea.lib.amfa_offline_signatures import signing_enabled
+                if signing_enabled() and token.type.lower() == "hotp":
+                    requested = int((options or {}).get("count", 100))
+                    if not 1 <= requested <= 1024:
+                        raise ParameterError(_("Invalid signed offline refill size"))
+                    if len(otps) < requested:
+                        matched, otp_pin, _otp_value = token.split_pin_pass(password)
+                        if not matched:
+                            raise ParameterError(_("Could not split offline refill password"))
+                        rounds = int((options or {}).get("rounds", MachineApplication.ROUNDS)) if hasattr(MachineApplication, "ROUNDS") else int((options or {}).get("rounds", 6549))
+                        otps.update(MachineApplication.get_offline_otps(
+                            token, otp_pin, requested - len(otps), rounds))
                 refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
                 response = send_result(True)
                 content = response.json
