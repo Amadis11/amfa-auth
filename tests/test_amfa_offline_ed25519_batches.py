@@ -10,10 +10,22 @@ from unittest.mock import patch
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from privacyidea.lib.amfa_offline_signatures import (
-    SIGNING_CONTEXT, OfflineSigningError, canonical_item, sign_item,
-    signed_auth_items,
+# Load the pure signing module without executing privacyidea.lib.__init__,
+# which imports Flask/SQLAlchemy dependencies irrelevant to this crypto test.
+import importlib.util
+from pathlib import Path
+
+_spec = importlib.util.spec_from_file_location(
+    "amfa_offline_signatures",
+    Path(__file__).resolve().parents[1] / "privacyidea/lib/amfa_offline_signatures.py",
 )
+_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+SIGNING_CONTEXT = _module.SIGNING_CONTEXT
+OfflineSigningError = _module.OfflineSigningError
+canonical_item = _module.canonical_item
+sign_item = _module.sign_item
+signed_auth_items = _module.signed_auth_items
 
 # RFC 8032 test-only seed (public knowledge). NEVER reuse for an installation!
 SEED = bytes.fromhex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60")
@@ -50,7 +62,7 @@ class SignedOfflineBatchTests(unittest.TestCase):
         # Exact bytes checked by tests/ParserTests/main.cpp in the Windows repo.
         # Freeze time so the issued expiry is 1800000000 (test only).
         with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
-            with patch("privacyidea.lib.amfa_offline_signatures.time.time",
+            with patch.object(_module.time, "time",
                        return_value=1799996400):
                 envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         self.assertEqual(envelope["signed_payload"],
