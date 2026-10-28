@@ -46,6 +46,20 @@ class SignedOfflineBatchTests(unittest.TestCase):
         with self.assertRaises(Exception):
             TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"hash0", b"evil0"))
 
+    def test_cpp_cross_language_fixture(self):
+        # Exact bytes checked by tests/ParserTests/main.cpp in the Windows repo.
+        # Freeze time so the issued expiry is 1800000000 (test only).
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
+            with patch("privacyidea.lib.amfa_offline_signatures.time.time",
+                       return_value=1799996400):
+                envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+        self.assertEqual(envelope["signed_payload"],
+            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwicmVmaWxsdG9rZW4iOi"
+            "JyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwi"
+            "OiJURVNUMSIsInVzZXJuYW1lIjoiYWxpY2UifQ==")
+        self.assertEqual(envelope["signature"],
+            "t94EvyT0n8YghZrzFSHp9A/5+Jf5h5e7yihfRFz/IioNvRNeM7/j0UdfLN5zjHpOD7T6M17sgu8vXgcGosAAAw==")
+
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         blob = base64.b64decode(signed["signed_payload"])
