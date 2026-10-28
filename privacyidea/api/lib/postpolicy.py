@@ -670,10 +670,17 @@ def offline_info(request, response):
                                             user_agent=request.user_agent.string,
                                             user_verification=user_verification)
                 if auth_items:
+                    # An enabled signer must never leak an unsigned offline bag.
+                    # Signing failure leaves the online authentication intact,
+                    # but no offline credentials are issued (#1156).
+                    from privacyidea.lib.amfa_offline_signatures import signed_auth_items
+                    auth_items = signed_auth_items(auth_items)
                     content["auth_items"] = auth_items
                     response.set_data(json.dumps(content))
             except Exception as exx:
-                log.info(exx)
+                # The original code swallowed signature errors with INFO.
+                # A misconfigured signer must be a visible operational alarm.
+                log.error("AMFA offline batch was not issued (fail-closed): %s", type(exx).__name__)
     return response
 
 
