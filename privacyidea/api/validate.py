@@ -316,9 +316,14 @@ def offlinerefill():
                 refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
                 response = send_result(True)
                 content = response.json
-                content["auth_items"] = {"offline": [{"refilltoken": refilltoken_new,
-                                                      "response": otps,
-                                                      "serial": serial}]}
+                from privacyidea.lib.amfa_offline_signatures import signed_auth_items
+                # Refill rotates the token: the new token AND new OTP material
+                # must be signed together, never spliced onto an old signature.
+                refill_item = {"refilltoken": refilltoken_new,
+                               "response": otps,
+                               "serial": serial,
+                               "username": token.user.login if token.user else ""}
+                content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                 response.set_data(json.dumps(content))
                 return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
