@@ -276,12 +276,12 @@ def offlinerefill():
             raise ParameterError(_("The token does not exist"))
 
         token = tokens[0]
-        # Lock the token before checking its active state or offline attachments.
-        # A concurrent administrator may disable/revoke the token while a
-        # refill waits for this row. Decisions taken before FOR UPDATE would
-        # be stale even when the refill token itself is rotated under the lock.
-        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
-        db.session.refresh(token.token)
+        # Lock and refresh the token BEFORE checking its state or offline
+        # attachments. A concurrent administrator may disable/revoke it while
+        # refill waits; the validity decision must observe the locked row.
+        # A locking refresh observes the row state under the lock even on
+        # backends using REPEATABLE READ for ordinary SELECT statements.
+        db.session.refresh(token.token, with_for_update=True)
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
