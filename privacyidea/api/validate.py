@@ -92,7 +92,6 @@ import threading
 
 from flask import (Blueprint, request, g, Response)
 from flask_babel import _
-from sqlalchemy import select
 
 from privacyidea.api.auth import admin_required
 from privacyidea.api.lib.decorators import add_serial_from_response_to_g
@@ -146,7 +145,7 @@ from privacyidea.lib.tokens.webauthntoken import WebAuthnTokenClass
 from privacyidea.lib.user import log_used_user, User, split_user
 from privacyidea.lib.utils import get_plugin_info_from_useragent, AUTH_RESPONSE
 from privacyidea.lib.utils import is_true, get_computer_name_from_user_agent
-from privacyidea.models import db, Token
+from privacyidea.models import db
 from .lib.policyhelper import check_last_auth_policy, get_realm_for_authentication
 from .lib.utils import (get_required, get_auth_error_status_code, send_error, send_result,
                         log_authentication, pop_auth_event_reason, pop_auth_event_serials)
