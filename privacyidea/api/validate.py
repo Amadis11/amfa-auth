@@ -93,7 +93,6 @@ from functools import partial
 
 from flask import (Blueprint, request, g, Response)
 from flask_babel import _
-from sqlalchemy import select
 
 from privacyidea.api.auth import admin_required
 from privacyidea.api.lib.decorators import add_serial_from_response_to_g
@@ -155,7 +154,7 @@ from privacyidea.lib.tokens.webauthntoken import (WebAuthnTokenClass, require_fi
 from privacyidea.lib.user import log_used_user, User, split_user
 from privacyidea.lib.utils import get_plugin_info_from_useragent, AUTH_RESPONSE
 from privacyidea.lib.utils import is_true, get_computer_name_from_user_agent
-from privacyidea.models import db, Token
+from privacyidea.models import db
 from .lib.policyhelper import (check_last_auth_policy, get_realm_for_authentication, get_request_identity,
                                get_remember_device_duration, name_conflicting_action, check_token_action_allowed,
                                get_token_user_attributes, user_is_owner, UserAttributes)
