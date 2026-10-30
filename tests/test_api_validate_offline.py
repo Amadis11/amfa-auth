@@ -219,6 +219,31 @@ class AValidateOfflineTestCase(MyApiTestCase):
         self._assert_refill_logged(AuthEventType.OFFLINE_REFILL_FAIL, self.serials[0], user,
                                    AuthEventReason.REFILLTOKEN_MISMATCH, dispatches=3)
 
+        # Simulate an admin disabling the token while this request waited
+        # for the row lock: the refreshed token is disabled even though
+        # get_tokens() initially returned an active token. The refill must
+        # not issue OTPs or rotate its authorization token.
+        original_refresh = db.session.refresh
+
+        def disabled_after_lock(record, *args, **kwargs):
+            original_refresh(record, *args, **kwargs)
+            if isinstance(record, Token) and record.serial == self.serials[0]:
+                record.active = False
+
+        with mock.patch.object(db.session, "refresh", side_effect=disabled_after_lock):
+            with self.app.test_request_context('/validate/offlinerefill',
+                                               method='POST',
+                                               data={"serial": self.serials[0],
+                                                     "pass": "pin520489",
+                                                     "refilltoken": refilltoken_2},
+                                               environ_base={'REMOTE_ADDR': '192.168.0.2'}):
+                response = self.app.full_dispatch_request()
+                self.assertEqual(response.status_code, 400, response)
+                self.assertIn("The token is not valid.", response.json["result"]["error"]["message"])
+        # Restore normal token state for subsequent success-path checks.
+        enable_token(self.serials[0], True)
+        self.assertEqual(refilltoken_2, get_tokens(serial=self.serials[0])[0].get_tokeninfo("refilltoken"))
+
         # Disable token. Refill should fail.
         enable_token(self.serials[0], False)
         clear_authentication_log()
