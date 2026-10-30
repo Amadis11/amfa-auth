@@ -276,7 +276,12 @@ def offlinerefill():
             raise ParameterError(_("The token does not exist"))
 
         token = tokens[0]
-        # check if token is disabled or otherwise not fit for auth
+        # Lock the token before checking its active state or offline attachments.
+        # A concurrent administrator may disable/revoke the token while a
+        # refill waits for this row. Decisions taken before FOR UPDATE would
+        # be stale even when the refill token itself is rotated under the lock.
+        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+        db.session.refresh(token.token)
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
@@ -293,8 +298,7 @@ def offlinerefill():
             # Uwaga: to blad OGOLNY privacyIDEA, nie nasza funkcja — kandydat do upstreamu.
             # `token` to klasa tokenu (opakowanie), wiersz bazy siedzi w `token.token`; serial jest
             # unikalny, wiec lock trafia w ten sam wiersz co `SELECT ... FOR UPDATE` w cyklu zycia.
-            db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
-            db.session.refresh(token.token)
+            # State and attachments were checked after the lock above.
             # TODO: Currently we do not distinguish, if a token had more than one offline attachment
             # check refill token depending on token type
             refilltoken_stored = None
