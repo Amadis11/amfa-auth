@@ -460,7 +460,7 @@ def _get_host_identifier(hostname, machine_id, resolver_name):
 
 
 def get_auth_items(hostname=None, application=None, serial=None, challenge=None, filter_param=None, user_agent=None,
-                   user_verification=None):
+                   user_verification=None, defer_offline_commit=False):
     """
     Return the authentication items for a given hostname and the application.
     The hostname is used to identify the machine object. Then all attached
@@ -510,8 +510,14 @@ def get_auth_items(hostname=None, application=None, serial=None, challenge=None,
                                       options=machine_token.get("options"),
                                       filter_param=filter_param,
                                       user_agent=user_agent,
-                                      user_verification=user_verification)
+                                      user_verification=user_verification,
+                                      defer_offline_commit=defer_offline_commit)
         except PrivacyIDEAError as error:
+            # During signed issuance a partial HOTP reservation must never be
+            # committed alongside another item's successful response. Surface
+            # the failure to the request boundary, which rolls back everything.
+            if defer_offline_commit:
+                raise
             # A token that refuses to hand out its item, e.g. an SSH key that fails its integrity check, must not
             # take the items of the other tokens with it: an SSH server would lose every authorized key at once.
             log.error(f"Skipping the {machine_token.get('application')} authentication item of the token "
