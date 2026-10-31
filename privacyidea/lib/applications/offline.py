@@ -269,6 +269,7 @@ class MachineApplication(MachineApplicationBase):
                     raise ParameterError(f"Invalid offline refill window: {count!r}")
                 if not 1 <= rounds <= 100000:
                     raise ParameterError(f"Invalid offline refill PBKDF2 rounds: {rounds!r}")
+                _validate_otp_generation_work(count, rounds)
                 _r, otppin, otpval = token.split_pin_pass(password)
                 if not _r:
                     raise ParameterError("Could not split password")
