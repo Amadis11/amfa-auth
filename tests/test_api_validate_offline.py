@@ -438,19 +438,22 @@ class AValidateOfflineTestCase(MyApiTestCase):
         self.assertEqual(1, len(tokeny), "przylaczenia dostaly rozne refilltokeny — wracamy do rotacji przy logowaniu")
         refilltoken = tokeny.pop()
         self.assertEqual(refilltoken, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
-        # Ten sam token jest przyjmowany przez refill: w podstawie pierwszy wpis byl juz martwy
-        # (ERR905 „refill token is incorrect”), bo drugie przylaczenie nadpisalo tokeninfo. Teraz
-        # jedyne, co moze odrzucic zadanie, to sam kod — i tu jest zly (licznik HOTP po logowaniu),
-        # wiec odpowiedz mowi o kodzie, a nie o tokenie. To jest dowod, ze token przechodzi bramke.
+        # Test the actual refill contract with an OTP from the second
+        # offline window. A hard-coded OTP could succeed or fail depending on
+        # counter state, so it cannot prove the refilltoken is still usable.
+        token = get_tokens(serial=serial)[0]
+        refill_counter = min(int(counter) for counter in offline_entries[-1]["response"])
+        correct_otp = token._calc_otp(refill_counter)
         with self.app.test_request_context('/validate/offlinerefill',
                                            method='POST',
-                                           data={"serial": serial, "pass": "pin254676",
+                                           data={"serial": serial, "pass": "pin" + correct_otp,
                                                  "refilltoken": refilltoken},
                                            environ_base={'REMOTE_ADDR': '192.168.0.2'}):
             res = self.app.full_dispatch_request()
-            komunikat = res.json["result"]["error"]["message"]
-            self.assertNotIn("refill token is incorrect", komunikat,
-                             "refilltoken odrzucony jako nieaktualny — stabilnosc tokenu nie dziala")
-            self.assertIn("OTP", komunikat, komunikat)
+            self.assertEqual(200, res.status_code, res.json)
+            self.assertTrue(res.json["result"]["value"], res.json)
+            replacement = res.json["auth_items"]["offline"][0]["refilltoken"]
+        self.assertNotEqual(refilltoken, replacement, "successful refill must rotate the secret")
+        self.assertEqual(replacement, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
         remove_token(serial)
 
