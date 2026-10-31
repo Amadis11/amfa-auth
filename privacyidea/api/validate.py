@@ -92,6 +92,7 @@ import threading
 
 from flask import (Blueprint, request, g, Response)
 from flask_babel import _
+from sqlalchemy import select
 
 from privacyidea.api.auth import admin_required
 from privacyidea.api.lib.decorators import add_serial_from_response_to_g
@@ -145,7 +146,7 @@ from privacyidea.lib.tokens.webauthntoken import WebAuthnTokenClass
 from privacyidea.lib.user import log_used_user, User, split_user
 from privacyidea.lib.utils import get_plugin_info_from_useragent, AUTH_RESPONSE
 from privacyidea.lib.utils import is_true, get_computer_name_from_user_agent
-from privacyidea.models import db
+from privacyidea.models import db, Token
 from .lib.policyhelper import check_last_auth_policy, get_realm_for_authentication
 from .lib.utils import (get_required, get_auth_error_status_code, send_error, send_result,
                         log_authentication, pop_auth_event_reason, pop_auth_event_serials)
@@ -275,12 +276,13 @@ def offlinerefill():
             raise ParameterError(_("The token does not exist"))
 
         token = tokens[0]
-        # Lock and refresh the token BEFORE checking its state or offline
-        # attachments. A concurrent administrator may disable/revoke it while
-        # refill waits; the validity decision must observe the locked row.
-        # A locking refresh observes the row state under the lock even on
-        # backends using REPEATABLE READ for ordinary SELECT statements.
-        db.session.refresh(token.token, with_for_update=True)
+        # Lock only the token row, without joining nullable relationships.
+        # SQLAlchemy's refresh(..., with_for_update=True) can generate outer
+        # joins and PostgreSQL rejects FOR UPDATE on their nullable side.
+        # Acquire the narrowly scoped lock first, then refresh ORM state and
+        # check validity before reading attachments or issuing new OTPs.
+        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+        db.session.refresh(token.token)
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
