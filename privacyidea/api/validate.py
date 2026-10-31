@@ -322,6 +322,7 @@ def offlinerefill():
             # potentially exception-raising equality/substring conversion.
             if (isinstance(refilltoken_stored, str) and
                     isinstance(refilltoken_request, str) and
+                    refilltoken_stored.isascii() and refilltoken_request.isascii() and
                     secrets.compare_digest(refilltoken_stored, refilltoken_request)):
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
