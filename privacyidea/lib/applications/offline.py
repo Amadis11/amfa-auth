@@ -33,6 +33,7 @@ from privacyidea.lib.error import ValidateError, ParameterError
 from privacyidea.lib.fido2.token_info import FIDO2TokenInfo
 from privacyidea.lib.policy import TYPE
 from privacyidea.lib.token import get_one_token
+from privacyidea.lib.tokens.HMAC import HmacOtp
 from privacyidea.lib.utils import get_computer_name_from_user_agent
 
 log = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class MachineApplication(MachineApplicationBase):
     application_name = "offline"
 
     @staticmethod
-    def generate_new_refilltoken(token, user_agent=None):
+    def generate_new_refilltoken(token, user_agent=None, *, commit_db_session=True):
         """
         Generate new refill token and store it in the tokeninfo of the token.
         :param token: token in question
@@ -82,7 +83,7 @@ class MachineApplication(MachineApplicationBase):
             key = "refilltoken"
 
         new_refilltoken = geturandom(REFILLTOKEN_LENGTH, hex=True)
-        token.write_tokeninfo(key, new_refilltoken)
+        token.write_tokeninfo(key, new_refilltoken, commit_db_session=commit_db_session)
         return new_refilltoken
 
     @staticmethod
@@ -121,7 +122,7 @@ class MachineApplication(MachineApplicationBase):
         return MachineApplication.generate_new_refilltoken(token, user_agent)
 
     @staticmethod
-    def get_offline_otps(token, otppin, amount, rounds=ROUNDS):
+    def get_offline_otps(token, otppin, amount, rounds=ROUNDS, *, atomic=False):
         """
         Retrieve the desired number of passwords (= PIN + OTP), hash them
         and return them in a dictionary. Increase the token counter.
@@ -146,12 +147,15 @@ class MachineApplication(MachineApplicationBase):
         # token_obj.enable(False)
         # increase the counter by the consumed values and
         # also store it in tokeninfo.
-        token.inc_otp_counter(increment=amount)
+        if atomic:
+            token.inc_otp_counter(increment=amount, commit_db_session=False)
+        else:
+            token.inc_otp_counter(increment=amount)
 
         return otps
 
     @staticmethod
-    def get_refill(token, password, options=None):
+    def get_refill(token, password, options=None, *, atomic=False):
         """
         Returns new authentication OTPs to refill the client
 
@@ -174,19 +178,30 @@ class MachineApplication(MachineApplicationBase):
             first_offline_counter = current_token_counter - count
             if first_offline_counter < 0:
                 first_offline_counter = 0
-            # find the value in the offline OTP values! This resets the token.count!
-            matching_count = token.check_otp(otpval, first_offline_counter, count)
-            token.set_otp_count(current_token_counter)
-            # Raise an exception *after* we reset the token counter
+            if atomic:
+                # offlinerefill holds SELECT ... FOR UPDATE until the *single*
+                # final commit. HotpTokenClass.check_otp calls set_otp_count(),
+                # which commits and silently releases that lock. Verify the
+                # same HOTP window without mutating the counter instead.
+                verifier = HmacOtp(
+                    token.token.get_otpkey(), first_offline_counter, int(token.token.otplen),
+                    token.get_hashlib(token.hashlib),
+                )
+                matching_count = verifier.checkOtp(otpval, count)
+            else:
+                # Legacy callers keep their prior counter and autosync logic.
+                matching_count = token.check_otp(otpval, first_offline_counter, count)
+                token.set_otp_count(current_token_counter)
             if matching_count < 0:
                 raise ValidateError("You provided a wrong OTP value.")
             # We have to add 1 here: Assume *first_offline_counter* is the counter value of the first offline OTP
             # we sent to the client. Assume the client then requests a refill with that exact OTP value.
             # Then, we need to respond with a refill of one OTP value, as the client has consumed one OTP value.
             counter_diff = matching_count - first_offline_counter + 1
-            otps = MachineApplication.get_offline_otps(token, otppin, counter_diff, rounds)
-            token.write_tokeninfo(key="offline_counter",
-                                value=count)
+            otps = MachineApplication.get_offline_otps(token, otppin, counter_diff, rounds, atomic=atomic)
+            token.write_tokeninfo(
+                key="offline_counter", value=count, commit_db_session=not atomic,
+            )
         elif token.type.lower() in ["webauthn", "passkey"]:
             pass
         return otps

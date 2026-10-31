@@ -98,10 +98,16 @@ class StableRefillTokenTests(unittest.TestCase):
         self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie bez odczytu zapisanego")
 
     def test_negative_control_when_refill_stops_rotating(self) -> None:
-        zlamane = self.validate.replace(
-            "refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)",
-            "refilltoken_new = MachineApplication.existing_refilltoken(token, request.user_agent.string)",
+        # W PR #85 nowy token jest zapisywany w jednej transakcji, wiec
+        # wywolanie ma argument commit_db_session=False i moze byc wieloliniowe.
+        # Kontrola negatywna musi naprawde dokonac mutacji, inaczej jest
+        # pozornie zielona i nie chroni przed usunieciem rotacji.
+        zlamane, replacements = re.subn(
+            r"(refilltoken_new\s*=\s*MachineApplication\.)generate_new_refilltoken\s*\(",
+            r"\1existing_refilltoken(",
+            self.validate,
         )
+        self.assertEqual(replacements, 1, "nie znaleziono wywolania rotacji do celowej mutacji")
         self.assertNotEqual(problemy(self.offline, zlamane), [], "regula musi zapalic sie bez rotacji przy refillu")
 
 
