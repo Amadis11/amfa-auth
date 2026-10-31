@@ -84,7 +84,7 @@ class StableRefillTokenTests(unittest.TestCase):
     def test_negative_control_when_login_rotates_again(self) -> None:
         zlamane, replacements = re.subn(
             r'ret\["refilltoken"\]\s*=\s*MachineApplication\.existing_or_new_refilltoken\s*\('
-            r'\s*token,\s*user_agent,\s*commit_db_session=commit_db_session\s*\)',
+            r'\s*token,\s*user_agent(?:,\s*commit_db_session=commit_db_session)?\s*\)',
             'ret["refilltoken"] = MachineApplication.generate_new_refilltoken('
             'token, user_agent, commit_db_session=commit_db_session)',
             self.offline,
