@@ -190,6 +190,10 @@ class MachineApplication(MachineApplicationBase):
         The next *amount* OTP values from the token counter on, each hashed together with the OTP PIN. The counter
         is not changed.
         """
+        # Legacy standalone callers use zero as an explicit empty request.
+        # It must neither generate an OTP nor advance the HOTP counter.
+        if type(amount) is int and amount == 0:
+            return {}
         _validate_otp_generation_work(amount, rounds)
         (res, _err, otp_dict) = token.get_multi_otp(count=amount, counter_index=True)
         otps = otp_dict.get("otp") if isinstance(otp_dict, dict) else None
