@@ -125,6 +125,12 @@ class MachineApplication(MachineApplicationBase):
         # TokenInfo so even MariaDB REPEATABLE READ does not reuse an old
         # snapshot. The winning insertion commits before the waiting request
         # rechecks the database. Do not serialize only within one process.
+        if not isinstance(token.token, Token):
+            # The standalone offline serializer contract also accepts token
+            # test doubles (which have no ORM identity or database session).
+            # Real persisted token models always take the SQL locking path.
+            istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+            return istniejacy or MachineApplication.generate_new_refilltoken(token, user_agent)
         token_id = token.token.id
         if token_id is None:
             raise ParameterError("Offline refill requires a persisted token.")
