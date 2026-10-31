@@ -117,7 +117,7 @@ class RefillTransactionTests(unittest.TestCase):
     def test_signing_failure_cannot_commit_refill(self):
         source = (ROOT / "privacyidea/api/validate.py").read_text(encoding="utf-8")
         handler = source.split("def offlinerefill():", 1)[1].split(
-            "\\ndef _conditional_access_identity():", 1
+            "\ndef _conditional_access_identity():", 1
         )[0]
         signed = handler.index('signed_auth_items({"offline": [refill_item]})')
         commit = handler.index("db.session.commit()")
