@@ -82,10 +82,14 @@ class StableRefillTokenTests(unittest.TestCase):
         self.assertEqual(problemy(self.offline, self.validate), [])
 
     def test_negative_control_when_login_rotates_again(self) -> None:
-        zlamane = self.offline.replace(
-            'ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)',
-            'ret["refilltoken"] = MachineApplication.generate_new_refilltoken(token, user_agent)',
+        zlamane, replacements = re.subn(
+            r'ret\["refilltoken"\]\s*=\s*MachineApplication\.existing_or_new_refilltoken\s*\('
+            r'\s*token,\s*user_agent,\s*commit_db_session=commit_db_session\s*\)',
+            'ret["refilltoken"] = MachineApplication.generate_new_refilltoken('
+            'token, user_agent, commit_db_session=commit_db_session)',
+            self.offline,
         )
+        self.assertEqual(replacements, 1, "regresja musi faktycznie zamienic istniejace wywolanie")
         self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie po powrocie rotacji")
 
     def test_negative_control_when_reuse_is_removed(self) -> None:
