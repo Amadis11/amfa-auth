@@ -407,6 +407,51 @@ class AValidateOfflineTestCase(MyApiTestCase):
         finally:
             remove_token(serial)
 
+    def test_04b_failed_signed_refill_does_not_consume_otp_or_rotate_refilltoken(self):
+        """One failing signature must leave a valid refill retryable."""
+        serial = "AMFA-SIGNER-FAIL-REFILL"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        try:
+            attach_token(serial, "offline", hostname="pippin",
+                         resolver_name="testresolver", options={"count": 3, "rounds": 1})
+            with self.app.test_request_context("/validate/check", method="POST",
+                                               data={"serial": serial, "pass": "pin755224"},
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                response = self.app.full_dispatch_request()
+                self.assertTrue(response.json["result"]["value"], response.json)
+                offline_entry = response.json["auth_items"]["offline"][0]
+            refilltoken = offline_entry["refilltoken"]
+            counter = min(int(k) for k in offline_entry["response"])
+            token = get_tokens(serial=serial)[0]
+            password = "pin" + token._calc_otp(counter)
+            before = token.token.count
+            payload = {"serial": serial, "pass": password, "refilltoken": refilltoken}
+            with mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
+                            side_effect=RuntimeError("test signer unavailable")):
+                with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                                   data=payload,
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    try:
+                        failed = self.app.full_dispatch_request()
+                    except RuntimeError:
+                        pass  # An unmasked signing failure may propagate to the caller.
+                    else:
+                        self.assertNotEqual(failed.status_code, 200)
+            db.session.expire_all()
+            after = get_tokens(serial=serial)[0]
+            self.assertEqual(after.token.count, before, "signing failure consumed offline counters")
+            self.assertEqual(after.get_tokeninfo("refilltoken"), refilltoken,
+                             "signing failure rotated a credential the client never received")
+            with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                               data=payload,
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                retry = self.app.full_dispatch_request()
+                self.assertEqual(retry.status_code, 200, retry.json)
+                self.assertTrue(retry.json["result"]["value"], retry.json)
+        finally:
+            remove_token(serial)
+
     def test_04_multiple_offline_attachments_share_one_refilltoken(self):
         """Dwa przylaczenia offline (HOTP) dostaja **ten sam** refilltoken (AMFA: #1156, plaster 04, Z4).
 
