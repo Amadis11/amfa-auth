@@ -116,6 +116,9 @@ class ParallelOfflineRefillTests(MyApiTestCase):
         self.assertFalse(second.is_alive(), "second refill worker deadlocked")
         self.assertEqual(failures, [], f"refill workers raised: {failures!r}")
         self.assertEqual(sorted(status for status, _ in results), [200, 400], results)
+        # This test's main app context loaded the Token before worker commits.
+        # Expire its identity map so assertions read the persisted SQL state.
+        db.session.expire_all()
         self.assertEqual(
             get_one_token(serial=serial).token.count, 105,
             "counter must be advanced exactly once (102 before refill, +3)",
