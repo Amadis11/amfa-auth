@@ -25,6 +25,9 @@
 import logging
 
 from passlib.hash import pbkdf2_sha512
+from sqlalchemy import select
+
+from privacyidea.models import Token, TokenInfo, db
 
 from privacyidea.lib.applications import MachineApplicationBase
 from privacyidea.lib.config import get_prepend_pin
@@ -33,6 +36,7 @@ from privacyidea.lib.error import ValidateError, ParameterError
 from privacyidea.lib.fido2.token_info import FIDO2TokenInfo
 from privacyidea.lib.policy import TYPE
 from privacyidea.lib.token import get_one_token
+from privacyidea.lib.tokens.HMAC import HmacOtp
 from privacyidea.lib.utils import get_computer_name_from_user_agent
 
 log = logging.getLogger(__name__)
@@ -60,7 +64,7 @@ class MachineApplication(MachineApplicationBase):
     application_name = "offline"
 
     @staticmethod
-    def generate_new_refilltoken(token, user_agent=None):
+    def generate_new_refilltoken(token, user_agent=None, *, commit_db_session=True):
         """
         Generate new refill token and store it in the tokeninfo of the token.
         :param token: token in question
@@ -82,7 +86,7 @@ class MachineApplication(MachineApplicationBase):
             key = "refilltoken"
 
         new_refilltoken = geturandom(REFILLTOKEN_LENGTH, hex=True)
-        token.write_tokeninfo(key, new_refilltoken)
+        token.write_tokeninfo(key, new_refilltoken, commit_db_session=commit_db_session)
         return new_refilltoken
 
     @staticmethod
@@ -115,13 +119,46 @@ class MachineApplication(MachineApplicationBase):
         go dopiero udany refill w `offlinerefill`. Odpowiedzi logowania sa wiec wzgledem niego
         idempotentne, a powtorzone zadanie nie unieważnia tego, co klient juz zapisal.
         """
-        istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+        # Two /validate/check requests for the same new token may both reach
+        # here before either writes tokeninfo. A read-then-insert alone either
+        # issues an obsolete refilltoken or hits UNIQUE(token_id, Key).
+        # Lock the parent row (it already exists), then use a locking read of
+        # TokenInfo so even MariaDB REPEATABLE READ does not reuse an old
+        # snapshot. The winning insertion commits before the waiting request
+        # rechecks the database. Do not serialize only within one process.
+        if not isinstance(token.token, Token):
+            # The standalone offline serializer contract also accepts token
+            # test doubles (which have no ORM identity or database session).
+            # Real persisted token models always take the SQL locking path.
+            istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+            return istniejacy or MachineApplication.generate_new_refilltoken(token, user_agent)
+        token_id = token.token.id
+        if token_id is None:
+            raise ParameterError("Offline refill requires a persisted token.")
+        db.session.execute(
+            select(Token.id).where(Token.id == token_id).with_for_update()
+        ).scalar_one()
+        if token.type.lower() in ("webauthn", "passkey"):
+            computer_name = get_computer_name_from_user_agent(user_agent)
+            if not computer_name:
+                raise ParameterError("Unable to generate refill token without computer name.")
+            key = "refilltoken_" + computer_name
+        else:
+            key = "refilltoken"
+        istniejacy = db.session.execute(
+            select(TokenInfo.Value)
+            .where(TokenInfo.token_id == token_id, TokenInfo.Key == key)
+            .with_for_update()
+        ).scalar_one_or_none()
         if istniejacy:
+            # get_tokeninfo() uses a lazy relationship that may have been
+            # populated before the lock; invalidate it before later reads.
+            db.session.expire(token.token, ["info_list"])
             return istniejacy
         return MachineApplication.generate_new_refilltoken(token, user_agent)
 
     @staticmethod
-    def get_offline_otps(token, otppin, amount, rounds=ROUNDS):
+    def get_offline_otps(token, otppin, amount, rounds=ROUNDS, *, atomic=False):
         """
         Retrieve the desired number of passwords (= PIN + OTP), hash them
         and return them in a dictionary. Increase the token counter.
@@ -146,12 +183,15 @@ class MachineApplication(MachineApplicationBase):
         # token_obj.enable(False)
         # increase the counter by the consumed values and
         # also store it in tokeninfo.
-        token.inc_otp_counter(increment=amount)
+        if atomic:
+            token.inc_otp_counter(increment=amount, commit_db_session=False)
+        else:
+            token.inc_otp_counter(increment=amount)
 
         return otps
 
     @staticmethod
-    def get_refill(token, password, options=None):
+    def get_refill(token, password, options=None, *, atomic=False):
         """
         Returns new authentication OTPs to refill the client
 
@@ -174,19 +214,30 @@ class MachineApplication(MachineApplicationBase):
             first_offline_counter = current_token_counter - count
             if first_offline_counter < 0:
                 first_offline_counter = 0
-            # find the value in the offline OTP values! This resets the token.count!
-            matching_count = token.check_otp(otpval, first_offline_counter, count)
-            token.set_otp_count(current_token_counter)
-            # Raise an exception *after* we reset the token counter
+            if atomic:
+                # offlinerefill holds SELECT ... FOR UPDATE until the *single*
+                # final commit. HotpTokenClass.check_otp calls set_otp_count(),
+                # which commits and silently releases that lock. Verify the
+                # same HOTP window without mutating the counter instead.
+                verifier = HmacOtp(
+                    token.token.get_otpkey(), first_offline_counter, int(token.token.otplen),
+                    token.get_hashlib(token.hashlib),
+                )
+                matching_count = verifier.checkOtp(otpval, count)
+            else:
+                # Legacy callers keep their prior counter and autosync logic.
+                matching_count = token.check_otp(otpval, first_offline_counter, count)
+                token.set_otp_count(current_token_counter)
             if matching_count < 0:
                 raise ValidateError("You provided a wrong OTP value.")
             # We have to add 1 here: Assume *first_offline_counter* is the counter value of the first offline OTP
             # we sent to the client. Assume the client then requests a refill with that exact OTP value.
             # Then, we need to respond with a refill of one OTP value, as the client has consumed one OTP value.
             counter_diff = matching_count - first_offline_counter + 1
-            otps = MachineApplication.get_offline_otps(token, otppin, counter_diff, rounds)
-            token.write_tokeninfo(key="offline_counter",
-                                value=count)
+            otps = MachineApplication.get_offline_otps(token, otppin, counter_diff, rounds, atomic=atomic)
+            token.write_tokeninfo(
+                key="offline_counter", value=count, commit_db_session=not atomic,
+            )
         elif token.type.lower() in ["webauthn", "passkey"]:
             pass
         return otps
@@ -207,6 +258,38 @@ class MachineApplication(MachineApplicationBase):
         """
         if user_verification:
             response["userVerification"] = user_verification
+
+    @staticmethod
+    def _reserve_initial_hotp_bundle(token, otppin, count, rounds, user_agent=None):
+        """Reserve the complete offline HOTP batch under one token-row lock.
+
+        Two successful online validations can overlap after HOTP checkUserPass
+        has returned. The first login must not hand out a stale/overlapping
+        offline bag while another node allocates from the same counter.
+        Re-read the counter *after* SELECT FOR UPDATE, and do not commit
+        TokenInfo or counter changes until both are staged.
+        """
+        token_id = token.token.id
+        if token_id is None:
+            raise ParameterError("Offline HOTP token has no database identity.")
+        db.session.execute(
+            select(Token.id).where(Token.id == token_id).with_for_update()
+        ).scalar_one()
+        db.session.refresh(token.token)
+        db.session.expire(token.token, ["info_list"])
+        messages = []
+        if not token.check_all(messages):
+            raise ValidateError("Token is no longer valid for offline issuance.")
+        refilltoken = token.get_tokeninfo("refilltoken")
+        if not refilltoken:
+            refilltoken = MachineApplication.generate_new_refilltoken(
+                token, user_agent, commit_db_session=False,
+            )
+        otps = MachineApplication.get_offline_otps(
+            token, otppin, count, rounds, atomic=True,
+        )
+        db.session.commit()
+        return refilltoken, otps
 
     @staticmethod
     def get_authentication_item(token_type, serial, challenge=None, options=None, filter_param=None, user_agent=None,
@@ -249,7 +332,11 @@ class MachineApplication(MachineApplicationBase):
             # Refilltoken stabilny miedzy logowaniami (audyt 26.10.2026, plaster 04, Z4): rotacja przy
             # kazdym udanym `/validate/check` uniewazniala token, ktory klient juz zapisal. Odnawia go
             # dopiero udany refill w `offlinerefill`.
-            ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)
+            if token_type != "hotp" or not isinstance(getattr(token, "token", None), Token):
+                # WebAuthn/Passkey and standalone serializers retain the
+                # existing contract. Persisted HOTP reserves its counter and
+                # refilltoken *together* in the branch below.
+                ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)
 
             # Gather offline data depending on the token type
             if token_type == "webauthn":
@@ -269,10 +356,14 @@ class MachineApplication(MachineApplicationBase):
                 else:
                     otppin = ""
 
-                ret["response"] = MachineApplication.get_offline_otps(token,
-                                                                      otppin,
-                                                                      int(options.get("count", 100)),
-                                                                      int(options.get("rounds", ROUNDS)))
+                count = int(options.get("count", 100))
+                rounds = int(options.get("rounds", ROUNDS))
+                if isinstance(getattr(token, "token", None), Token):
+                    ret["refilltoken"], ret["response"] = MachineApplication._reserve_initial_hotp_bundle(
+                        token, otppin, count, rounds, user_agent,
+                    )
+                else:
+                    ret["response"] = MachineApplication.get_offline_otps(token, otppin, count, rounds)
             elif token_type == "passkey":
                 ret["response"].update({
                     "pubKey": token.get_tokeninfo("public_key"),
