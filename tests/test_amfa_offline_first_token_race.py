@@ -68,10 +68,12 @@ class FirstOfflineRefillTokenRaceTests(MyTestCase):
                 self.assertTrue(second_attempt.wait(10), "second writer did not attempt the token row lock")
                 self.assertFalse(any(results), "first token generated before test released the lock")
                 release_generator.set()
-                first.join(timeout=15)
-                second.join(timeout=15)
         finally:
             release_generator.set()
+            if first.ident is not None:
+                first.join(timeout=15)
+            if second.ident is not None:
+                second.join(timeout=15)
             event.remove(db.engine, "before_cursor_execute", observe_sql)
         self.assertFalse(first.is_alive(), "first worker deadlocked")
         self.assertFalse(second.is_alive(), "second worker deadlocked")
