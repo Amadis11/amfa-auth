@@ -276,7 +276,13 @@ def offlinerefill():
             raise ParameterError(_("The token does not exist"))
 
         token = tokens[0]
-        # check if token is disabled or otherwise not fit for auth
+        # Lock only the token row, without joining nullable relationships.
+        # SQLAlchemy's refresh(..., with_for_update=True) can generate outer
+        # joins and PostgreSQL rejects FOR UPDATE on their nullable side.
+        # Acquire the narrowly scoped lock first, then refresh ORM state and
+        # check validity before reading attachments or issuing new OTPs.
+        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+        db.session.refresh(token.token)
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
@@ -293,8 +299,7 @@ def offlinerefill():
             # Uwaga: to blad OGOLNY privacyIDEA, nie nasza funkcja — kandydat do upstreamu.
             # `token` to klasa tokenu (opakowanie), wiersz bazy siedzi w `token.token`; serial jest
             # unikalny, wiec lock trafia w ten sam wiersz co `SELECT ... FOR UPDATE` w cyklu zycia.
-            db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
-            db.session.refresh(token.token)
+            # State and attachments were checked after the lock above.
             # TODO: Currently we do not distinguish, if a token had more than one offline attachment
             # check refill token depending on token type
             refilltoken_stored = None
