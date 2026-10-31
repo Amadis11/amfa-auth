@@ -88,6 +88,7 @@ clients consume from challenge responses.
 import copy
 import json
 import logging
+import secrets
 import threading
 
 from flask import (Blueprint, request, g, Response)
@@ -316,7 +317,13 @@ def offlinerefill():
                     raise ParameterError(_("Machine can not be identified by user agent!"))
                 refilltoken_stored = token.get_tokeninfo("refilltoken_" + computer_name)
 
-            if refilltoken_stored and refilltoken_stored == refilltoken_request:
+            # Refill credentials are bearer secrets. Compare their values in
+            # constant time and reject malformed non-text inputs without a
+            # potentially exception-raising equality/substring conversion.
+            if (bool(refilltoken_stored) and isinstance(refilltoken_stored, str) and
+                    isinstance(refilltoken_request, str) and
+                    refilltoken_stored.isascii() and refilltoken_request.isascii() and
+                    secrets.compare_digest(refilltoken_stored, refilltoken_request)):
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
@@ -360,7 +367,7 @@ def offlinerefill():
                         SCOPE.AUTH, user=token.user if token.user else None)
                     refill_item = MachineApplication.get_authentication_item(
                         token.type, serial, user_agent=request.user_agent.string,
-                        user_verification=uv_policy)
+                        user_verification=uv_policy, commit_db_session=False)
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
@@ -374,6 +381,9 @@ def offlinerefill():
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
 
     except Exception as e:
+        db.session.rollback()
+        # Roll back before querying the masking policy: it could otherwise
+        # autoflush token updates or run against a failed SQL transaction.
         if Match.user(
                 g,
                 scope=SCOPE.TOKEN,

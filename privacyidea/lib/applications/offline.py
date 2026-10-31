@@ -42,6 +42,19 @@ from privacyidea.lib.utils import get_computer_name_from_user_agent
 log = logging.getLogger(__name__)
 ROUNDS = 6549
 REFILLTOKEN_LENGTH = 40
+# The existing max batch/count and max rounds separately allowed 1024 * 100000
+# SHA512 PBKDF2 iterations in one HTTP request while holding a token row lock.
+# Preserve the normal 1024 x 6549 batch but bound their combined CPU cost.
+MAX_OFFLINE_PBKDF2_WORK = 10_000_000
+
+
+def _validate_otp_generation_work(amount, rounds):
+    if type(amount) is not int or not 1 <= amount <= 1024:
+        raise ParameterError(f"Invalid offline OTP amount: {amount!r}")
+    if type(rounds) is not int or not 1 <= rounds <= 100000:
+        raise ParameterError(f"Invalid offline OTP PBKDF2 rounds: {rounds!r}")
+    if amount * rounds > MAX_OFFLINE_PBKDF2_WORK:
+        raise ParameterError("Offline OTP hash work budget exceeded")
 
 
 class MachineApplication(MachineApplicationBase):
@@ -107,7 +120,7 @@ class MachineApplication(MachineApplicationBase):
         return token.get_tokeninfo(key)
 
     @staticmethod
-    def existing_or_new_refilltoken(token, user_agent=None):
+    def existing_or_new_refilltoken(token, user_agent=None, *, commit_db_session=True):
         """Stabilny refilltoken miedzy logowaniami (audyt 26.10.2026, plaster 04, Z4).
 
         Kazde udane `/validate/check` wolalo `generate_new_refilltoken`, co **nadpisywalo** zapisany
@@ -131,7 +144,8 @@ class MachineApplication(MachineApplicationBase):
             # test doubles (which have no ORM identity or database session).
             # Real persisted token models always take the SQL locking path.
             istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
-            return istniejacy or MachineApplication.generate_new_refilltoken(token, user_agent)
+            return istniejacy or MachineApplication.generate_new_refilltoken(
+                token, user_agent, commit_db_session=commit_db_session)
         token_id = token.token.id
         if token_id is None:
             raise ParameterError("Offline refill requires a persisted token.")
@@ -155,7 +169,8 @@ class MachineApplication(MachineApplicationBase):
             # populated before the lock; invalidate it before later reads.
             db.session.expire(token.token, ["info_list"])
             return istniejacy
-        return MachineApplication.generate_new_refilltoken(token, user_agent)
+        return MachineApplication.generate_new_refilltoken(
+            token, user_agent, commit_db_session=commit_db_session)
 
     @staticmethod
     def get_offline_otps(token, otppin, amount, rounds=ROUNDS, *, atomic=False):
@@ -169,12 +184,18 @@ class MachineApplication(MachineApplicationBase):
         :param rounds: Number of PBKDF2 rounds
         :return: dictionary
         """
-        if not isinstance(amount, int) or not 0 <= amount <= 1024:
-            raise ParameterError(f"Invalid offline OTP amount: {amount!r}")
-        if not isinstance(rounds, int) or not 1 <= rounds <= 100000:
-            raise ParameterError(f"Invalid offline OTP PBKDF2 rounds: {rounds!r}")
-        (res, err, otp_dict) = token.get_multi_otp(count=amount, counter_index=True)
-        otps = otp_dict.get("otp")
+        # Legacy standalone callers use zero as an explicit empty request.
+        # It must neither generate an OTP nor advance the HOTP counter.
+        if type(amount) is int and amount == 0:
+            return {}
+        _validate_otp_generation_work(amount, rounds)
+        (res, _err, otp_dict) = token.get_multi_otp(count=amount, counter_index=True)
+        otps = otp_dict.get("otp") if isinstance(otp_dict, dict) else None
+        # Never bump the counter if the token returned an incomplete or
+        # unsupported batch. In a signed full-window refill, the client must
+        # receive exactly the counters which the server reserves.
+        if not res or not isinstance(otps, dict) or len(otps) != amount:
+            raise ValidateError("Failed to generate the complete offline OTP batch")
         prepend_pin = get_prepend_pin()
         for key, otp in otps.items():
             # Return the hash of OTP PIN and OTP values
@@ -213,6 +234,7 @@ class MachineApplication(MachineApplicationBase):
                 raise ParameterError(f"Invalid offline refill window: {count!r}")
             if not 1 <= rounds <= 100000:
                 raise ParameterError(f"Invalid offline refill PBKDF2 rounds: {rounds!r}")
+            _validate_otp_generation_work(count, rounds)
             _r, otppin, otpval = token.split_pin_pass(password)
             if not _r:
                 raise ParameterError("Could not split password")
@@ -266,7 +288,7 @@ class MachineApplication(MachineApplicationBase):
             response["userVerification"] = user_verification
 
     @staticmethod
-    def _reserve_initial_hotp_bundle(token, otppin, count, rounds, user_agent=None):
+    def _reserve_initial_hotp_bundle(token, otppin, count, rounds, user_agent=None, *, commit_db_session=True):
         """Reserve the complete offline HOTP batch under one token-row lock.
 
         Two successful online validations can overlap after HOTP checkUserPass
@@ -275,6 +297,8 @@ class MachineApplication(MachineApplicationBase):
         Re-read the counter *after* SELECT FOR UPDATE, and do not commit
         TokenInfo or counter changes until both are staged.
         """
+        # Reject expensive/invalid batches before acquiring SELECT FOR UPDATE.
+        _validate_otp_generation_work(count, rounds)
         token_id = token.token.id
         if token_id is None:
             raise ParameterError("Offline HOTP token has no database identity.")
@@ -294,12 +318,13 @@ class MachineApplication(MachineApplicationBase):
         otps = MachineApplication.get_offline_otps(
             token, otppin, count, rounds, atomic=True,
         )
-        db.session.commit()
+        if commit_db_session:
+            db.session.commit()
         return refilltoken, otps
 
     @staticmethod
     def get_authentication_item(token_type, serial, challenge=None, options=None, filter_param=None, user_agent=None,
-                                user_verification=None):
+                                user_verification=None, commit_db_session=True):
         """
         :param token_type: the type of the token. At the moment
                            we support HOTP and WebAuthn/Passkey tokens.
@@ -342,7 +367,8 @@ class MachineApplication(MachineApplicationBase):
                 # WebAuthn/Passkey and standalone serializers retain the
                 # existing contract. Persisted HOTP reserves its counter and
                 # refilltoken *together* in the branch below.
-                ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)
+                ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(
+                    token, user_agent, commit_db_session=commit_db_session)
 
             # Gather offline data depending on the token type
             if token_type == "webauthn":
@@ -367,6 +393,7 @@ class MachineApplication(MachineApplicationBase):
                 if isinstance(getattr(token, "token", None), Token):
                     ret["refilltoken"], ret["response"] = MachineApplication._reserve_initial_hotp_bundle(
                         token, otppin, count, rounds, user_agent,
+                        commit_db_session=commit_db_session,
                     )
                 else:
                     ret["response"] = MachineApplication.get_offline_otps(token, otppin, count, rounds)
