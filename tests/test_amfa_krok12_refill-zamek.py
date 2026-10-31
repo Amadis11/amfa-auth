@@ -85,18 +85,11 @@ class RefillLockTests(unittest.TestCase):
     def test_negative_control_validity_checked_before_lock(self) -> None:
         source = zrodlo()
         section = cialo_funkcji(source, "offlinerefill")
-        snippet = (
-            "        message_list = []\\n"
-            "        if not token.check_all(message_list):\\n"
-            "            log.info(f\\\"Failed to offline refill: {message_list}\\\")\\n"
-            "            raise ParameterError(_(\\\"The token is not valid.\\\"))\\n"
-        )
-        self.assertIn(snippet, section)
-        moved = section.replace(snippet, "", 1).replace(
-            "        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()",
-            snippet + "        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()",
-            1,
-        )
+        # Insert a premature validity check before the lock. The guard must
+        # detect it even if the correct check still exists later on.
+        lock = "db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()"
+        self.assertIn(lock, section)
+        moved = section.replace(lock, "if not token.check_all(message_list): " + lock, 1)
         self.assertIn(
             "check_all() musi sprawdzac token odswiezony pod zamkiem, przed refill",
             problemy(moved),
