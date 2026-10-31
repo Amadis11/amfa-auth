@@ -86,17 +86,20 @@ class MachineApplication(MachineApplicationBase):
         return key
 
     @staticmethod
-    def generate_new_refilltoken(token: TokenClass, user_agent: str | None = None) -> str:
+    def generate_new_refilltoken(token: TokenClass, user_agent: str | None = None,
+                                 *, commit_db_session: bool = True) -> str:
         """
         Generate new refill token and store it in the tokeninfo of the token.
         :param token: token in question
         :param user_agent: name of the machine, taken from the user-agent header
+        :param commit_db_session: write without committing, for callers that hold the token row lock
+            and commit their own batch in one transaction
         :return: a string
         """
         log.debug(f"Generating refilltoken for {token.get_serial()} with user agent {user_agent}")
         key = MachineApplication._refilltoken_key(token, user_agent)
         new_refilltoken = geturandom(REFILLTOKEN_LENGTH, hex=True)
-        token.write_tokeninfo(key, new_refilltoken)
+        token.write_tokeninfo(key, new_refilltoken, commit_db_session=commit_db_session)
         return new_refilltoken
 
     @staticmethod
@@ -151,7 +154,8 @@ class MachineApplication(MachineApplicationBase):
         return otps
 
     @staticmethod
-    def get_offline_otps(token: TokenClass, otppin: str, amount: int, rounds: int = ROUNDS) -> dict:
+    def get_offline_otps(token: TokenClass, otppin: str, amount: int, rounds: int = ROUNDS,
+                         *, atomic: bool = False) -> dict:
         """
         Retrieve the desired number of passwords (= PIN + OTP), hash them
         and return them in a dictionary. Increase the token counter.
@@ -160,6 +164,8 @@ class MachineApplication(MachineApplicationBase):
         :param otppin: The OTP PIN to prepend in the passwords. The PIN is not validated!
         :param amount: Number of OTP values (non-negative!)
         :param rounds: Number of PBKDF2 rounds
+        :param atomic: increment the counter without committing, for callers that hold the token row
+            lock and commit the whole batch (counter, refill token, response material) in one transaction
         :return: dictionary
         """
         otps = MachineApplication._hash_offline_otps(token, otppin, amount, rounds)
@@ -168,7 +174,10 @@ class MachineApplication(MachineApplicationBase):
         # token_obj.enable(False)
         # increase the counter by the consumed values and
         # also store it in tokeninfo.
-        token.inc_otp_counter(increment=amount)
+        if atomic:
+            token.inc_otp_counter(increment=amount, commit_db_session=False)
+        else:
+            token.inc_otp_counter(increment=amount)
         return otps
 
     @staticmethod
