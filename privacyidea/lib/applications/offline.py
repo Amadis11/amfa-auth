@@ -266,7 +266,7 @@ class MachineApplication(MachineApplicationBase):
             response["userVerification"] = user_verification
 
     @staticmethod
-    def _reserve_initial_hotp_bundle(token, otppin, count, rounds, user_agent=None):
+    def _reserve_initial_hotp_bundle(token, otppin, count, rounds, user_agent=None, *, commit_db_session=True):
         """Reserve the complete offline HOTP batch under one token-row lock.
 
         Two successful online validations can overlap after HOTP checkUserPass
@@ -294,12 +294,13 @@ class MachineApplication(MachineApplicationBase):
         otps = MachineApplication.get_offline_otps(
             token, otppin, count, rounds, atomic=True,
         )
-        db.session.commit()
+        if commit_db_session:
+            db.session.commit()
         return refilltoken, otps
 
     @staticmethod
     def get_authentication_item(token_type, serial, challenge=None, options=None, filter_param=None, user_agent=None,
-                                user_verification=None):
+                                user_verification=None, commit_db_session=True):
         """
         :param token_type: the type of the token. At the moment
                            we support HOTP and WebAuthn/Passkey tokens.
@@ -367,6 +368,7 @@ class MachineApplication(MachineApplicationBase):
                 if isinstance(getattr(token, "token", None), Token):
                     ret["refilltoken"], ret["response"] = MachineApplication._reserve_initial_hotp_bundle(
                         token, otppin, count, rounds, user_agent,
+                        commit_db_session=commit_db_session,
                     )
                 else:
                     ret["response"] = MachineApplication.get_offline_otps(token, otppin, count, rounds)
