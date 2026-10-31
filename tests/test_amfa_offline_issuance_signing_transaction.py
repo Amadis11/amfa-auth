@@ -99,6 +99,41 @@ class OfflineSigningTransactionTests(unittest.TestCase):
         self.assertTrue(json.loads(response.data)["result"]["value"])
         self.assertNotIn("auth_items", json.loads(response.data))
 
+    def test_webauthn_first_refilltoken_is_staged_without_commit(self):
+        """A missing signer must not leave a fresh per-workstation token behind."""
+        writes = []
+        token = SimpleNamespace(
+            token=SimpleNamespace(), type="webauthn",
+            get_tokeninfo=lambda _key: None,
+            get_serial=lambda: "WEBX",
+            write_tokeninfo=lambda key, value, *, commit_db_session=True:
+                writes.append((key, value, commit_db_session)),
+        )
+        with patch.object(offline_module, "get_computer_name_from_user_agent",
+                          return_value="WINDOWS145"), \
+             patch.object(offline_module, "geturandom", return_value="web-refill"):
+            secret = offline_module.MachineApplication.existing_or_new_refilltoken(
+                token, "CP-WINDOWS145", commit_db_session=False)
+        self.assertEqual(secret, "web-refill")
+        self.assertEqual(writes, [("refilltoken_WINDOWS145", "web-refill", False)])
+
+    def test_passkey_first_refilltoken_is_staged_without_commit(self):
+        writes = []
+        token = SimpleNamespace(
+            token=SimpleNamespace(), type="passkey",
+            get_tokeninfo=lambda _key: None,
+            get_serial=lambda: "PASSKEYX",
+            write_tokeninfo=lambda key, value, *, commit_db_session=True:
+                writes.append((key, value, commit_db_session)),
+        )
+        with patch.object(offline_module, "get_computer_name_from_user_agent",
+                          return_value="WINDOWS145"), \
+             patch.object(offline_module, "geturandom", return_value="pk-refill"):
+            secret = offline_module.MachineApplication.existing_or_new_refilltoken(
+                token, "CP-WINDOWS145", commit_db_session=False)
+        self.assertEqual(secret, "pk-refill")
+        self.assertEqual(writes, [("refilltoken_WINDOWS145", "pk-refill", False)])
+
     def test_initial_hotp_bundle_can_defer_commit(self):
         token = SimpleNamespace(token=SimpleNamespace(id=42),
                                 check_all=lambda messages: True,
