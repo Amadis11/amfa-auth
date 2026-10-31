@@ -27,6 +27,8 @@ def signed_refill_violations(source: str) -> list[str]:
         "non-committing refill secret rotation": "commit_db_session=False",
         "post-lock ORM TokenInfo expiry": 'db.session.expire(token.token, ["info_list"])',
         "WebAuthn signed refill must not commit early": "user_verification=uv_policy, commit_db_session=False)",
+        "bearer token constant-time comparison": "secrets.compare_digest(refilltoken_stored, refilltoken_request)",
+        "failed-refill rollback": "except Exception as e:\n        db.session.rollback()",
     }
     violations = [name for name, needle in expected.items() if needle not in handler]
     sign = handler.find('signed_auth_items({"offline": [refill_item]})')
@@ -41,6 +43,18 @@ def signed_refill_violations(source: str) -> list[str]:
 class SignedRefillHandlerContractTests(unittest.TestCase):
     def test_signed_offline_handler_keeps_full_batch_and_atomic_rotation(self):
         self.assertEqual(signed_refill_violations(SOURCE), [])
+
+    def test_negative_control_rejects_timing_unsafe_bearer_comparison(self):
+        safe = "secrets.compare_digest(refilltoken_stored, refilltoken_request)"
+        broken = SOURCE.replace(safe, "refilltoken_stored == refilltoken_request")
+        self.assertNotEqual(broken, SOURCE)
+        self.assertIn("bearer token constant-time comparison", signed_refill_violations(broken))
+
+    def test_negative_control_requires_rollback_before_error_masking(self):
+        original = "except Exception as e:\\n        db.session.rollback()"
+        broken = SOURCE.replace(original, "except Exception as e:")
+        self.assertNotEqual(broken, SOURCE)
+        self.assertIn("failed-refill rollback", signed_refill_violations(broken))
 
     def test_negative_control_catches_early_webauthn_serializer_commit(self):
         original = "user_verification=uv_policy, commit_db_session=False)"
