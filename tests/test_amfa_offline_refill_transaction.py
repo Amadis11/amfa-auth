@@ -99,6 +99,7 @@ class RefillTransactionTests(unittest.TestCase):
         handler = src[start:end]
         ordered = [
             "with_for_update()",
+            'db.session.expire(token.token, ["info_list"])',
             'refilltoken_stored = token.get_tokeninfo("refilltoken")',
             "MachineApplication.get_refill(token, password, options, atomic=True)",
             "commit_db_session=False,",
