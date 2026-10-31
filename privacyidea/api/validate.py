@@ -374,6 +374,11 @@ def offlinerefill():
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
 
     except Exception as e:
+        # A failed signature, serialization, authorization or DB write must
+        # undo *all* staged counter/refilltoken updates before the masking
+        # policy queries the database. That query may otherwise autoflush
+        # pending token changes (and can also run on a failed SQL transaction).
+        db.session.rollback()
         if Match.user(
                 g,
                 scope=SCOPE.TOKEN,
