@@ -103,8 +103,10 @@ class RefillTransactionTests(unittest.TestCase):
             'refilltoken_stored = token.get_tokeninfo("refilltoken")',
             "MachineApplication.get_refill(token, password, options, atomic=True)",
             "commit_db_session=False,",
-            "db.session.commit()",
             "response = send_result(True)",
+            "content[\"auth_items\"] = signed_auth_items(",
+            "response.set_data(json.dumps(content))",
+            "db.session.commit()",
         ]
         offsets = [handler.index(item) for item in ordered]
         self.assertEqual(offsets, sorted(offsets))
