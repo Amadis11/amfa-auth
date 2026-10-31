@@ -25,6 +25,9 @@
 import logging
 
 from passlib.hash import pbkdf2_sha512
+from sqlalchemy import select
+
+from privacyidea.models import Token, TokenInfo, db
 
 from privacyidea.lib.applications import MachineApplicationBase
 from privacyidea.lib.config import get_prepend_pin
@@ -116,8 +119,41 @@ class MachineApplication(MachineApplicationBase):
         go dopiero udany refill w `offlinerefill`. Odpowiedzi logowania sa wiec wzgledem niego
         idempotentne, a powtorzone zadanie nie unieważnia tego, co klient juz zapisal.
         """
-        istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+        # Two /validate/check requests for the same new token may both reach
+        # here before either writes tokeninfo. A read-then-insert alone either
+        # issues an obsolete refilltoken or hits UNIQUE(token_id, Key).
+        # Lock the parent row (it already exists), then use a locking read of
+        # TokenInfo so even MariaDB REPEATABLE READ does not reuse an old
+        # snapshot. The winning insertion commits before the waiting request
+        # rechecks the database. Do not serialize only within one process.
+        if not isinstance(token.token, Token):
+            # The standalone offline serializer contract also accepts token
+            # test doubles (which have no ORM identity or database session).
+            # Real persisted token models always take the SQL locking path.
+            istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
+            return istniejacy or MachineApplication.generate_new_refilltoken(token, user_agent)
+        token_id = token.token.id
+        if token_id is None:
+            raise ParameterError("Offline refill requires a persisted token.")
+        db.session.execute(
+            select(Token.id).where(Token.id == token_id).with_for_update()
+        ).scalar_one()
+        if token.type.lower() in ("webauthn", "passkey"):
+            computer_name = get_computer_name_from_user_agent(user_agent)
+            if not computer_name:
+                raise ParameterError("Unable to generate refill token without computer name.")
+            key = "refilltoken_" + computer_name
+        else:
+            key = "refilltoken"
+        istniejacy = db.session.execute(
+            select(TokenInfo.Value)
+            .where(TokenInfo.token_id == token_id, TokenInfo.Key == key)
+            .with_for_update()
+        ).scalar_one_or_none()
         if istniejacy:
+            # get_tokeninfo() uses a lazy relationship that may have been
+            # populated before the lock; invalidate it before later reads.
+            db.session.expire(token.token, ["info_list"])
             return istniejacy
         return MachineApplication.generate_new_refilltoken(token, user_agent)
 
