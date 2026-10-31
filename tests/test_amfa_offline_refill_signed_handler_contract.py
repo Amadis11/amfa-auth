@@ -51,7 +51,7 @@ class SignedRefillHandlerContractTests(unittest.TestCase):
         self.assertIn("bearer token constant-time comparison", signed_refill_violations(broken))
 
     def test_negative_control_requires_rollback_before_error_masking(self):
-        original = "except Exception as e:\\n        db.session.rollback()"
+        original = "except Exception as e:\n        db.session.rollback()"
         broken = SOURCE.replace(original, "except Exception as e:")
         self.assertNotEqual(broken, SOURCE)
         self.assertIn("failed-refill rollback", signed_refill_violations(broken))
