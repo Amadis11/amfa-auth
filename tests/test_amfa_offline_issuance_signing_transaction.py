@@ -28,7 +28,7 @@ class OfflineSigningTransactionTests(unittest.TestCase):
                                user_agent=SimpleNamespace(string="AMFA-CP/1"),
                                User=None)
 
-    def _run(self, signer, *, failing_serialization=False):
+    def _run(self, signer, *, failing_serialization=False, fail_commit=False):
         app = Flask(__name__)
         response = FakeResponse()
         events = []
@@ -52,7 +52,11 @@ class OfflineSigningTransactionTests(unittest.TestCase):
                  patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
                        side_effect=signer), \\
                  patch.object(postpolicy, "db") as db:
-                db.session.commit.side_effect = lambda: events.append("commit")
+                def commit():
+                    events.append("commit")
+                    if fail_commit:
+                        raise RuntimeError("database commit failed")
+                db.session.commit.side_effect = commit
                 db.session.rollback.side_effect = lambda: events.append("rollback")
                 result = postpolicy.offline_info(self._request(), response)
                 self.assertIs(result, response)
@@ -86,6 +90,14 @@ class OfflineSigningTransactionTests(unittest.TestCase):
         self.assertEqual(events, ["serialize", "rollback"])
         self.assertEqual(commits, 0)
         self.assertEqual(rollbacks, 1)
+
+    def test_commit_failure_removes_signed_bag_from_online_response(self):
+        events, response, commits, rollbacks = self._run(lambda items: items, fail_commit=True)
+        self.assertEqual(events, ["serialize", "commit", "rollback", "serialize"])
+        self.assertEqual(commits, 1)
+        self.assertEqual(rollbacks, 1)
+        self.assertTrue(json.loads(response.data)["result"]["value"])
+        self.assertNotIn("auth_items", json.loads(response.data))
 
     def test_initial_hotp_bundle_can_defer_commit(self):
         token = SimpleNamespace(token=SimpleNamespace(id=42),
