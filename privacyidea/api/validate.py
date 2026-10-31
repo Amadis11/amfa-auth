@@ -283,6 +283,10 @@ def offlinerefill():
         # check validity before reading attachments or issuing new OTPs.
         db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
         db.session.refresh(token.token)
+        # get_tokens() may have populated the lazy TokenInfo relationship
+        # BEFORE waiting for the row lock. Re-read the rotated refilltoken
+        # from the database only after the lock has been acquired.
+        db.session.expire(token.token, ["info_list"])
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
