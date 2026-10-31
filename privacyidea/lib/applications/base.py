@@ -127,20 +127,25 @@ class MachineApplication:
 
 @log_with(log)
 def get_auth_item(application, token_type,serial,
-                  challenge=None, options=None, filter_param=None, user_agent=None, user_verification=None):
+                  challenge=None, options=None, filter_param=None, user_agent=None, user_verification=None,
+                  defer_offline_commit=False):
 
     options = options or {}
     # application_module from application
     class_dict = get_machine_application_class_dict()
     # should be able to run as class or as object
     auth_class = class_dict.get(application)
+    # Only the offline application understands deferred HOTP persistence. Other
+    # application classes keep their existing method signatures unchanged.
+    commit_options = {"commit_db_session": False} if defer_offline_commit and application == "offline" else {}
     auth_item = auth_class.get_authentication_item(token_type,
                                                    serial,
                                                    challenge=challenge,
                                                    options=options,
                                                    filter_param=filter_param,
                                                    user_agent=user_agent,
-                                                   user_verification=user_verification)
+                                                   user_verification=user_verification,
+                                                   **commit_options)
     return auth_item
 
 
