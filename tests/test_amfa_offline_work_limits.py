@@ -16,7 +16,8 @@ class OfflineWorkLimitTests(unittest.TestCase):
 
     def test_empty_or_boolean_batch_count_does_not_produce_a_fake_reservation(self):
         token = Mock()
-        for amount in (0, True, False):
+        self.assertEqual(MachineApplication.get_offline_otps(token, "", 0, 1), {})
+        for amount in (True, False):
             with self.subTest(amount=amount), self.assertRaises(ParameterError):
                 MachineApplication.get_offline_otps(token, "", amount, 1)
         token.get_multi_otp.assert_not_called()
