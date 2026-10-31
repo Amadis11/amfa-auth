@@ -20,6 +20,29 @@ from .base import MyTestCase
 
 
 class InitialHOTPBatchRaceTests(MyTestCase):
+    def test_failed_signed_issuance_rolls_back_counter_and_refilltoken_on_real_sql(self):
+        if db.engine.dialect.name not in ("postgresql", "mysql", "mariadb"):
+            self.skipTest("requires real PostgreSQL/MariaDB rollback semantics")
+        serial = "AMFA-FIRST-HOTP-BATCH-ROLLBACK"
+        record = Token(serial, tokentype="hotp")
+        record.update_otpkey(self.otpkey)
+        record.save()
+
+        token = get_one_token(serial=serial)
+        refill, bag = MachineApplication._reserve_initial_hotp_bundle(
+            token, "", 3, 1, "AMFA-test", commit_db_session=False,
+        )
+        self.assertTrue(refill)
+        self.assertEqual(len(bag), 3)
+        self.assertEqual(token.token.count, 3, "batch is staged before sign()")
+        # The caller failed to sign the offline item: request transaction aborts.
+        db.session.rollback()
+        db.session.expire_all()
+        restored = get_one_token(serial=serial)
+        self.assertEqual(restored.token.count, 0, "unpublished HOTP counters must remain usable")
+        self.assertFalse(restored.get_tokeninfo("refilltoken"),
+                         "unpublished first refilltoken must not survive signing failure")
+
     def test_two_initial_issuances_have_disjoint_counters_and_one_refilltoken(self):
         if db.engine.dialect.name not in ("postgresql", "mysql", "mariadb"):
             self.skipTest("requires real PostgreSQL/MariaDB SELECT FOR UPDATE")
