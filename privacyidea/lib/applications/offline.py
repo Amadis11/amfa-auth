@@ -42,6 +42,19 @@ from privacyidea.lib.utils import get_computer_name_from_user_agent
 log = logging.getLogger(__name__)
 ROUNDS = 6549
 REFILLTOKEN_LENGTH = 40
+# The existing max batch/count and max rounds separately allowed 1024 * 100000
+# SHA512 PBKDF2 iterations in one HTTP request while holding a token row lock.
+# Preserve the normal 1024 x 6549 batch but bound their combined CPU cost.
+MAX_OFFLINE_PBKDF2_WORK = 10_000_000
+
+
+def _validate_otp_generation_work(amount, rounds):
+    if type(amount) is not int or not 1 <= amount <= 1024:
+        raise ParameterError(f"Invalid offline OTP amount: {amount!r}")
+    if type(rounds) is not int or not 1 <= rounds <= 100000:
+        raise ParameterError(f"Invalid offline OTP PBKDF2 rounds: {rounds!r}")
+    if amount * rounds > MAX_OFFLINE_PBKDF2_WORK:
+        raise ParameterError("Offline OTP hash work budget exceeded")
 
 
 class MachineApplication(MachineApplicationBase):
@@ -171,12 +184,14 @@ class MachineApplication(MachineApplicationBase):
         :param rounds: Number of PBKDF2 rounds
         :return: dictionary
         """
-        if not isinstance(amount, int) or not 0 <= amount <= 1024:
-            raise ParameterError(f"Invalid offline OTP amount: {amount!r}")
-        if not isinstance(rounds, int) or not 1 <= rounds <= 100000:
-            raise ParameterError(f"Invalid offline OTP PBKDF2 rounds: {rounds!r}")
-        (res, err, otp_dict) = token.get_multi_otp(count=amount, counter_index=True)
-        otps = otp_dict.get("otp")
+        _validate_otp_generation_work(amount, rounds)
+        (res, _err, otp_dict) = token.get_multi_otp(count=amount, counter_index=True)
+        otps = otp_dict.get("otp") if isinstance(otp_dict, dict) else None
+        # Never bump the counter if the token returned an incomplete or
+        # unsupported batch. In a signed full-window refill, the client must
+        # receive exactly the counters which the server reserves.
+        if not res or not isinstance(otps, dict) or len(otps) != amount:
+            raise ValidateError("Failed to generate the complete offline OTP batch")
         prepend_pin = get_prepend_pin()
         for key, otp in otps.items():
             # Return the hash of OTP PIN and OTP values
@@ -215,6 +230,7 @@ class MachineApplication(MachineApplicationBase):
                 raise ParameterError(f"Invalid offline refill window: {count!r}")
             if not 1 <= rounds <= 100000:
                 raise ParameterError(f"Invalid offline refill PBKDF2 rounds: {rounds!r}")
+            _validate_otp_generation_work(count, rounds)
             _r, otppin, otpval = token.split_pin_pass(password)
             if not _r:
                 raise ParameterError("Could not split password")
@@ -277,6 +293,8 @@ class MachineApplication(MachineApplicationBase):
         Re-read the counter *after* SELECT FOR UPDATE, and do not commit
         TokenInfo or counter changes until both are staged.
         """
+        # Reject expensive/invalid batches before acquiring SELECT FOR UPDATE.
+        _validate_otp_generation_work(count, rounds)
         token_id = token.token.id
         if token_id is None:
             raise ParameterError("Offline HOTP token has no database identity.")
