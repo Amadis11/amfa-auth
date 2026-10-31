@@ -427,6 +427,15 @@ class AValidateOfflineTestCase(MyApiTestCase):
             password = "pin" + token._calc_otp(counter)
             before = token.token.count
             payload = {"serial": serial, "pass": password, "refilltoken": refilltoken}
+            # secrets.compare_digest only accepts ASCII str (or bytes): reject
+            # malformed Unicode refill credentials as an ordinary bad token,
+            # not an uncaught TypeError/HTTP 500.
+            bad_payload = dict(payload, refilltoken="\\u017c" * len(refilltoken))
+            with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                               data=bad_payload,
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                bad_response = self.app.full_dispatch_request()
+                self.assertEqual(bad_response.status_code, 400, bad_response.json)
             with mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
                             side_effect=RuntimeError("test signer unavailable")):
                 with self.app.test_request_context("/validate/offlinerefill", method="POST",
