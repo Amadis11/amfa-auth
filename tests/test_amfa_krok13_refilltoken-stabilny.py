@@ -89,12 +89,15 @@ class StableRefillTokenTests(unittest.TestCase):
         self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie po powrocie rotacji")
 
     def test_negative_control_when_reuse_is_removed(self) -> None:
-        zlamane = self.offline.replace(
-            "        istniejacy = MachineApplication.existing_refilltoken(token, user_agent)\n"
-            "        if istniejacy:\n"
-            "            return istniejacy\n",
+        # The production path now performs its own locked TokenInfo read.
+        # The existing-refill path is retained for token-shaped test doubles;
+        # mutate that actual call, not an obsolete indentation template.
+        zlamane, replacements = re.subn(
+            r"(?m)^\s*istniejacy = MachineApplication\.existing_refilltoken\(token, user_agent\)\s*$",
             "",
+            self.offline,
         )
+        self.assertEqual(replacements, 1, "the regression test must actually change the source")
         self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie bez odczytu zapisanego")
 
     def test_negative_control_when_refill_stops_rotating(self) -> None:
