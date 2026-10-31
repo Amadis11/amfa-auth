@@ -17,6 +17,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 from datetime import datetime, timedelta, timezone
+import base64
+import json
+import os
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from unittest.mock import patch
 
 from webauthn.helpers.structs import AttestationConveyancePreference
@@ -722,6 +727,32 @@ class PasskeyAPITest(PasskeyAPITestBase):
             self.assertEqual(serial, offline["serial"])
             self.assertIn("response", offline)
             self.assertFalse(offline["response"])
+
+        # Signed refill must return a COMPLETE FIDO snapshot with the effective
+        # user/realm UV policy. Do not force "required" for a user whose
+        # policy explicitly says "discouraged" (#80).
+        environment = {
+            "AMFA_OFFLINE_ED25519_ENABLED": "1",
+            "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
+            "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+        }
+        with patch.dict(os.environ, environment), patch(
+            "privacyidea.lib.amfa_offline_signatures._load_key",
+            return_value=Ed25519PrivateKey.generate(),
+        ):
+            data = {"serial": serial, "refilltoken": refill_token, "pass": ""}
+            with self.app.test_request_context('/validate/offlinerefill', method='POST',
+                                               data=data, headers=headers):
+                res = self.app.full_dispatch_request()
+                self._assert_result_value_true(res.json)
+                envelope = res.json["auth_items"]["offline"][0]
+                self.assertEqual(envelope["alg"], "Ed25519")
+                signed_item = json.loads(base64.b64decode(envelope["signed_payload"], validate=True))
+                self.assertEqual(signed_item["serial"], serial)
+                self.assertEqual(signed_item["response"]["userVerification"], "discouraged")
+                self.assertEqual(signed_item["response"]["rpId"], self.rp_id)
+                self.assertIn("pubKey", signed_item["response"])
+                refill_token = signed_item["refilltoken"]
 
         # Disable offline for the token
         with self.app.test_request_context(f'/machine/token/{serial}/offline/1',
