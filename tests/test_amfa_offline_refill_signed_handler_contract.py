@@ -28,6 +28,7 @@ def signed_refill_violations(source: str) -> list[str]:
         "post-lock ORM TokenInfo expiry": 'db.session.expire(token.token, ["info_list"])',
         "WebAuthn signed refill must not commit early": "user_verification=uv_policy, commit_db_session=False)",
         "bearer token constant-time comparison": "secrets.compare_digest(refilltoken_stored, refilltoken_request)",
+        "empty stored bearer token rejected": "bool(refilltoken_stored) and isinstance(refilltoken_stored, str)",
         "failed-refill rollback": "except Exception as e:\n        db.session.rollback()",
     }
     violations = [name for name, needle in expected.items() if needle not in handler]
@@ -43,6 +44,12 @@ def signed_refill_violations(source: str) -> list[str]:
 class SignedRefillHandlerContractTests(unittest.TestCase):
     def test_signed_offline_handler_keeps_full_batch_and_atomic_rotation(self):
         self.assertEqual(signed_refill_violations(SOURCE), [])
+
+    def test_negative_control_rejects_empty_stored_refilltoken(self):
+        safe = "bool(refilltoken_stored) and isinstance(refilltoken_stored, str)"
+        broken = SOURCE.replace(safe, "isinstance(refilltoken_stored, str)")
+        self.assertNotEqual(broken, SOURCE)
+        self.assertIn("empty stored bearer token rejected", signed_refill_violations(broken))
 
     def test_negative_control_rejects_timing_unsafe_bearer_comparison(self):
         safe = "secrets.compare_digest(refilltoken_stored, refilltoken_request)"
