@@ -430,7 +430,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
             # secrets.compare_digest only accepts ASCII str (or bytes): reject
             # malformed Unicode refill credentials as an ordinary bad token,
             # not an uncaught TypeError/HTTP 500.
-            bad_payload = dict(payload, refilltoken="\\u017c" * len(refilltoken))
+            bad_payload = dict(payload, refilltoken=chr(0x017C) * len(refilltoken))
             with self.app.test_request_context("/validate/offlinerefill", method="POST",
                                                data=bad_payload,
                                                environ_base={"REMOTE_ADDR": "192.168.0.2"}):
