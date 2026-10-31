@@ -424,9 +424,11 @@ def offlinerefill():
                         # "required" contradicts a configured "discouraged".
                         uv_policy = get_user_verification_requirement(
                             SCOPE.AUTH, user=token.user if token.user else None)
+                        # The WebAuthn/Passkey serializer must not commit inside the locked
+                        # rotation: the handler owns the single commit below.
                         refill_item = MachineApplication.get_authentication_item(
                             token.type, serial, user_agent=request.user_agent.string,
-                            user_verification=uv_policy)
+                            user_verification=uv_policy, commit_db_session=False)
                         refill_item.update({"refilltoken": refill.refilltoken,
                                             "serial": serial,
                                             "username": token.user.login if token.user else ""})
