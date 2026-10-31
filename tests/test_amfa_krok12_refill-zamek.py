@@ -53,6 +53,7 @@ def problemy(text: str) -> list[str]:
     i_lock = cialo.find(LOCK)
     i_refresh = cialo.find(REFRESH)
     i_read = cialo.find(STORE_READ)
+    i_validity = cialo.find("if not token.check_all(message_list):")
     if i_read < 0:
         wynik.append("w offlinerefill nie ma odczytu `refilltoken` — sprawdz, czy trasa nie zostala przepisana")
     if i_lock < 0:
@@ -63,6 +64,8 @@ def problemy(text: str) -> list[str]:
         wynik.append("zamek stoi PO odczytaniu zapisanego refilltokenu — kolejnosc jest istota poprawki")
     if i_lock >= 0 and i_refresh >= 0 and i_refresh < i_lock:
         wynik.append("`refresh` stoi przed zamkiem — odswiezenie musi byc pod zamkiem")
+    if i_validity < 0 or i_lock < 0 or i_refresh < 0 or not (i_lock < i_refresh < i_validity):
+        wynik.append("check_all() musi sprawdzac token odswiezony pod zamkiem, przed refill")
     return wynik
 
 
@@ -78,6 +81,26 @@ class RefillLockTests(unittest.TestCase):
             "db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()", ""
         )
         self.assertNotEqual(problemy(zlamane), [], "regula musi zapalic sie po zdjeciu zamka")
+
+    def test_negative_control_validity_checked_before_lock(self) -> None:
+        source = zrodlo()
+        section = cialo_funkcji(source, "offlinerefill")
+        snippet = (
+            "        message_list = []\\n"
+            "        if not token.check_all(message_list):\\n"
+            "            log.info(f\\\"Failed to offline refill: {message_list}\\\")\\n"
+            "            raise ParameterError(_(\\\"The token is not valid.\\\"))\\n"
+        )
+        self.assertIn(snippet, section)
+        moved = section.replace(snippet, "", 1).replace(
+            "        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()",
+            snippet + "        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()",
+            1,
+        )
+        self.assertIn(
+            "check_all() musi sprawdzac token odswiezony pod zamkiem, przed refill",
+            problemy(moved),
+        )
 
     def test_negative_control_without_the_refresh(self) -> None:
         zlamane = zrodlo().replace(REFRESH, "")
