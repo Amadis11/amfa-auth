@@ -88,6 +88,7 @@ clients consume from challenge responses.
 import copy
 import json
 import logging
+import secrets
 import threading
 
 from flask import (Blueprint, request, g, Response)
@@ -316,7 +317,12 @@ def offlinerefill():
                     raise ParameterError(_("Machine can not be identified by user agent!"))
                 refilltoken_stored = token.get_tokeninfo("refilltoken_" + computer_name)
 
-            if refilltoken_stored and refilltoken_stored == refilltoken_request:
+            # Refill credentials are bearer secrets. Compare their values in
+            # constant time and reject malformed non-text inputs without a
+            # potentially exception-raising equality/substring conversion.
+            if (isinstance(refilltoken_stored, str) and
+                    isinstance(refilltoken_request, str) and
+                    secrets.compare_digest(refilltoken_stored, refilltoken_request)):
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
