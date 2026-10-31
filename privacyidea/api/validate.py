@@ -320,7 +320,7 @@ def offlinerefill():
             # Refill credentials are bearer secrets. Compare their values in
             # constant time and reject malformed non-text inputs without a
             # potentially exception-raising equality/substring conversion.
-            if (isinstance(refilltoken_stored, str) and
+            if (bool(refilltoken_stored) and isinstance(refilltoken_stored, str) and
                     isinstance(refilltoken_request, str) and
                     refilltoken_stored.isascii() and refilltoken_request.isascii() and
                     secrets.compare_digest(refilltoken_stored, refilltoken_request)):
