@@ -318,12 +318,48 @@ def offlinerefill():
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
                 otps = MachineApplication.get_refill(token, password, options)
+                # Signed snapshots REPLACE the previous local record; a
+                # traditional refill contains only the number of newly used
+                # counters and is meant to be MERGED. In signed mode emit a
+                # full fresh HOTP window instead, otherwise a user would be
+                # left with one code and need a refill on every login.
+                from privacyidea.lib.amfa_offline_signatures import signing_enabled
+                if signing_enabled() and token.type.lower() == "hotp":
+                    requested = int((options or {}).get("count", 100))
+                    if not 1 <= requested <= 1024:
+                        raise ParameterError(_("Invalid signed offline refill size"))
+                    if len(otps) < requested:
+                        matched, otp_pin, _otp_value = token.split_pin_pass(password)
+                        if not matched:
+                            raise ParameterError(_("Could not split offline refill password"))
+                        rounds = int((options or {}).get("rounds", 6549))
+                        otps.update(MachineApplication.get_offline_otps(
+                            token, otp_pin, requested - len(otps), rounds))
                 refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
                 response = send_result(True)
                 content = response.json
-                content["auth_items"] = {"offline": [{"refilltoken": refilltoken_new,
-                                                      "response": otps,
-                                                      "serial": serial}]}
+                from privacyidea.lib.amfa_offline_signatures import signed_auth_items
+                # Refill rotates the token: the new token AND new OTP material
+                # must be signed together, never spliced onto an old signature.
+                refill_item = {"refilltoken": refilltoken_new,
+                               "response": otps,
+                               "serial": serial,
+                               "username": token.user.login if token.user else ""}
+                if signing_enabled() and token.type.lower() in ("webauthn", "passkey"):
+                    # Only the Ed25519 format replaces the whole local entry.
+                    # With signing disabled retain privacyIDEA's original
+                    # refill contract (response={}) for old clients.
+                    # Resolve UV from the actual user policy; a hard-coded
+                    # "required" contradicts a configured "discouraged".
+                    uv_policy = get_user_verification_requirement(
+                        SCOPE.AUTH, user=token.user if token.user else None)
+                    refill_item = MachineApplication.get_authentication_item(
+                        token.type, serial, user_agent=request.user_agent.string,
+                        user_verification=uv_policy)
+                    refill_item.update({"refilltoken": refilltoken_new,
+                                        "serial": serial,
+                                        "username": token.user.login if token.user else ""})
+                content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                 response.set_data(json.dumps(content))
                 return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
