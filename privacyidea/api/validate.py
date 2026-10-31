@@ -360,7 +360,7 @@ def offlinerefill():
                         SCOPE.AUTH, user=token.user if token.user else None)
                     refill_item = MachineApplication.get_authentication_item(
                         token.type, serial, user_agent=request.user_agent.string,
-                        user_verification=uv_policy)
+                        user_verification=uv_policy, commit_db_session=False)
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
