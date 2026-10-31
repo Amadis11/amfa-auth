@@ -352,6 +352,9 @@ def offlinerefill():
         # check validity before reading attachments or issuing new OTPs.
         db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
         db.session.refresh(token.token)
+        # get_tokens() may have loaded TokenInfo before the FOR UPDATE wait.
+        # Discard that ORM snapshot before comparing the rotated secret.
+        db.session.expire(token.token, ["info_list"])
         message_list = []
         if not token.check_all(message_list):
             reason = token.auth_details.get(AUTH_EVENT_REASON_KEY)
@@ -383,8 +386,10 @@ def offlinerefill():
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
                 try:
+                    # atomic=True keeps the counter and the rotated refill token staged until the
+                    # signature of the response material has been generated below.
                     refill = MachineApplication.refill(token, password, refilltoken_request, options,
-                                                       request.user_agent.string)
+                                                       request.user_agent.string, atomic=True)
                 except ValidateError:
                     reason = AuthEventReason.WRONG_OTP
                     raise
@@ -406,7 +411,7 @@ def offlinerefill():
                                 raise ParameterError(_("Could not split offline refill password"))
                             rounds = int((options or {}).get("rounds", 6549))
                             otps.update(MachineApplication.get_offline_otps(
-                                token, otp_pin, requested - len(otps), rounds))
+                                token, otp_pin, requested - len(otps), rounds, atomic=True))
                     refill_item = {"refilltoken": refill.refilltoken,
                                    "response": otps,
                                    "serial": serial,
@@ -429,6 +434,9 @@ def offlinerefill():
                     content = response.json
                     content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                     response.set_data(json.dumps(content))
+                    # Signing may fail (bad key / unavailable key); do not commit a consumed counter or
+                    # rotated refilltoken before signing has succeeded.
+                    db.session.commit()
                     log_authentication(AuthEventType.OFFLINE_REFILL_SUCCESS, request, serial=serial)
                     return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))

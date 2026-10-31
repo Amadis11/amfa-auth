@@ -12,7 +12,7 @@ from __future__ import annotations
 import pathlib
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from privacyidea.lib.applications import offline as offline_module
 from privacyidea.lib.error import ValidateError
@@ -25,7 +25,7 @@ class FakeHOTP:
     hashlib = "sha1"
 
     def __init__(self):
-        self.token = SimpleNamespace(count=25, otplen=6, get_otpkey=lambda: b"test-secret")
+        self.token = SimpleNamespace(id=7, count=25, otplen=6, get_otpkey=lambda: b"test-secret")
         self.writes = []
 
     def split_pin_pass(self, password):
@@ -57,30 +57,50 @@ class FakeHOTP:
 
 
 class RefillTransactionTests(unittest.TestCase):
+    def _refill(self, token, verifier_result=17):
+        """Run the atomic refill against a fake database session.
+
+        The stored refill token is compared inside the lock, the counter and the
+        rotated refill token stay staged, and the caller commits on its own.
+        """
+        fake_db = SimpleNamespace(session=SimpleNamespace(
+            execute=MagicMock(return_value=SimpleNamespace(
+                scalar_one_or_none=lambda: "refill-stored")),
+            refresh=MagicMock(), commit=MagicMock(), rollback=MagicMock(), add=MagicMock(),
+        ))
+        with patch.object(offline_module, "db", fake_db), \
+             patch.object(offline_module, "HmacOtp") as verifier, \
+             patch.object(offline_module, "get_prepend_pin", return_value=False), \
+             patch.object(offline_module, "lock_token_row"), \
+             patch.object(offline_module, "safe_compare", return_value=True), \
+             patch.object(offline_module, "geturandom", return_value="refill-test"):
+            verifier.return_value.checkOtp.return_value = verifier_result
+            result = offline_module.MachineApplication.refill(
+                token, "PIN123456", "refill-stored", {"count": 10, "rounds": 1}, atomic=True,
+            )
+        return verifier, result, fake_db
+
     def test_hotp_refill_never_commits_intermediate_counter_or_info(self):
         token = FakeHOTP()
-        with patch.object(offline_module, "HmacOtp") as verifier, \
-             patch.object(offline_module, "get_prepend_pin", return_value=False):
-            verifier.return_value.checkOtp.return_value = 17
-            result = offline_module.MachineApplication.get_refill(
-                token, "PIN123456", {"count": 10, "rounds": 1}, atomic=True,
-            )
-            self.assertEqual(verifier.call_count, 1)
-            self.assertEqual(verifier.return_value.checkOtp.call_args.args, ("123456", 10))
-        self.assertEqual(len(result), 3)
+        verifier, result, fake_db = self._refill(token)
+        self.assertEqual(verifier.call_count, 1)
+        self.assertEqual(verifier.return_value.checkOtp.call_args.args, ("123456", 10))
+        self.assertEqual(len(result.otps), 3)
+        self.assertEqual(result.refilltoken, "refill-test")
         self.assertEqual(
             token.writes,
-            [("counter", 3, False), ("info", "offline_counter", 10, False)],
+            [("info", "offline_counter", 10, False),
+             ("info", "refilltoken", "refill-test", False),
+             ("counter", 3, False)],
         )
+        # Only the commit that ends the reading transaction runs before the
+        # caller's own commit: no counter and no rotation is persisted early.
+        self.assertEqual(fake_db.session.commit.call_count, 1)
 
     def test_bad_otp_cannot_commit_or_rotate_anything(self):
         token = FakeHOTP()
-        with patch.object(offline_module, "HmacOtp") as verifier:
-            verifier.return_value.checkOtp.return_value = -1
-            with self.assertRaises(ValidateError):
-                offline_module.MachineApplication.get_refill(
-                    token, "PIN123456", {"count": 10, "rounds": 1}, atomic=True,
-                )
+        with self.assertRaises(ValidateError):
+            self._refill(token, verifier_result=-1)
         self.assertEqual(token.writes, [])
 
     def test_new_refilltoken_can_be_stored_without_releasing_the_lock(self):
@@ -95,22 +115,32 @@ class RefillTransactionTests(unittest.TestCase):
     def test_handler_commits_after_refill_counter_and_token_rotation(self):
         src = (ROOT / "privacyidea/api/validate.py").read_text(encoding="utf-8")
         start = src.index("def offlinerefill():")
-        end = src.index("\ndef _conditional_access_identity():", start)
+        end = src.index("\ndef _challenge_owner(", start)
         handler = src[start:end]
         ordered = [
             "with_for_update()",
             'db.session.expire(token.token, ["info_list"])',
-            'refilltoken_stored = token.get_tokeninfo("refilltoken")',
-            "MachineApplication.get_refill(token, password, options, atomic=True)",
-            "commit_db_session=False,",
+            "MachineApplication.refill(token, password, refilltoken_request, options,",
+            "atomic=True)",
             "response = send_result(True)",
-            "content[\"auth_items\"] = signed_auth_items(",
+            'content["auth_items"] = signed_auth_items(',
             "response.set_data(json.dumps(content))",
             "db.session.commit()",
         ]
         offsets = [handler.index(item) for item in ordered]
         self.assertEqual(offsets, sorted(offsets))
+        # Signing may fail (bad key / unavailable key); do not commit a consumed
+        # counter or rotated refilltoken before signing has succeeded.
         self.assertEqual(handler.count("db.session.commit()"), 1)
+
+    def test_signing_failure_cannot_commit_refill(self):
+        source = (ROOT / "privacyidea/api/validate.py").read_text(encoding="utf-8")
+        handler = source.split("def offlinerefill():", 1)[1].split(
+            "\ndef _challenge_owner(", 1
+        )[0]
+        signed = handler.index('signed_auth_items({"offline": [refill_item]})')
+        commit = handler.index("db.session.commit()")
+        self.assertLess(signed, commit, "transaction was committed before signature generation")
 
     def test_noncommitting_tokenclass_helpers_cover_failcounter_cleanup(self):
         source = (ROOT / "privacyidea/lib/tokenclass.py").read_text(encoding="utf-8")
