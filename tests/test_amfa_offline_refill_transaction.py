@@ -104,24 +104,13 @@ class RefillTransactionTests(unittest.TestCase):
             "MachineApplication.get_refill(token, password, options, atomic=True)",
             "commit_db_session=False,",
             "response = send_result(True)",
-            'signed_auth_items({"offline": [refill_item]})',
-            "db.session.commit()",
+            "content[\"auth_items\"] = signed_auth_items(",
             "response.set_data(json.dumps(content))",
+            "db.session.commit()",
         ]
         offsets = [handler.index(item) for item in ordered]
         self.assertEqual(offsets, sorted(offsets))
-        # Signing may fail (bad key / unavailable key); do not commit a consumed
-        # counter or rotated refilltoken before signing has succeeded.
         self.assertEqual(handler.count("db.session.commit()"), 1)
-
-    def test_signing_failure_cannot_commit_refill(self):
-        source = (ROOT / "privacyidea/api/validate.py").read_text(encoding="utf-8")
-        handler = source.split("def offlinerefill():", 1)[1].split(
-            "\ndef _conditional_access_identity():", 1
-        )[0]
-        signed = handler.index('signed_auth_items({"offline": [refill_item]})')
-        commit = handler.index("db.session.commit()")
-        self.assertLess(signed, commit, "transaction was committed before signature generation")
 
     def test_noncommitting_tokenclass_helpers_cover_failcounter_cleanup(self):
         source = (ROOT / "privacyidea/lib/tokenclass.py").read_text(encoding="utf-8")

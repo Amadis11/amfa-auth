@@ -283,7 +283,8 @@ def offlinerefill():
         # check validity before reading attachments or issuing new OTPs.
         db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
         db.session.refresh(token.token)
-        # A queued request must not read TokenInfo cached before the row lock.
+        # get_tokens() may have loaded TokenInfo before the FOR UPDATE wait.
+        # Discard that ORM snapshot before comparing the rotated secret.
         db.session.expire(token.token, ["info_list"])
         message_list = []
         if not token.check_all(message_list):
@@ -363,12 +364,12 @@ def offlinerefill():
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
-                # Construct/sign the snapshot before the single final commit.
-                # Any signing exception must not consume the counter or rotate
-                # refilltoken while the client receives no refill payload.
                 content["auth_items"] = signed_auth_items({"offline": [refill_item]})
-                db.session.commit()
                 response.set_data(json.dumps(content))
+                # The lock must cover the HOTP counter, signed full-window
+                # replenishment, refilltoken rotation and response material.
+                # None of these writes may commit independently.
+                db.session.commit()
                 return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
 
