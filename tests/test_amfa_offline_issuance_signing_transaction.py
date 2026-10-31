@@ -45,12 +45,12 @@ class OfflineSigningTransactionTests(unittest.TestCase):
             response.set_data = serialize
         with app.test_request_context("/"):
             g.client_ip = "127.0.0.1"
-            with patch.object(postpolicy, "get_user_verification_requirement", return_value="preferred"), \\
+            with patch.object(postpolicy, "get_user_verification_requirement", return_value="preferred"), \
                  patch.object(postpolicy, "get_auth_items", return_value={
                      "offline": [{"serial": "HOTPX", "response": {"1": "hash"}, "refilltoken": "refill"}]
-                 }) as items, \\
+                 }) as items, \
                  patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
-                       side_effect=signer), \\
+                       side_effect=signer), \
                  patch.object(postpolicy, "db") as db:
                 def commit():
                     events.append("commit")
@@ -103,7 +103,7 @@ class OfflineSigningTransactionTests(unittest.TestCase):
         token = SimpleNamespace(token=SimpleNamespace(id=42),
                                 check_all=lambda messages: True,
                                 get_tokeninfo=lambda key: "existing-refill")
-        with patch.object(offline_module, "db") as db, \\
+        with patch.object(offline_module, "db") as db, \
              patch.object(offline_module.MachineApplication, "get_offline_otps",
                           return_value={"42": "hash"}):
             result = offline_module.MachineApplication._reserve_initial_hotp_bundle(
