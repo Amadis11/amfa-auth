@@ -209,6 +209,10 @@ class MachineApplication(MachineApplicationBase):
         if token.type.lower() == "hotp":
             count = int(options.get("count", 100))
             rounds = int(options.get("rounds", ROUNDS))
+            if not 1 <= count <= 1024:
+                raise ParameterError(f"Invalid offline refill window: {count!r}")
+            if not 1 <= rounds <= 100000:
+                raise ParameterError(f"Invalid offline refill PBKDF2 rounds: {rounds!r}")
             _r, otppin, otpval = token.split_pin_pass(password)
             if not _r:
                 raise ParameterError("Could not split password")
