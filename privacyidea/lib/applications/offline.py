@@ -107,7 +107,7 @@ class MachineApplication(MachineApplicationBase):
         return token.get_tokeninfo(key)
 
     @staticmethod
-    def existing_or_new_refilltoken(token, user_agent=None):
+    def existing_or_new_refilltoken(token, user_agent=None, *, commit_db_session=True):
         """Stabilny refilltoken miedzy logowaniami (audyt 26.10.2026, plaster 04, Z4).
 
         Kazde udane `/validate/check` wolalo `generate_new_refilltoken`, co **nadpisywalo** zapisany
@@ -131,7 +131,8 @@ class MachineApplication(MachineApplicationBase):
             # test doubles (which have no ORM identity or database session).
             # Real persisted token models always take the SQL locking path.
             istniejacy = MachineApplication.existing_refilltoken(token, user_agent)
-            return istniejacy or MachineApplication.generate_new_refilltoken(token, user_agent)
+            return istniejacy or MachineApplication.generate_new_refilltoken(
+                token, user_agent, commit_db_session=commit_db_session)
         token_id = token.token.id
         if token_id is None:
             raise ParameterError("Offline refill requires a persisted token.")
@@ -155,7 +156,8 @@ class MachineApplication(MachineApplicationBase):
             # populated before the lock; invalidate it before later reads.
             db.session.expire(token.token, ["info_list"])
             return istniejacy
-        return MachineApplication.generate_new_refilltoken(token, user_agent)
+        return MachineApplication.generate_new_refilltoken(
+            token, user_agent, commit_db_session=commit_db_session)
 
     @staticmethod
     def get_offline_otps(token, otppin, amount, rounds=ROUNDS, *, atomic=False):
@@ -343,7 +345,8 @@ class MachineApplication(MachineApplicationBase):
                 # WebAuthn/Passkey and standalone serializers retain the
                 # existing contract. Persisted HOTP reserves its counter and
                 # refilltoken *together* in the branch below.
-                ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(token, user_agent)
+                ret["refilltoken"] = MachineApplication.existing_or_new_refilltoken(
+                    token, user_agent, commit_db_session=commit_db_session)
 
             # Gather offline data depending on the token type
             if token_type == "webauthn":
