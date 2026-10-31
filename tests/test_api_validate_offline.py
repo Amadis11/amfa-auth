@@ -373,6 +373,40 @@ class AValidateOfflineTestCase(MyApiTestCase):
                              res.json["result"]["error"]["message"])
         remove_token(serial)
 
+    def test_04a_signer_failure_preserves_online_hotp_consumption(self):
+        """Failure to issue offline credentials must not make an accepted OTP reusable."""
+        serial = "AMFA-SIGNER-FAILURE-ONLINE-COUNTER"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        try:
+            attach_token(serial, "offline", hostname="pippin",
+                         resolver_name="testresolver", options={"count": 3, "rounds": 1})
+            token = get_tokens(serial=serial)[0]
+            first_count = token.token.count
+            success, _reason, values = token.get_multi_otp(count=1)
+            self.assertTrue(success)
+            password = "pin" + next(iter(values["otp"].values()))
+            with mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
+                            side_effect=RuntimeError("test signer unavailable")):
+                with self.app.test_request_context("/validate/check", method="POST",
+                                                   data={"serial": serial, "pass": password},
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    result = self.app.full_dispatch_request().json
+                    self.assertTrue(result["result"]["value"], result)
+                    self.assertNotIn("auth_items", result)
+            db.session.expire_all()
+            persisted = get_tokens(serial=serial)[0]
+            self.assertEqual(persisted.token.count, first_count + 1,
+                             "offline rollback must not undo successful online authentication")
+            self.assertIsNone(persisted.get_tokeninfo("refilltoken"))
+            with self.app.test_request_context("/validate/check", method="POST",
+                                               data={"serial": serial, "pass": password},
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                replay = self.app.full_dispatch_request().json
+                self.assertFalse(replay["result"]["value"], "accepted HOTP cannot be replayed")
+        finally:
+            remove_token(serial)
+
     def test_04_multiple_offline_attachments_share_one_refilltoken(self):
         """Dwa przylaczenia offline (HOTP) dostaja **ten sam** refilltoken (AMFA: #1156, plaster 04, Z4).
 
