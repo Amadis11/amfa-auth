@@ -317,8 +317,14 @@ def offlinerefill():
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
-                otps = MachineApplication.get_refill(token, password, options)
-                refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
+                otps = MachineApplication.get_refill(token, password, options, atomic=True)
+                refilltoken_new = MachineApplication.generate_new_refilltoken(
+                    token, request.user_agent.string, commit_db_session=False,
+                )
+                # The row lock must cover verification, OTP counter increments,
+                # token-info writes *and* refill-token rotation. All intermediate
+                # token methods above are non-committing in this path.
+                db.session.commit()
                 response = send_result(True)
                 content = response.json
                 content["auth_items"] = {"offline": [{"refilltoken": refilltoken_new,
