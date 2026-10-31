@@ -283,6 +283,8 @@ def offlinerefill():
         # check validity before reading attachments or issuing new OTPs.
         db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
         db.session.refresh(token.token)
+        # A queued request must not read TokenInfo cached before the row lock.
+        db.session.expire(token.token, ["info_list"])
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
@@ -317,7 +319,7 @@ def offlinerefill():
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
-                otps = MachineApplication.get_refill(token, password, options)
+                otps = MachineApplication.get_refill(token, password, options, atomic=True)
                 # Signed snapshots REPLACE the previous local record; a
                 # traditional refill contains only the number of newly used
                 # counters and is meant to be MERGED. In signed mode emit a
@@ -334,8 +336,10 @@ def offlinerefill():
                             raise ParameterError(_("Could not split offline refill password"))
                         rounds = int((options or {}).get("rounds", 6549))
                         otps.update(MachineApplication.get_offline_otps(
-                            token, otp_pin, requested - len(otps), rounds))
-                refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
+                            token, otp_pin, requested - len(otps), rounds, atomic=True))
+                refilltoken_new = MachineApplication.generate_new_refilltoken(
+                    token, request.user_agent.string, commit_db_session=False,
+                )
                 response = send_result(True)
                 content = response.json
                 from privacyidea.lib.amfa_offline_signatures import signed_auth_items
@@ -359,7 +363,11 @@ def offlinerefill():
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
+                # Construct/sign the snapshot before the single final commit.
+                # Any signing exception must not consume the counter or rotate
+                # refilltoken while the client receives no refill payload.
                 content["auth_items"] = signed_auth_items({"offline": [refill_item]})
+                db.session.commit()
                 response.set_data(json.dumps(content))
                 return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
