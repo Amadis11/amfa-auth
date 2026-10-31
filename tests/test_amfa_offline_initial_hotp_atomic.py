@@ -8,6 +8,7 @@ cross-process serialization and is explicitly skipped.
 from __future__ import annotations
 
 import threading
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from sqlalchemy import event
@@ -20,6 +21,36 @@ from .base import MyTestCase
 
 
 class InitialHOTPBatchRaceTests(MyTestCase):
+    def test_failed_signing_rolls_back_per_station_webauthn_and_passkey_refilltokens(self):
+        if db.engine.dialect.name not in ("postgresql", "mysql", "mariadb"):
+            self.skipTest("requires real PostgreSQL/MariaDB transaction rollback")
+        for kind in ("webauthn", "passkey"):
+            with self.subTest(kind=kind):
+                serial = "AMFA-SIGNED-" + kind.upper() + "-ROLLBACK"
+                record = Token(serial, tokentype="hotp")
+                record.update_otpkey(self.otpkey)
+                record.save()
+                original = get_one_token(serial=serial)
+                # Keep a real persisted Token and TokenInfo writer; the proxy
+                # selects the per-workstation WebAuthn/Passkey tokeninfo key.
+                proxy = SimpleNamespace(
+                    token=original.token, type=kind,
+                    get_serial=original.get_serial,
+                    get_tokeninfo=original.get_tokeninfo,
+                    write_tokeninfo=original.write_tokeninfo,
+                )
+                with patch("privacyidea.lib.applications.offline.get_computer_name_from_user_agent",
+                           return_value="WIN145"):
+                    secret = MachineApplication.existing_or_new_refilltoken(
+                        proxy, "AMFA-CP-WIN145", commit_db_session=False,
+                    )
+                self.assertTrue(secret)
+                db.session.rollback()
+                db.session.expire_all()
+                fresh = get_one_token(serial=serial)
+                self.assertFalse(fresh.get_tokeninfo("refilltoken_WIN145"),
+                                 "unsigned offline refilltoken was committed for " + kind)
+
     def test_failed_signed_issuance_rolls_back_counter_and_refilltoken_on_real_sql(self):
         if db.engine.dialect.name not in ("postgresql", "mysql", "mariadb"):
             self.skipTest("requires real PostgreSQL/MariaDB rollback semantics")
