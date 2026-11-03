@@ -128,6 +128,50 @@ def test_pomocnik_polityki_uv_ma_bezpieczna_domyslna_wartosc() -> None:
     assert DEFAULT_USER_VERIFICATION_REQUIREMENT in WARTOSCI_UV
 
 
+def test_konflikt_uv_zwraca_domyslna_wartosc_i_nie_usuwa_offline() -> None:
+    """Konflikt dwoch polityk UV nie odbiera HOTP/FIDO2 partii ani nie rzuca wyjatku (#72)."""
+    from unittest import mock
+    from privacyidea.api.lib import prepolicy as modul
+    from privacyidea.lib.error import PolicyError
+    from privacyidea.lib.policy import SCOPE
+    from privacyidea.lib.tokens.webauthntoken import DEFAULT_USER_VERIFICATION_REQUIREMENT as domyslna
+
+    with mock.patch.object(modul.Match, "user") as dopasowanie, \
+            mock.patch.object(modul.log, "warning") as ostrzezenie:
+        dopasowanie.return_value.action_values.side_effect = PolicyError(
+            "Conflicting webauthn_user_verification_requirement values"
+        )
+        wartosc = modul.get_user_verification_requirement(SCOPE.AUTH)
+        assert wartosc == domyslna, "konflikt polityk musi bezpiecznie uzyc domyslnego UV"
+        assert dopasowanie.return_value.action_values.call_args.kwargs["unique"] is True
+        ostrzezenie.assert_called_once()
+    for typ in ("webauthn", "passkey"):
+        ladunek = _ladunek_offline(typ, wartosc)
+        assert ladunek["response"][POLE_UV] == domyslna
+        assert ladunek.get("refilltoken"), "konflikt UV nie moze usunac tokenu uzupelniania"
+
+
+def test_polityka_uv_zgodna_pusta_i_nieprawidlowa() -> None:
+    """Zwykla polityka, jej brak i zla wartosc zachowuja dotychczasowy kontrakt."""
+    from unittest import mock
+    from privacyidea.api.lib import prepolicy as modul
+    from privacyidea.lib.policy import SCOPE
+    from privacyidea.lib.tokens.webauthntoken import DEFAULT_USER_VERIFICATION_REQUIREMENT as domyslna
+
+    for wartosci, oczekiwana, ostrzezenia in (
+        (["required"], "required", 0),
+        (["discouraged"], "discouraged", 0),
+        ([], domyslna, 0),
+        (["invalid-uv"], domyslna, 1),
+    ):
+        with mock.patch.object(modul.Match, "user") as dopasowanie, \
+                mock.patch.object(modul.log, "warning") as warning:
+            dopasowanie.return_value.action_values.return_value = wartosci
+            wynik = modul.get_user_verification_requirement(SCOPE.AUTH)
+            assert wynik == oczekiwana, (wartosci, wynik, oczekiwana)
+            assert warning.call_count == ostrzezenia, (wartosci, warning.call_count)
+
+
 def test_obie_sciezki_offline_przekazuja_wartosc_polityki() -> None:
     """Wartosc liczy sie tam, gdzie jest kontekst polityki, i jest przekazana do ladunku offline."""
     postpolicy = POSTPOLICY.read_text(encoding="utf-8")
