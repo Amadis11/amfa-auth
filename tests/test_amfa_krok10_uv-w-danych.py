@@ -172,6 +172,50 @@ def test_polityka_uv_zgodna_pusta_i_nieprawidlowa() -> None:
             assert warning.call_count == ostrzezenia, (wartosci, warning.call_count)
 
 
+def test_konflikt_uv_nie_usuwa_podpisanego_ladunku_postpolicy() -> None:
+    """Cala sciezka offline_info nadal publikuje ladunek przy konflikcie UV (#72)."""
+    import json
+    from types import SimpleNamespace
+    from unittest import mock
+    from flask import Flask, g
+    from privacyidea.api.lib import prepolicy as modul, postpolicy
+    from privacyidea.lib.error import PolicyError
+    from privacyidea.lib.tokens.webauthntoken import DEFAULT_USER_VERIFICATION_REQUIREMENT as domyslna
+
+    class Odpowiedz:
+        def __init__(self):
+            self.json = {"result": {"value": True}, "detail": {"serial": "AMFA-TEST-UV"}}
+            self.data = None
+
+        def set_data(self, value):
+            self.data = value
+
+    app = Flask(__name__)
+    with app.test_request_context("/validate/check"):
+        g.client_ip = "127.0.0.1"
+        request = SimpleNamespace(
+            all_data={"pass": "test-otp-pin"},
+            user_agent=SimpleNamespace(string=UA_DOSTAWCY),
+            User=None,
+        )
+        response = Odpowiedz()
+        with mock.patch.object(modul.Match, "user") as dopasowanie, \
+                mock.patch.object(postpolicy, "get_auth_items", return_value={
+                    "offline": [{"serial": "AMFA-TEST-UV", "response": {"userVerification": domyslna}}]
+                }) as get_items, \
+                mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
+                           side_effect=lambda items: items), \
+                mock.patch.object(postpolicy, "db") as db:
+            dopasowanie.return_value.action_values.side_effect = PolicyError("UV conflict")
+            assert postpolicy.offline_info(request, response) is response
+            assert response.data is not None, "konflikt UV nie moze wylaczyc signed offline payload"
+            ladunek = json.loads(response.data)
+            assert len(ladunek["auth_items"]["offline"]) == 1
+            assert get_items.call_args.kwargs["user_verification"] == domyslna
+            db.session.commit.assert_called_once()
+            db.session.rollback.assert_not_called()
+
+
 def test_obie_sciezki_offline_przekazuja_wartosc_polityki() -> None:
     """Wartosc liczy sie tam, gdzie jest kontekst polityki, i jest przekazana do ladunku offline."""
     postpolicy = POSTPOLICY.read_text(encoding="utf-8")
