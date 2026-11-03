@@ -2648,10 +2648,17 @@ def get_user_verification_requirement(scope: str, user: User | None = None) -> s
     :param user: the user used to match user, realm and resolver scoped policies
     :return: "required", "preferred" or "discouraged"
     """
-    policies = Match.user(g, scope=scope, action=FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT,
-                          user_object=user).action_values(unique=True, allow_white_space_in_action=True,
-                                                          write_to_audit_log=False)
-    policy_value = list(policies)[0] if policies else DEFAULT_USER_VERIFICATION_REQUIREMENT
+    try:
+        policies = Match.user(g, scope=scope, action=FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT,
+                              user_object=user).action_values(unique=True, allow_white_space_in_action=True,
+                                                              write_to_audit_log=False)
+        policy_value = list(policies)[0] if policies else DEFAULT_USER_VERIFICATION_REQUIREMENT
+    except PolicyError as error:
+        # UV enriches the offline response; conflicting policies must not
+        # suppress an otherwise valid signed offline batch (#72).
+        log.warning("Conflicting FIDO2 user verification policies in scope %r; "
+                    "falling back to %r: %s", scope, DEFAULT_USER_VERIFICATION_REQUIREMENT, error)
+        return DEFAULT_USER_VERIFICATION_REQUIREMENT
     if policy_value not in USER_VERIFICATION_LEVELS:
         log.warning(f"Invalid value {policy_value!r} for {FIDO2PolicyAction.USER_VERIFICATION_REQUIREMENT} in "
                     f"scope {scope!r}. Falling back to {DEFAULT_USER_VERIFICATION_REQUIREMENT!r}.")
