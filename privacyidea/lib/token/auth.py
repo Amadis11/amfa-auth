@@ -763,8 +763,8 @@ def check_token_list(token_object_list: list[TokenClass], passw: str, user: User
         reply_dict["message"] = _("No suitable token found for authentication.")
 
     # Stan konta rozpoznany przez katalog (haslo wygasle, wymagana zmiana, konto wylaczone albo wygasle).
-    # Klasyfikacja idzie zawsze do rejestru zadania, a do odpowiedzi tylko zaufana sciezka (brama
-    # z sekretem w naglowku) - inaczej bylaby oracle poprawnosci hasla (zgloszenie #31).
+    # Klasyfikacja trafia do rejestru zadania i do odpowiedzi; bez rozpoznanego stanu
+    # zachowujemy standardowa odmowe, a nie dopisujemy domyslnych stanow.
     stany_katalogu = {t.auth_details.get("directory_password_state")
                       for t in invalid_token_list if t.auth_details.get("password_change_required")}
     stany_katalogu.update(stany_katalogu_z_zadania())

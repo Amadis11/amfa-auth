@@ -15,18 +15,9 @@ kto sprawdza hasło), a odczytuje `lib/token/auth.py` przy budowaniu odpowiedzi.
 
 from __future__ import annotations
 
-import hmac
-
-from flask import g, has_request_context, request
-
-from privacyidea.lib.config import SYSCONF, get_from_config
+from flask import g, has_request_context
 
 KLUCZ_W_ZADANIU = "amfa_stany_katalogu"
-
-# Naglowek, ktorym zaufany klient (nasza brama) znaczy swoje wlasne wywolanie silnika. Nazwa jest
-# wspolna z brama - ona go dokłada, a OpenResty usuwa wejsciowe `X-AMFA-*` od klienta, wiec nikt
-# z zewnatrz nie moze go podrobic.
-TRUST_MARKER_HEADER = "X-AMFA-Trusted-Client"
 
 # Stany, ktore wolno pokazac uzytkownikowi: te, ktore wystepuja tylko po poprawnym hasle i mowia, ze
 # konto wymaga dzialania (zmiana hasla, wygasle haslo, wygasle konto), oraz zablokowane i wylaczone.
@@ -58,34 +49,6 @@ REVEALED_STATES = frozenset({
 })
 
 
-def trusted_secrets() -> list[str]:
-    """Sekrety, ktore wolno przedstawic w znaczniku: biezacy i poprzedni (okres rotacji, #1030).
-
-    Dwa sekrety obok siebie znacza "trwa rotacja": stacja zaktualizowana uzywa biezacego, stara jeszcze
-    dziala na poprzednim. Po wyczyszczeniu pola poprzedniego stary sekret przestaje dawac **stan konta**
-    - ale znacznik nigdy nie jest warunkiem logowania, wiec logowanie dziala dalej.
-    """
-    wartosci = (
-        get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET, ""),
-        get_from_config(SYSCONF.TRUSTED_CLIENT_SECRET_PREVIOUS, ""),
-    )
-    return [str(wartosc) for wartosc in wartosci if wartosc]
-
-
-def is_trusted_client_request() -> bool:
-    """Czy zadanie przyszlo zaufana sciezka (nasza brama albo stacja z sekretem w naglowku)?
-
-    Bez skonfigurowanego sekretu odpowiedz brzmi "nie" - domyslnie stan konta nie opuszcza silnika
-    (fail-closed), a nie odwrotnie.
-    """
-    if not has_request_context():
-        return False
-    przedstawiony = str(request.headers.get(TRUST_MARKER_HEADER, ""))
-    if not przedstawiony:
-        return False
-    return any(hmac.compare_digest(przedstawiony, sekret) for sekret in trusted_secrets())
-
-
 def states_to_reveal(states) -> list[str]:
     """Stany konta, ktore moga trafic do odpowiedzi - czesc wspolna z REVEALED_STATES."""
     return sorted({stan for stan in states if stan in REVEALED_STATES})
@@ -94,13 +57,9 @@ def states_to_reveal(states) -> list[str]:
 def directory_reply_keys(states) -> dict:
     """Pola odpowiedzi o stanie konta albo nic.
 
-    Stan konta jest nasza funkcja, ale nie moze byc oracle poprawnosci hasla: `password_expired`
-    i `password_change_required` wystepuja tylko po poprawnym hasle, wiec w ogolnej odpowiedzi
-    `/validate/check` zdradzalyby, ze zgadniete haslo bylo dobre (zgloszenie #31). Dlatego pola
-    dokladamy wylacznie wtedy, gdy zadanie przyszlo zaufana sciezka.
+    Rozpoznane przez katalog stany trafiaja do odpowiedzi niezaleznie od klienta.
+    Lista ogranicza sie do znanych stanow, bez "user_not_found".
     """
-    if not is_trusted_client_request():
-        return {}
     do_ujawnienia = states_to_reveal(states)
     if not do_ujawnienia:
         return {}
