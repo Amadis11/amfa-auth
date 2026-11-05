@@ -333,13 +333,6 @@ class SYSCONF:
     SPLITATSIGN = "splitAtSign"
     INCFAILCOUNTER = "IncFailCountOnFalsePin"
     RESET_FAILCOUNTER_ON_PIN_ONLY = "ResetFailcounterOnPIN"
-    # Wspolny sekret bramy i silnika dla zaufanej sciezki: brama znaczy nim swoje wlasne wywolanie
-    # `/validate/check`, a silnik tylko wtedy dokłada stan konta do odpowiedzi (zgloszenie #31).
-    TRUSTED_CLIENT_SECRET = "TrustedClientSecret"
-    #: Sekret poprzedni (#1030): okres przejsciowy rotacji. Stacja, ktora nie zdazyla z aktualizacja,
-    #: dostaje stan konta jeszcze przez ten sekret; po wyczyszczeniu pola stary sekret przestaje dawac
-    #: stan, ale NIE blokuje logowania (znacznik nigdy nie jest warunkiem uwierzytelnienia).
-    TRUSTED_CLIENT_SECRET_PREVIOUS = "TrustedClientSecretPrevious"
 
 
 # System settings that users may read, as the token classes declare it for theirs in get_setting_type. The WebUI
