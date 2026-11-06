@@ -47,9 +47,12 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
         raise OfflineSigningError("offline signing key must be Ed25519")
     # Server time limits the signed batch. The workstation must NEVER infer a
     # longer validity from its own clock for a signed payload.
-    validity = int(os.environ.get("AMFA_OFFLINE_ED25519_TTL_SECONDS", "3888000"))
-    if not 60 <= validity <= 45 * 24 * 3600:
-        raise OfflineSigningError("signed offline TTL must be between 60 seconds and 45 days")
+    # Pre-production 1.0 contract: an offline batch may be renewed by a
+    # successful online authentication, but can never be issued for >30 days.
+    # The issuer controls the TTL; local offline logons never extend it.
+    validity = int(os.environ.get("AMFA_OFFLINE_ED25519_TTL_SECONDS", "2592000"))
+    if not 60 <= validity <= 30 * 24 * 3600:
+        raise OfflineSigningError("signed offline TTL must be between 60 seconds and 30 days")
     item = dict(item)
     item["expiration"] = int(time.time()) + validity
     item["format_version"] = 1
