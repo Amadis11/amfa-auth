@@ -376,6 +376,24 @@ def test_katalog_niedostepny_to_nie_zle_poswiadczenia() -> None:
                 assert resolver.checkPass(dn, "zle-haslo") is False
                 # (c) konto usuniete (DN poza katalogiem) to tez zwykla odmowa, bez stanu
                 assert resolver.checkPass("cn=amfa-usuniete,ou=example,o=test", "x") is False
+
+            # (d) TA SAMA droga, ale przy ODCZYCIE konta: wiazanie do katalogu idzie przez `_bind`
+            #     (uzywany przez `_search`). Do 07.11.2026 `_bind` zamienial blad gniazda/puli na
+            #     ogolny `ResolverError` (ERR907), wiec przy odcietym katalogu stan
+            #     `directory_unavailable` nie dochodzil do odpowiedzi, a stacja pokazywala komunikat
+            #     o bledzie polaczenia z numerem bledu (zgloszenie #1456, pomiar na stacji 145).
+            with ldap3mock.mock:
+                ldap3mock.setLDAPDirectory(AD_STANY)
+                ldap3mock.set_exception()
+                resolver = LDAPResolver()
+                resolver.loadConfig(KONFIG_AD)
+                try:
+                    resolver._bind()
+                    assert False, "odczyt konta przy niedostepnym katalogu nie podniosl bledu"
+                except DirectoryUnavailable:
+                    pass
+                finally:
+                    ldap3mock.set_exception(False)
     finally:
         os.chdir(katalog_roboczy)
 
@@ -385,6 +403,20 @@ def test_katalog_niedostepny_to_nie_zle_poswiadczenia() -> None:
     resolver_zrodlo = (KORZEN / "privacyidea" / "lib" / "resolvers" / "LDAPIdResolver.py").read_text(encoding="utf-8")
     assert "except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as e:" in resolver_zrodlo
     assert "raise DirectoryUnavailable(" in resolver_zrodlo
+    # Ta sama droga przy ODCZYCIE konta (`_bind`, uzywany przez `_search`): do 07.11.2026 zamieniala
+    # blad gniazda/puli na ogolny `ResolverError` (ERR907), wiec przy odcietym katalogu stan
+    # `directory_unavailable` nie dochodzil do odpowiedzi, a stacja pokazywala komunikat o bledzie
+    # polaczenia z numerem bledu (zgloszenie #1456, pomiar na 145). Straznik pilnuje obu drog.
+    wiazanie = resolver_zrodlo.split("def _bind(self)")[1].split("def _search")[0]
+    assert "except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as ex:" in wiazanie, \
+        "_bind nie zamienia bledu gniazda/puli na DirectoryUnavailable"
+    assert "raise DirectoryUnavailable(" in wiazanie, "_bind nie podnosi DirectoryUnavailable"
+    # Straznik czasu: limit petli puli ldap3 i liczba rund musza byc dobrane do budzetu, w ktorym
+    # odpowiedz ma wrocic do stacji (connect 1500 ms + receive 2000 ms), a nie zostawione na
+    # wartosciach domyslnych (10 s petli, 2 rundy -> zmierzone 20,8 s przy odcietym DC).
+    assert 'get_app_config_value("PI_LDAP_POOLING_LOOP_TIMEOUT", 1)' in resolver_zrodlo, \
+        "limit petli puli wrocil do wartosci domyslnej ldap3"
+    assert "SERVERPOOL_ROUNDS = 1" in resolver_zrodlo, "liczba rund wrocila do dwoch"
     uzytkownik = (KORZEN / "privacyidea" / "lib" / "user.py").read_text(encoding="utf-8")
     assert "except DirectoryUnavailable:" in uzytkownik, "user.py nie lapie DirectoryUnavailable"
     assert 'zapamietaj_stan_katalogu("directory_unavailable", self.login)' in uzytkownik
