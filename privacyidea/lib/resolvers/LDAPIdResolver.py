@@ -724,7 +724,10 @@ class IdResolver(UserIdResolver):
                 # (zgloszenie #1456): przy odcietym DC w dzienniku bylo `LDAPIdResolver:706`, a
                 # `lib/user.py` lapal to dopiero w ogolnym `except Exception`.
                 log.info(f"Katalog nieosiagalny przy wiazaniu do katalogu: {ex!r}")
-                raise DirectoryUnavailable(f"Directory unavailable: {ex}") from ex
+                # Tresc komunikatu zostaje taka, jaka pinuje upstream (`test_06_user_with_failing_resolver`):
+                # rozroznienie „katalog nieosiagalny" niesie TYP wyjatku, a nie tekst. Zmiana tekstu
+                # przewracalaby kontrakt na komunikat, ktorego #1456 nie dotyczy.
+                raise DirectoryUnavailable(f"Error performing bind operation: {ex}") from ex
             except Exception as ex:
                 log.error(f"Error performing bind operation: {ex}!")
                 raise ResolverError(f"Error performing bind operation: {ex}")
