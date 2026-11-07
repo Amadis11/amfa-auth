@@ -755,6 +755,11 @@ class Ldap3Mock(object):
         self.bind_result_user = None
         self.search_result = None
         self.search_response = None
+        # Wymuszony wyjatek musi znikac tak samo jak wyniki bind/search: `test_api_auth` ustawia go
+        # na czas jednego testu, a bez czyszczenia kazdy nastepny test w tym samym procesie widzi
+        # katalog nieosiagalny i przewraca sie o kilka ekranow dalej (zgloszenie #1456, pelny
+        # przebieg CI: 9 testow `test_api_auth` + 2 testy stanu konta czerwone tylko z tego powodu).
+        self.exception = None
 
     def setLDAPDirectory(self, directory=None):
         if directory is None:
