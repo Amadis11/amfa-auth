@@ -65,7 +65,11 @@ CACHE = {}
 ENCODING = "utf-8"
 # The number of rounds the resolver tries to reach a responding server in the
 #  pool
-SERVERPOOL_ROUNDS = 2
+# Jedna runda wystarczy: przy zdrowym katalogu pierwsza proba sie udaje, a przy niedostepnym druga
+# runda tylko zjada budzet, w ktorym odpowiedz ma wrocic do stacji (limit petli puli liczy sie na
+# runde, wiec dwie rundy podwoily czas porazki: zmierzone 07.11.2026 — 1 s petli z dwiema rundami to
+# 3,36 s, a z jedna ~1 s). Wartosc z konfiguracji resolvera nadal ma pierwszenstwo, jesli jest podana.
+SERVERPOOL_ROUNDS = 1
 # The number of seconds a non-responding server is removed from the server pool
 SERVERPOOL_SKIP = 30
 # The pooling strategy for the ldap servers
@@ -414,7 +418,17 @@ class IdResolver(UserIdResolver):
         self.group_attribute_mapping_key = ""
         # The number of seconds that ldap3 waits if no server is left in the pool before
         # starting the next round
-        pooling_loop_timeout = get_app_config_value("PI_LDAP_POOLING_LOOP_TIMEOUT", 10)
+        # Limit petli puli ldap3 to NAJWOLNIEJSZY element drogi do katalogu, wiec musi byc dobrany do
+        # budzetu, w ktorym miesci sie odpowiedz dla stacji, a nie zostawiony na wartosci domyslnej
+        # ldap3 (10 s). Zmierzone 07.11.2026 (zgloszenie #1178 wiersz 7, stacja 145):
+        #  * zdrowy katalog: TCP+TLS do DC 14 ms srednio, 26 ms maksymalnie (10 prob),
+        #  * budzet dostawcy na jedno zadanie: connect 1500 ms + receive 2000 ms,
+        #  * przy 10 s silnik odpowiadal po 20,8 s — czyli POZA budzetem, a stacja pokazywala blad
+        #    polaczenia zamiast stanu konta; przy 1 s odpowiedz dochodzi w ~1 s.
+        # Sekunda jest ~70x wieksza od sredniej zdrowego katalogu (czyli nie "przesadzona" w druga
+        # strone: chwilowe spowolnienie katalogu nie zamienia sie w falszywe "katalog niedostepny"),
+        # a jednoczesnie miesci sie w budzecie stacji z zapasem.
+        pooling_loop_timeout = get_app_config_value("PI_LDAP_POOLING_LOOP_TIMEOUT", 1)
         log.debug(f"Setting system-wide POOLING_LOOP_TIMEOUT to {pooling_loop_timeout!s}.")
         ldap3.set_config_parameter("POOLING_LOOP_TIMEOUT", pooling_loop_timeout)
 
@@ -702,6 +716,18 @@ class IdResolver(UserIdResolver):
                                                          start_tls=self.start_tls,
                                                          keytabfile=self.keytabfile)
                 bound = self.connection.bind()
+            except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as ex:
+                # Ta droga (wiazanie do katalogu przy odczycie konta) musi podniesc ten sam typ co
+                # sprawdzanie hasla: inaczej wyjatek leci jako ogolny `ResolverError` (ERR907), stan
+                # `directory_unavailable` nie trafia do odpowiedzi i stacja pokazuje komunikat o bledzie
+                # polaczenia z numerem bledu zamiast stanu konta. Zmierzone 07.11.2026 na stacji 145
+                # (zgloszenie #1456): przy odcietym DC w dzienniku bylo `LDAPIdResolver:706`, a
+                # `lib/user.py` lapal to dopiero w ogolnym `except Exception`.
+                log.info(f"Katalog nieosiagalny przy wiazaniu do katalogu: {ex!r}")
+                # Tresc komunikatu zostaje taka, jaka pinuje upstream (`test_06_user_with_failing_resolver`):
+                # rozroznienie „katalog nieosiagalny" niesie TYP wyjatku, a nie tekst. Zmiana tekstu
+                # przewracalaby kontrakt na komunikat, ktorego #1456 nie dotyczy.
+                raise DirectoryUnavailable(f"Error performing bind operation: {ex}") from ex
             except Exception as ex:
                 log.error(f"Error performing bind operation: {ex}!")
                 raise ResolverError(f"Error performing bind operation: {ex}")
