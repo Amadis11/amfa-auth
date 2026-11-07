@@ -67,6 +67,7 @@ from privacyidea.lib.crypto import get_sign_object
 from privacyidea.lib.error import PolicyError, ValidateError
 from privacyidea.lib.info.rss import FETCH_DAYS
 from privacyidea.lib.machine import get_auth_items
+from privacyidea.models import db
 from privacyidea.lib.policy import (DEFAULT_ANDROID_APP_URL, DEFAULT_IOS_APP_URL, DEFAULT_PREFERRED_CLIENT_MODE_LIST,
                                     SCOPE, AUTOASSIGNVALUE, AUTHORIZED, SESSION_PERSISTENCE, Match)
 from privacyidea.lib.subscriptions import (subscription_status,
@@ -78,7 +79,8 @@ from privacyidea.lib.tokenrolloutstate import RolloutState
 from privacyidea.lib.tokens.passkeytoken import PasskeyTokenClass
 from privacyidea.lib.utils import (create_img, get_version, AUTH_RESPONSE,
                                    get_plugin_info_from_useragent)
-from .prepolicy import check_max_token_user, check_max_token_realm, fido2_enroll, rss_age, container_registration_config
+from .prepolicy import (check_max_token_user, check_max_token_realm, fido2_enroll, rss_age,
+                        container_registration_config, get_user_verification_requirement)
 from ...lib.challenge import get_challenges
 from ...lib.container import (get_all_containers, init_container, init_registration, find_container_by_serial,
                               create_container_tokens_from_template, get_container_challenge_user)
@@ -648,6 +650,9 @@ def offline_info(request, response):
     If for the given Token an offline application is defined, the hashes of OTP values or FIDO2 credential information
     is added to the response.
 
+    The FIDO2 user verification requirement is resolved here, at a place that has the policy context, and is passed
+    on with the offline data: the client enforces the requirement offline and cannot resolve the policy itself.
+
     """
     content = response.json
     # check if the authentication was successful
@@ -655,15 +660,47 @@ def offline_info(request, response):
         # check if there is a MachineToken definition
         serial = content.get("detail", {}).get("serial")
         if serial:
+            signed_response_published = False
             try:
+                # The offline client enforces the user verification requirement on its own, so the policy value
+                # has to travel with the offline data. It is the SCOPE.AUTH value, which is the one the client
+                # already sees in the online challenge of the same authentication.
+                user_verification = get_user_verification_requirement(
+                    SCOPE.AUTH, user=request.User if hasattr(request, "User") else None)
                 auth_items = get_auth_items(serial=serial, application="offline",
                                             challenge=request.all_data.get("pass"),
-                                            user_agent=request.user_agent.string)
+                                            user_agent=request.user_agent.string,
+                                            user_verification=user_verification,
+                                            defer_offline_commit=True)
                 if auth_items:
+                    # An enabled signer must never leak an unsigned offline bag.
+                    # Signing failure leaves the online authentication intact,
+                    # but no offline credentials are issued (#1156).
+                    from privacyidea.lib.amfa_offline_signatures import signed_auth_items
+                    auth_items = signed_auth_items(auth_items)
                     content["auth_items"] = auth_items
                     response.set_data(json.dumps(content))
+                    signed_response_published = True
+                    # Commit only after the entire signed offline response has
+                    # been serialized. A broken signer must not consume HOTP
+                    # counters or create a refilltoken the client never sees.
+                    db.session.commit()
             except Exception as exx:
-                log.info(exx)
+                try:
+                    db.session.rollback()
+                except Exception:  # noqa: BLE001 — retain successful online auth response
+                    log.exception("AMFA offline issuance transaction rollback failed")
+                # A COMMIT failure happens *after* response.set_data(). Never send
+                # an offline bag for which the reserved counters were rolled back.
+                if signed_response_published:
+                    content.pop("auth_items", None)
+                    try:
+                        response.set_data(json.dumps(content))
+                    except Exception:  # noqa: BLE001 — do not conceal the original failure
+                        log.exception("AMFA failed to restore online-only response")
+                # The original code swallowed signature errors with INFO.
+                # A misconfigured signer must be a visible operational alarm.
+                log.error("AMFA offline batch was not issued (fail-closed): %s", type(exx).__name__)
     return response
 
 

@@ -1024,13 +1024,13 @@ class TokenClass:
         return self.token.failcount
 
     @check_token_locked
-    def set_failcount(self, failcount):
+    def set_failcount(self, failcount, commit_db_session: bool = True):
         """
         Set the failcounter in the database
         """
         self.token.failcount = failcount
         if failcount == 0:
-            self.remove_tokeninfo(FAILCOUNTER_EXCEEDED)
+            self.remove_tokeninfo(FAILCOUNTER_EXCEEDED, commit_db_session=commit_db_session)
 
     def get_max_failcount(self):
         return self.token.maxfail
@@ -1336,7 +1336,7 @@ class TokenClass:
             raise PolicyError(f"The token info key '{key}' is managed by the token and can not be deleted.")
         self.remove_tokeninfo(key)
 
-    def remove_tokeninfo(self, key: str = None) -> None:
+    def remove_tokeninfo(self, key: str = None, commit_db_session: bool = True) -> None:
         """
         Deletes the token info for the given key without checking whether the token class owns the key. If no key
         is given, all info entries from this token are deleted. This is the remover for server side code that
@@ -1349,7 +1349,8 @@ class TokenClass:
         if key:
             statement = statement.where(TokenInfo.Key == key)
         db.session.execute(statement)
-        db.session.commit()
+        if commit_db_session:
+            db.session.commit()
 
     def delete_tokengroup(self, tokengroup: str = None, tokengroup_id: int = None) -> bool:
         """
@@ -1699,7 +1700,7 @@ class TokenClass:
 
     @log_with(log)
     @check_token_locked
-    def inc_otp_counter(self, counter=None, increment=1, reset=True):
+    def inc_otp_counter(self, counter=None, increment=1, reset=True, commit_db_session: bool = True):
         """
         Increase the otp counter and store the token in the database
 
@@ -1726,10 +1727,14 @@ class TokenClass:
 
         if (reset_counter and self.token.active and self.token.failcount <
                 self.token.maxfail):
-            self.set_failcount(0)
+            self.set_failcount(0, commit_db_session=commit_db_session)
 
-        # make DB persistent immediately, to avoid the re-usage of the counter
-        self.token.save()
+        # The offline-refill handler owns one transaction and the FOR UPDATE
+        # lock. Default callers still persist immediately, as before.
+        if commit_db_session:
+            self.token.save()
+        else:
+            db.session.add(self.token)
         return self.token.count
 
     def check_otp_exist(self, otp, window=None):

@@ -42,7 +42,8 @@ import ldap3
 import yaml
 from ldap3 import MODIFY_REPLACE, MODIFY_ADD, MODIFY_DELETE
 from ldap3 import Tls
-from ldap3.core.exceptions import LDAPOperationResult
+from ldap3.core.exceptions import (LDAPOperationResult, LDAPServerPoolExhaustedError,
+                                   LDAPSocketOpenError)
 from ldap3.core.results import RESULT_SIZE_LIMIT_EXCEEDED
 from ldap3.utils.conv import escape_bytes
 from passlib.hash import ldap_salted_sha1
@@ -64,7 +65,11 @@ CACHE = {}
 ENCODING = "utf-8"
 # The number of rounds the resolver tries to reach a responding server in the
 #  pool
-SERVERPOOL_ROUNDS = 2
+# Jedna runda wystarczy: przy zdrowym katalogu pierwsza proba sie udaje, a przy niedostepnym druga
+# runda tylko zjada budzet, w ktorym odpowiedz ma wrocic do stacji (limit petli puli liczy sie na
+# runde, wiec dwie rundy podwoily czas porazki: zmierzone 07.11.2026 — 1 s petli z dwiema rundami to
+# 3,36 s, a z jedna ~1 s). Wartosc z konfiguracji resolvera nadal ma pierwszenstwo, jesli jest podana.
+SERVERPOOL_ROUNDS = 1
 # The number of seconds a non-responding server is removed from the server pool
 SERVERPOOL_SKIP = 30
 # The pooling strategy for the ldap servers
@@ -313,6 +318,67 @@ class AUTHTYPE:
     SASL_KERBEROS = "SASL Kerberos"
 
 
+# Kody Active Directory w komunikacie katalogu (szesnastkowe, jak je zwraca AD).
+# Rozroznienie jest konieczne, bo sam kod LDAP to 49 (invalidCredentials) zarowno przy zlym
+# hasle, jak i przy hasle wygaslym, wymagajacym zmiany czy zablokowanym koncie.
+AD_KODY_STANU_HASLA = {
+    "525": "user_not_found",
+    "52e": "invalid_credentials",
+    "530": "logon_time_restriction",
+    "531": "logon_restriction",
+    "532": "password_expired",
+    "533": "account_disabled",
+    "701": "account_expired",
+    "773": "password_change_required",
+    "775": "account_locked",
+}
+
+
+class DirectoryPasswordState(ResolverError):
+    """Katalog rozpoznal stan konta lub hasla, ktory nie jest zwyklym bledem poswiadczen.
+
+    Sygnalu nie wolno polykac: dostawca poswiadczen buduje z niego ekran zmiany poswiadczen,
+    tak jak robi to system Windows.
+    """
+
+    def __init__(self, state: str, message: str, result: dict = None):
+        super().__init__(message)
+        self.state = state
+        self.result = result or {}
+
+
+class DirectoryUnavailable(ResolverError):
+    """Katalog (LDAP/DC) jest nieosiagalny - nie udalo sie nawet nawiazac polaczenia.
+
+    To NIE sa zle poswiadczenia: bind nie doszedl do skutku z powodu sieci albo wyczerpanej puli
+    serwerow, a nie dlatego, ze haslo jest bledne. Bez rozroznienia kazdy taki przypadek wyglada jak
+    zwykla pomylka poswiadczen ("wrong otp pin"), uzytkownik powtarza proby i wpada w blokade AD.
+    Sygnal idzie wyzej (do ``lib/user.py``), gdzie jest zapamietywany jako stan ``directory_unavailable``,
+    zeby odpowiedz /validate/check niosla go maszynowo i dostawca poswiadczen pokazal blad
+    polaczenia/konfiguracji, a nie zly kod jednorazowy.
+    """
+
+    def __init__(self, message: str, result: dict = None):
+        super().__init__(message)
+        self.result = result or {}
+
+
+def stan_hasla_z_odpowiedzi_katalogu(result: dict):
+    """Zwraca nazwe stanu konta z odpowiedzi katalogu albo None.
+
+    Active Directory podaje rozroznienie w komunikacie jako ``data <kod>``.
+    """
+    if not result:
+        return None
+    tekst = " ".join(str(result.get(k, "")) for k in ("message", "description", "result"))
+    znacznik = "data "
+    pozycja = tekst.lower().find(znacznik)
+    if pozycja < 0:
+        return None
+    kod = tekst[pozycja + len(znacznik):].split()[0].rstrip(",;").lower()
+    return AD_KODY_STANU_HASLA.get(kod)
+
+
 class IdResolver(UserIdResolver):
     # If the resolver could be configured editable
     updateable = True
@@ -352,7 +418,17 @@ class IdResolver(UserIdResolver):
         self.group_attribute_mapping_key = ""
         # The number of seconds that ldap3 waits if no server is left in the pool before
         # starting the next round
-        pooling_loop_timeout = get_app_config_value("PI_LDAP_POOLING_LOOP_TIMEOUT", 10)
+        # Limit petli puli ldap3 to NAJWOLNIEJSZY element drogi do katalogu, wiec musi byc dobrany do
+        # budzetu, w ktorym miesci sie odpowiedz dla stacji, a nie zostawiony na wartosci domyslnej
+        # ldap3 (10 s). Zmierzone 07.11.2026 (zgloszenie #1178 wiersz 7, stacja 145):
+        #  * zdrowy katalog: TCP+TLS do DC 14 ms srednio, 26 ms maksymalnie (10 prob),
+        #  * budzet dostawcy na jedno zadanie: connect 1500 ms + receive 2000 ms,
+        #  * przy 10 s silnik odpowiadal po 20,8 s — czyli POZA budzetem, a stacja pokazywala blad
+        #    polaczenia zamiast stanu konta; przy 1 s odpowiedz dochodzi w ~1 s.
+        # Sekunda jest ~70x wieksza od sredniej zdrowego katalogu (czyli nie "przesadzona" w druga
+        # strone: chwilowe spowolnienie katalogu nie zamienia sie w falszywe "katalog niedostepny"),
+        # a jednoczesnie miesci sie w budzecie stacji z zapasem.
+        pooling_loop_timeout = get_app_config_value("PI_LDAP_POOLING_LOOP_TIMEOUT", 1)
         log.debug(f"Setting system-wide POOLING_LOOP_TIMEOUT to {pooling_loop_timeout!s}.")
         ldap3.set_config_parameter("POOLING_LOOP_TIMEOUT", pooling_loop_timeout)
 
@@ -423,11 +499,31 @@ class IdResolver(UserIdResolver):
                                                 auto_referrals=not self.noreferrals,
                                                 start_tls=self.start_tls)
             if not connection.bind():
+                # Stan konta z katalogu ma pierwszenstwo przed ogolnym bledem poswiadczen:
+                # bez tego informacja ginie i wszystkie przypadki wygladaja tak samo.
+                stan = stan_hasla_z_odpowiedzi_katalogu(connection.result)
+                if stan and stan != "invalid_credentials":
+                    log.info(f"Katalog rozpoznal stan konta {stan!r} dla {uid!r}.")
+                    raise DirectoryPasswordState(stan, f"Directory reported {stan}",
+                                                 connection.result)
                 raise ResolverError(f"Bind failed with: {connection.result.get('description')} "
                                     f"({connection.result.get('result')})")
             log.debug(f"LDAP bind operation took {connection.usage.elapsed_time}")
             connection.unbind()
             log.debug("unbind successful.")
+        except DirectoryPasswordState:
+            # Stan konta rozpoznany przez katalog musi dojsc do wolajacego: bez tego ponizszy
+            # `except Exception` zjada go jako zwykla pomylke poswiadczen (log 475 sasiadujacy z 484)
+            # i cala informacja o wygaslym hasle albo wylaczonym koncie przepada (zgloszenie #222).
+            raise
+        except DirectoryUnavailable:
+            # Katalog nieosiagalny ma wlasny typ i wlasna droge: to nie jest pomylka poswiadczen,
+            # wiec nie wolno jej zjadac jako `False` (uzytkownik zobaczylby "wrong otp pin" i
+            # powtarzal proby, az AD zablokuje konto). Sygnal idzie do lib/user.py.
+            raise
+        except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as e:
+            log.info(f"Katalog nieosiagalny przy sprawdzaniu hasla dla {uid!r}: {e!r}")
+            raise DirectoryUnavailable(f"Directory unavailable: {e}") from e
         except Exception as e:
             log.info(f"Failed to check password for {uid!r}/{bind_user!r}: {e}")
             log.debug(traceback.format_exc())
@@ -620,6 +716,15 @@ class IdResolver(UserIdResolver):
                                                          start_tls=self.start_tls,
                                                          keytabfile=self.keytabfile)
                 bound = self.connection.bind()
+            except (LDAPSocketOpenError, LDAPServerPoolExhaustedError) as ex:
+                # Ta droga (wiazanie do katalogu przy odczycie konta) musi podniesc ten sam typ co
+                # sprawdzanie hasla: inaczej wyjatek leci jako ogolny `ResolverError` (ERR907), stan
+                # `directory_unavailable` nie trafia do odpowiedzi i stacja pokazuje komunikat o bledzie
+                # polaczenia z numerem bledu zamiast stanu konta. Zmierzone 07.11.2026 na stacji 145
+                # (zgloszenie #1456): przy odcietym DC w dzienniku bylo `LDAPIdResolver:706`, a
+                # `lib/user.py` lapal to dopiero w ogolnym `except Exception`.
+                log.info(f"Katalog nieosiagalny przy wiazaniu do katalogu: {ex!r}")
+                raise DirectoryUnavailable(f"Directory unavailable: {ex}") from ex
             except Exception as ex:
                 log.error(f"Error performing bind operation: {ex}!")
                 raise ResolverError(f"Error performing bind operation: {ex}")

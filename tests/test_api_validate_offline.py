@@ -141,6 +141,9 @@ class AValidateOfflineTestCase(MyApiTestCase):
             # Check the number of OTP values
             self.assertEqual(len(offline.get("response")), 100)
             self.assertEqual(offline.get("username"), "cornelius")
+            # A HOTP offline item is a mapping of counter values to hashed OTP values, so it carries no FIDO2
+            # user verification requirement
+            self.assertNotIn("userVerification", offline.get("response"))
             refilltoken_1 = offline.get("refilltoken")
             self.assertEqual(len(refilltoken_1), 2 * REFILLTOKEN_LENGTH)
             # check the token counter
@@ -191,6 +194,31 @@ class AValidateOfflineTestCase(MyApiTestCase):
             self._resend_and_check_unspecific_error(400)
             # A failed refill must not rotate the stored refilltoken
             self.assertEqual(refilltoken_2, get_tokens(serial=self.serials[0])[0].get_tokeninfo("refilltoken"))
+
+        # Simulate an admin disabling the token while this request waited
+        # for the row lock: the refreshed token is disabled even though
+        # get_tokens() initially returned an active token. The refill must
+        # not issue OTPs or rotate its authorization token.
+        original_refresh = db.session.refresh
+
+        def disabled_after_lock(record, *args, **kwargs):
+            original_refresh(record, *args, **kwargs)
+            if isinstance(record, Token) and record.serial == self.serials[0]:
+                record.active = False
+
+        with mock.patch.object(db.session, "refresh", side_effect=disabled_after_lock):
+            with self.app.test_request_context('/validate/offlinerefill',
+                                               method='POST',
+                                               data={"serial": self.serials[0],
+                                                     "pass": "pin520489",
+                                                     "refilltoken": refilltoken_2},
+                                               environ_base={'REMOTE_ADDR': '192.168.0.2'}):
+                response = self.app.full_dispatch_request()
+                self.assertEqual(response.status_code, 400, response)
+                self.assertIn("The token is not valid.", response.json["result"]["error"]["message"])
+        # Restore normal token state for subsequent success-path checks.
+        enable_token(self.serials[0], True)
+        self.assertEqual(refilltoken_2, get_tokens(serial=self.serials[0])[0].get_tokeninfo("refilltoken"))
 
         # Disable token. Refill should fail.
         enable_token(self.serials[0], False)
@@ -345,13 +373,105 @@ class AValidateOfflineTestCase(MyApiTestCase):
                              res.json["result"]["error"]["message"])
         remove_token(serial)
 
+    def test_04a_signer_failure_preserves_online_hotp_consumption(self):
+        """Failure to issue offline credentials must not make an accepted OTP reusable."""
+        serial = "AMFA-SIGNER-FAILURE-ONLINE-COUNTER"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        try:
+            attach_token(serial, "offline", hostname="pippin",
+                         resolver_name="testresolver", options={"count": 3, "rounds": 1})
+            token = get_tokens(serial=serial)[0]
+            first_count = token.token.count
+            success, _reason, values = token.get_multi_otp(count=1)
+            self.assertTrue(success)
+            password = "pin" + next(iter(values["otp"].values()))
+            with mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
+                            side_effect=RuntimeError("test signer unavailable")):
+                with self.app.test_request_context("/validate/check", method="POST",
+                                                   data={"serial": serial, "pass": password},
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    result = self.app.full_dispatch_request().json
+                    self.assertTrue(result["result"]["value"], result)
+                    self.assertNotIn("auth_items", result)
+            db.session.expire_all()
+            persisted = get_tokens(serial=serial)[0]
+            self.assertEqual(persisted.token.count, first_count + 1,
+                             "offline rollback must not undo successful online authentication")
+            self.assertIsNone(persisted.get_tokeninfo("refilltoken"))
+            with self.app.test_request_context("/validate/check", method="POST",
+                                               data={"serial": serial, "pass": password},
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                replay = self.app.full_dispatch_request().json
+                self.assertFalse(replay["result"]["value"], "accepted HOTP cannot be replayed")
+        finally:
+            remove_token(serial)
+
+    def test_04b_failed_signed_refill_does_not_consume_otp_or_rotate_refilltoken(self):
+        """One failing signature must leave a valid refill retryable."""
+        serial = "AMFA-SIGNER-FAIL-REFILL"
+        init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                   user=User("cornelius", self.realm1))
+        try:
+            attach_token(serial, "offline", hostname="pippin",
+                         resolver_name="testresolver", options={"count": 3, "rounds": 1})
+            with self.app.test_request_context("/validate/check", method="POST",
+                                               data={"serial": serial, "pass": "pin755224"},
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                response = self.app.full_dispatch_request()
+                self.assertTrue(response.json["result"]["value"], response.json)
+                offline_entry = response.json["auth_items"]["offline"][0]
+            refilltoken = offline_entry["refilltoken"]
+            counter = min(int(k) for k in offline_entry["response"])
+            token = get_tokens(serial=serial)[0]
+            password = "pin" + token._calc_otp(counter)
+            before = token.token.count
+            payload = {"serial": serial, "pass": password, "refilltoken": refilltoken}
+            # secrets.compare_digest only accepts ASCII str (or bytes): reject
+            # malformed Unicode refill credentials as an ordinary bad token,
+            # not an uncaught TypeError/HTTP 500.
+            bad_payload = dict(payload, refilltoken=chr(0x017C) * len(refilltoken))
+            with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                               data=bad_payload,
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                bad_response = self.app.full_dispatch_request()
+                self.assertEqual(bad_response.status_code, 400, bad_response.json)
+            with mock.patch("privacyidea.lib.amfa_offline_signatures.signed_auth_items",
+                            side_effect=RuntimeError("test signer unavailable")):
+                with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                                   data=payload,
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    try:
+                        failed = self.app.full_dispatch_request()
+                    except RuntimeError:
+                        pass  # An unmasked signing failure may propagate to the caller.
+                    else:
+                        self.assertNotEqual(failed.status_code, 200)
+            db.session.expire_all()
+            after = get_tokens(serial=serial)[0]
+            self.assertEqual(after.token.count, before, "signing failure consumed offline counters")
+            self.assertEqual(after.get_tokeninfo("refilltoken"), refilltoken,
+                             "signing failure rotated a credential the client never received")
+            with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                               data=payload,
+                                               environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                retry = self.app.full_dispatch_request()
+                self.assertEqual(retry.status_code, 200, retry.json)
+                self.assertTrue(retry.json["result"]["value"], retry.json)
+        finally:
+            remove_token(serial)
+
     def test_04_multiple_offline_attachments_share_one_refilltoken(self):
-        """With two offline attachments (HOTP), the response contains one ``auth_items.offline``
-        entry per machine, each with a distinct ``refilltoken`` in the JSON — but
-        ``generate_new_refilltoken`` is called once per attachment and writes the same
-        ``refilltoken`` tokeninfo key, so only the LAST refilltoken is actually stored.
-        Earlier entries are silently invalidated. Pins down current (buggy) behavior;
-        a proper fix would key the refilltoken per machine or de-duplicate attachments.
+        """Dwa przylaczenia offline (HOTP) dostaja **ten sam** refilltoken (AMFA: #1156, plaster 04, Z4).
+
+        Zachowanie podstawy: kazde udane `/validate/check` wolalo `generate_new_refilltoken`, wiec
+        kazde przylaczenie w odpowiedzi nioslo **inny** token, a przezywal tylko ostatni — wczesniejsze
+        byly po cichu uniewazniane (test przypinal to jako `current (buggy) behavior`). Klient, ktory
+        zapisal pierwsza partie i nie zdazyl zapisac drugiej, trzymal martwy token i dostawal `ERR905`
+        bez zadnego sygnalu.
+
+        W naszej linii refilltoken jest **stabilny miedzy logowaniami** i odnawia go dopiero udany
+        refill, wiec oba przylaczenia widza ten sam token, zapisany w tokeninfo, i refill nim przechodzi.
         """
         serial = "SE_OFFLINE_MULTI"
         init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
@@ -368,20 +488,26 @@ class AValidateOfflineTestCase(MyApiTestCase):
             self.assertEqual(200, res.status_code, res)
             offline_entries = res.json["auth_items"]["offline"]
         self.assertEqual(2, len(offline_entries))
-        refilltoken_first = offline_entries[0]["refilltoken"]
-        refilltoken_last = offline_entries[-1]["refilltoken"]
-        self.assertNotEqual(refilltoken_first, refilltoken_last)
-        # Only the LAST issued refilltoken survives in tokeninfo
-        self.assertEqual(refilltoken_last, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
-        # The earlier refilltoken is therefore already stale — a refill request with it is
-        # rejected with the generic 'not an offline token or refill token is incorrect' error
+        tokeny = {entry["refilltoken"] for entry in offline_entries}
+        self.assertEqual(1, len(tokeny), "przylaczenia dostaly rozne refilltokeny — wracamy do rotacji przy logowaniu")
+        refilltoken = tokeny.pop()
+        self.assertEqual(refilltoken, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
+        # Test the actual refill contract with an OTP from the second
+        # offline window. A hard-coded OTP could succeed or fail depending on
+        # counter state, so it cannot prove the refilltoken is still usable.
+        token = get_tokens(serial=serial)[0]
+        refill_counter = min(int(counter) for counter in offline_entries[-1]["response"])
+        correct_otp = token._calc_otp(refill_counter)
         with self.app.test_request_context('/validate/offlinerefill',
                                            method='POST',
-                                           data={"serial": serial, "pass": "pin254676",
-                                                 "refilltoken": refilltoken_first},
+                                           data={"serial": serial, "pass": "pin" + correct_otp,
+                                                 "refilltoken": refilltoken},
                                            environ_base={'REMOTE_ADDR': '192.168.0.2'}):
             res = self.app.full_dispatch_request()
-            self.assertEqual(400, res.status_code, res)
-            self.assertEqual("ERR905: Token is not an offline token or refill token is incorrect",
-                             res.json["result"]["error"]["message"])
+            self.assertEqual(200, res.status_code, res.json)
+            self.assertTrue(res.json["result"]["value"], res.json)
+            replacement = res.json["auth_items"]["offline"][0]["refilltoken"]
+        self.assertNotEqual(refilltoken, replacement, "successful refill must rotate the secret")
+        self.assertEqual(replacement, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
         remove_token(serial)
+

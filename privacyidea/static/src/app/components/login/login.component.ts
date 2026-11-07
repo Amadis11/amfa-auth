@@ -51,7 +51,7 @@ import { catchError, EMPTY, filter, Subscription, switchMap, take, timeout, time
 
 const PUSH_POLLING_INTERVAL_MS = 500;
 const PUSH_POLLING_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
-// A "-" entry in the realmdropdown policy is the privacyIDEA "no realm" sentinel:
+// A "-" entry in the realmdropdown policy is the AMFA "no realm" sentinel:
 // it is offered as a selectable option but must not be sent as a realm parameter.
 const NO_REALM_SENTINEL = "-";
 

@@ -88,10 +88,12 @@ clients consume from challenge responses.
 import copy
 import json
 import logging
+import secrets
 import threading
 
 from flask import (Blueprint, request, g, Response)
 from flask_babel import _
+from sqlalchemy import select
 
 from privacyidea.api.auth import admin_required
 from privacyidea.api.lib.decorators import add_serial_from_response_to_g
@@ -111,7 +113,8 @@ from privacyidea.api.lib.prepolicy import (prepolicy, set_realm,
                                            webauthntoken_authz,
                                            webauthntoken_request, check_application_tokentype,
                                            increase_failcounter_on_challenge, get_first_policy_value, fido2_enroll,
-                                           disabled_token_types, load_challenge_text)
+                                           disabled_token_types, load_challenge_text,
+                                           get_user_verification_requirement)
 from privacyidea.api.lib.conditional_access import (conditional_access_gate, conditional_access_precheck,
                                                     REMEMBER_DEVICE_REJECTION)
 from privacyidea.api.lib.utils import (get_all_params, get_before_request_config, get_optional_one_of, get_optional,
@@ -144,6 +147,7 @@ from privacyidea.lib.tokens.webauthntoken import WebAuthnTokenClass
 from privacyidea.lib.user import log_used_user, User, split_user
 from privacyidea.lib.utils import get_plugin_info_from_useragent, AUTH_RESPONSE
 from privacyidea.lib.utils import is_true, get_computer_name_from_user_agent
+from privacyidea.models import db, Token
 from .lib.policyhelper import check_last_auth_policy, get_realm_for_authentication
 from .lib.utils import (get_required, get_auth_error_status_code, send_error, send_result,
                         log_authentication, pop_auth_event_reason, pop_auth_event_serials)
@@ -273,13 +277,33 @@ def offlinerefill():
             raise ParameterError(_("The token does not exist"))
 
         token = tokens[0]
-        # check if token is disabled or otherwise not fit for auth
+        # Lock only the token row, without joining nullable relationships.
+        # SQLAlchemy's refresh(..., with_for_update=True) can generate outer
+        # joins and PostgreSQL rejects FOR UPDATE on their nullable side.
+        # Acquire the narrowly scoped lock first, then refresh ORM state and
+        # check validity before reading attachments or issuing new OTPs.
+        db.session.execute(select(Token.id).where(Token.serial == serial).with_for_update()).first()
+        db.session.refresh(token.token)
+        # get_tokens() may have loaded TokenInfo before the FOR UPDATE wait.
+        # Discard that ORM snapshot before comparing the rotated secret.
+        db.session.expire(token.token, ["info_list"])
         message_list = []
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
             raise ParameterError(_("The token is not valid."))
         token_attachments = list_machine_tokens(serial=serial, application="offline")
         if token_attachments:
+            # Serializacja refillu offline (audyt 26.10.2026, plaster 04, Z5): porownanie refilltokenu,
+            # wydanie partii i rotacja tokenu musza byc jedna sekcja krytyczna. Bez zamka dwa rownolegle
+            # zadania z tym samym refilltokenem czytaja ten sam licznik, oba wydaja kody i oba go
+            # inkrementuja (`get_refill` -> `get_multi_otp`), wiec powstaja dwa zestawy o pokrywajacych
+            # sie licznikach. `with_for_update` to ten sam idiom, co w `lib/token/lifecycle.py`; blokuje
+            # wiersz do konca transakcji zadania, a `refresh` sprawia, ze porownanie nizej widzi
+            # refilltoken zapisany przez zadanie, ktore skonczylo sie przed nami.
+            # Uwaga: to blad OGOLNY privacyIDEA, nie nasza funkcja — kandydat do upstreamu.
+            # `token` to klasa tokenu (opakowanie), wiersz bazy siedzi w `token.token`; serial jest
+            # unikalny, wiec lock trafia w ten sam wiersz co `SELECT ... FOR UPDATE` w cyklu zycia.
+            # State and attachments were checked after the lock above.
             # TODO: Currently we do not distinguish, if a token had more than one offline attachment
             # check refill token depending on token type
             refilltoken_stored = None
@@ -293,22 +317,73 @@ def offlinerefill():
                     raise ParameterError(_("Machine can not be identified by user agent!"))
                 refilltoken_stored = token.get_tokeninfo("refilltoken_" + computer_name)
 
-            if refilltoken_stored and refilltoken_stored == refilltoken_request:
+            # Refill credentials are bearer secrets. Compare their values in
+            # constant time and reject malformed non-text inputs without a
+            # potentially exception-raising equality/substring conversion.
+            if (bool(refilltoken_stored) and isinstance(refilltoken_stored, str) and
+                    isinstance(refilltoken_request, str) and
+                    refilltoken_stored.isascii() and refilltoken_request.isascii() and
+                    secrets.compare_digest(refilltoken_stored, refilltoken_request)):
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
                 options = token_attachments[0].get("options")
-                otps = MachineApplication.get_refill(token, password, options)
-                refilltoken_new = MachineApplication.generate_new_refilltoken(token, request.user_agent.string)
+                otps = MachineApplication.get_refill(token, password, options, atomic=True)
+                # Signed snapshots REPLACE the previous local record; a
+                # traditional refill contains only the number of newly used
+                # counters and is meant to be MERGED. In signed mode emit a
+                # full fresh HOTP window instead, otherwise a user would be
+                # left with one code and need a refill on every login.
+                from privacyidea.lib.amfa_offline_signatures import signing_enabled
+                if signing_enabled() and token.type.lower() == "hotp":
+                    requested = int((options or {}).get("count", 100))
+                    if not 1 <= requested <= 1024:
+                        raise ParameterError(_("Invalid signed offline refill size"))
+                    if len(otps) < requested:
+                        matched, otp_pin, _otp_value = token.split_pin_pass(password)
+                        if not matched:
+                            raise ParameterError(_("Could not split offline refill password"))
+                        rounds = int((options or {}).get("rounds", 6549))
+                        otps.update(MachineApplication.get_offline_otps(
+                            token, otp_pin, requested - len(otps), rounds, atomic=True))
+                refilltoken_new = MachineApplication.generate_new_refilltoken(
+                    token, request.user_agent.string, commit_db_session=False,
+                )
                 response = send_result(True)
                 content = response.json
-                content["auth_items"] = {"offline": [{"refilltoken": refilltoken_new,
-                                                      "response": otps,
-                                                      "serial": serial}]}
+                from privacyidea.lib.amfa_offline_signatures import signed_auth_items
+                # Refill rotates the token: the new token AND new OTP material
+                # must be signed together, never spliced onto an old signature.
+                refill_item = {"refilltoken": refilltoken_new,
+                               "response": otps,
+                               "serial": serial,
+                               "username": token.user.login if token.user else ""}
+                if signing_enabled() and token.type.lower() in ("webauthn", "passkey"):
+                    # Only the Ed25519 format replaces the whole local entry.
+                    # With signing disabled retain privacyIDEA's original
+                    # refill contract (response={}) for old clients.
+                    # Resolve UV from the actual user policy; a hard-coded
+                    # "required" contradicts a configured "discouraged".
+                    uv_policy = get_user_verification_requirement(
+                        SCOPE.AUTH, user=token.user if token.user else None)
+                    refill_item = MachineApplication.get_authentication_item(
+                        token.type, serial, user_agent=request.user_agent.string,
+                        user_verification=uv_policy, commit_db_session=False)
+                    refill_item.update({"refilltoken": refilltoken_new,
+                                        "serial": serial,
+                                        "username": token.user.login if token.user else ""})
+                content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                 response.set_data(json.dumps(content))
+                # The lock must cover the HOTP counter, signed full-window
+                # replenishment, refilltoken rotation and response material.
+                # None of these writes may commit independently.
+                db.session.commit()
                 return response
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
 
     except Exception as e:
+        db.session.rollback()
+        # Roll back before querying the masking policy: it could otherwise
+        # autoflush token updates or run against a failed SQL transaction.
         if Match.user(
                 g,
                 scope=SCOPE.TOKEN,
@@ -793,8 +868,13 @@ def _handle_fido2_auth(context: dict, credential_id: str):
                                   action=PolicyAction.ENROLL_VIA_MULTICHALLENGE_PASSKEY_OFFLINE,
                                   user_object=user).any():
                 __ = attach_token(token.get_serial(), "offline")
+                # The offline client enforces the user verification requirement on its own, so the policy value
+                # has to travel with the offline data. It is the SCOPE.AUTH value, the same one the client sees
+                # in the online passkey challenge.
+                user_verification = get_user_verification_requirement(SCOPE.AUTH, user=user)
                 offline_data = get_auth_items(serial=token.get_serial(), application="offline",
-                                              user_agent=request.user_agent.string)
+                                              user_agent=request.user_agent.string,
+                                              user_verification=user_verification)
                 if offline_data:
                     context["response_params"]["auth_items"] = offline_data
 

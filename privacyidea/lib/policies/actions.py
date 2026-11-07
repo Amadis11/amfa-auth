@@ -250,6 +250,26 @@ class PolicyAction:
     BLOCKLIST_RESET = "blocklist_reset"
     BLOCKLIST_SET = "blocklist_set"
 
+    # AMFA: zapis polityki zawężony do **zakresu docelowego** polityki. `POLICYWRITE`/`POLICYDELETE`
+    # zostają pełnym prawem (zgodność wstecz: istniejące konta i klienci nie tracą możliwości), a
+    # nazwy `<POLICYWRITE>_<zakres>` obejmują tylko politykę w swoim zakresie. Zakresu `admin` na tej
+    # liście nie ma i nie będzie — dzięki temu konto z wąskim prawem **nie zapisze** polityki
+    # administracyjnej, czyli granica leży w silniku, a nie w kodzie klienta.
+    POLICY_WRITE_SCOPES = ("authentication", "authorization", "audit", "user", "enrollment",
+                           "webui", "register", "container", "token", "hardening",
+                           "conditional_access")
+
+
+def policy_write_action(scope: str, delete: bool = False) -> str | None:
+    """Nazwa prawa zapisu polityki dla zakresu docelowego (``None``, gdy takiego prawa nie ma).
+
+    :param scope: zakres polityki, której dotyczy zadanie (np. ``authentication``)
+    :param delete: ``True`` dla usunięcia polityki (``policydelete_<zakres>``)
+    """
+    if scope not in PolicyAction.POLICY_WRITE_SCOPES:
+        return None
+    return f"policydelete_{scope}" if delete else f"policywrite_{scope}"
+
 
 # Admin actions on objects that belong to no realm, resolver or user: policies, event handlers, conditional-access
 # policies, API clients and the IP blocklist. An admin policy grants them only if it does not restrict its target, and
@@ -259,6 +279,12 @@ ADMIN_ACTIONS_WITHOUT_TARGET = frozenset({
     PolicyAction.CONDITIONAL_ACCESS_POLICY_WRITE, PolicyAction.API_CLIENT_ADD, PolicyAction.API_CLIENT_EDIT,
     PolicyAction.API_CLIENT_ROTATE, PolicyAction.API_CLIENT_DELETE, PolicyAction.BLOCKLIST_READ,
     PolicyAction.BLOCKLIST_SET, PolicyAction.BLOCKLIST_RESET,
+    # AMFA: nasze prawa zapisu polityki zawężone do zakresu dotyczą tego samego obiektu bez realmu
+    # (polityki), więc obowiązuje je ta sama reguła: polityka administracyjna z zawężonym celem ich
+    # nie nadaje i WebUI ich wtedy nie pokazuje. Zgodność pełnych `policywrite`/`policydelete`
+    # i nazw `<prawo>_admin`, których nie ma, bez zmian.
+    *(policy_write_action(scope, delete)
+      for delete in (False, True) for scope in PolicyAction.POLICY_WRITE_SCOPES),
 })
 
 

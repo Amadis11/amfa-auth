@@ -46,6 +46,7 @@ from ast import literal_eval
 import uuid
 from ldap3.utils.conv import escape_bytes
 import ldap3
+from ldap3.core.exceptions import LDAPSocketOpenError
 from mock import Mock
 import re
 import pyparsing
@@ -112,30 +113,57 @@ class Connection(object):
                 self.connection = connection
 
             def paged_search(self, **kwargs):
-                self.connection.search(search_base=kwargs.get("search_base"),
-                                       search_scope=kwargs.get("search_scope"),
-                                       search_filter=kwargs.get(
-                                           "search_filter"),
-                                       attributes=kwargs.get("attributes"),
-                                       paged_size=kwargs.get("page_size"),
-                                       size_limit=kwargs.get("size_limit"),
-                                       paged_cookie=None)
-                result = self.connection.response
+                connection = self.connection
+                # ldap3 (and the resolver) pass the page size as ``paged_size``; accept the
+                # older ``page_size`` spelling too so both callers work.
+                page_size = kwargs.get("paged_size") or kwargs.get("page_size") or 0
+                cookie = kwargs.get("paged_cookie")
+                # Fetch the full result set for this filter once, then hand out the pages. The
+                # real ldap3 walks the pages itself (and hands the cookie back to the server);
+                # here the cookie is the offset of the next page, so a test can page manually.
+                connection.search(search_base=kwargs.get("search_base"),
+                                  search_scope=kwargs.get("search_scope"),
+                                  search_filter=kwargs.get("search_filter"),
+                                  attributes=kwargs.get("attributes"),
+                                  paged_size=page_size,
+                                  size_limit=kwargs.get("size_limit"),
+                                  paged_cookie=None)
+                full = list(connection.response)
+                if not page_size or page_size <= 0:
+                    page_size = len(full) or 1
+                start = 0
+                if cookie not in (None, "", b""):
+                    try:
+                        start = int(cookie)
+                    except (TypeError, ValueError):
+                        start = 0
                 if kwargs.get("generator", False):
-                    # If ``generator=True`` is passed, ``paged_search`` should return an iterator.
-                    result = iter(result)
-                return result
+                    # If ``generator=True`` is passed, ``paged_search`` should return an
+                    # iterator that walks every page, exactly like ldap3 does.
+                    return connection._paged_generator(full, page_size)
+                page = full[start:start + page_size]
+                connection.response = page
+                connection.result = Connection._paged_result(start + page_size, len(full))
+                return page
 
         def __init__(self, connection):
             self.standard = self.Standard(connection)
 
-    def __init__(self, directory=None):
+    def __init__(self, directory=None, tls_rejected=False, bind_result=None,
+                 search_result=None, search_response=None):
         if directory is None:
             directory = []
         import copy
         self.directory = copy.deepcopy(directory)
         self.bound = False
         self.start_tls_called = False
+        # Steering hooks for tests: a connection can be told to reject TLS, to fail the bind
+        # with a directory result (e.g. LDAP 49 plus an Active Directory sub-code), or to answer
+        # a search with a specific LDAP result instead of "success".
+        self.tls_rejected = tls_rejected
+        self.bind_result = bind_result
+        self.search_result = search_result
+        self.search_response = search_response
         self.extend = self.Extend(self)
         self.usage = Mock(**{"elapsed_time": datetime.timedelta(microseconds=500)})
 
@@ -156,15 +184,30 @@ class Connection(object):
     def _find_user(self, dn):
         return next(i for (i, d) in enumerate(self.directory) if d["dn"] == dn)
 
-    @staticmethod
-    def open(read_server_info=True):
+    def open(self, read_server_info=True):
+        # A directory that rejects TLS never yields a usable connection. Raising here mirrors
+        # ldap3, where the socket/TLS layer fails before any bind can be attempted.
+        if self.tls_rejected:
+            raise LDAPSocketOpenError("TLS handshake failed")
         return
 
     def bind(self, read_server_info=True):
+        if self.tls_rejected:
+            raise LDAPSocketOpenError("TLS handshake failed")
+        if self.bind_result is not None:
+            # The directory answered the bind with a failure result. The caller reads
+            # ``connection.result`` (e.g. ``description`` and the AD ``data <code>`` message).
+            self.result = dict(self.bind_result)
+            self.bound = False
         return self.bound
 
     def start_tls(self, read_server_info=True):
         self.start_tls_called = True
+        if self.tls_rejected:
+            self.result = {'dn': '', 'referrals': None,
+                           'description': 'unwillingToPerform', 'result': 53,
+                           'message': 'TLS handshake failed', 'type': 'extendedResponse'}
+            return False
         return True
 
     def add(self, dn, object_class=None, attributes=None):
@@ -635,7 +678,6 @@ class Connection(object):
         s_filter = list()
         candidates = list()
         self.response = list()
-        self.result = dict()
 
         try:
             if isinstance(search_filter, bytes):
@@ -654,7 +696,41 @@ class Connection(object):
                                                          s_filter)
         self.response = Connection._deDuplicate(candidates)
 
+        if self.search_result is not None:
+            # A test told this connection to answer the search with a directory result
+            # (sizeLimitExceeded, noSuchObject, insufficientAccess, ...). An empty response then
+            # means "error", not "no matches" - the two are told apart by ``result``.
+            self.result = dict(self.search_result)
+            if self.search_response is not None:
+                self.response = list(self.search_response)
+            elif int(self.result.get("result", 0)) != 0:
+                self.response = []
+        else:
+            self.result = {'dn': '', 'referrals': None, 'description': 'success',
+                           'result': 0, 'message': '', 'type': 'searchResEntry'}
+
         return True
+
+    @staticmethod
+    def _paged_result(next_start, total):
+        """LDAP result carrying the paged-results control with the next page's cookie."""
+        cookie = str(next_start) if next_start < total else ""
+        return {'dn': '', 'referrals': None, 'description': 'success', 'result': 0,
+                'message': '', 'type': 'searchResEntry',
+                'controls': {'1.2.840.113556.1.4.319': {
+                    'criticality': True,
+                    'value': {'size': total, 'cookie': cookie}}}}
+
+    def _paged_generator(self, full, page_size):
+        """Yield every entry across pages, exposing each page in ``response`` like ldap3 does."""
+        for start in range(0, len(full), page_size):
+            page = full[start:start + page_size]
+            self.response = page
+            self.result = Connection._paged_result(start + page_size, len(full))
+            yield from page
+        if not full:
+            self.response = []
+            self.result = Connection._paged_result(0, 0)
 
     def unbind(self):
         return True
@@ -671,6 +747,14 @@ class Ldap3Mock(object):
 
     def reset(self):
         self._calls.reset()
+        # Steering state for tests. Cleared between runs so one test's forced bind/search
+        # result or TLS rejection cannot leak into the next (``__exit__`` calls this).
+        self.tls_rejected = False
+        self.server_options = []
+        self.bind_result = None
+        self.bind_result_user = None
+        self.search_result = None
+        self.search_response = None
 
     def setLDAPDirectory(self, directory=None):
         if directory is None:
@@ -684,7 +768,57 @@ class Ldap3Mock(object):
                 raise
 
     def set_exception(self, exc=True):
+        """Set the exception raised when a connection is created.
+
+        ``True`` raises ``LDAPSocketOpenError`` (a real ldap3 error, message kept as
+        ``"LDAP request failed"``), a class or an instance is raised as given (e.g.
+        ``LDAPOperationResult(result=4)``), ``False``/``None`` disables it.
+        """
         self.exception = exc
+
+    def _exception_to_raise(self):
+        if self.exception is True:
+            return LDAPSocketOpenError("LDAP request failed")
+        if isinstance(self.exception, BaseException):
+            return self.exception
+        if isinstance(self.exception, type) and issubclass(self.exception, BaseException):
+            return self.exception("LDAP request failed")
+        return LDAPSocketOpenError("LDAP request failed")
+
+    def set_bind_result(self, result=49, description="invalidCredentials",
+                        message=None, code=None, user=None):
+        """Force the next bind(s) to fail with a directory result.
+
+        ``code`` is the Active Directory sub-code as it appears in the directory message
+        (``52e``, ``773``, ...). When given, a realistic ``AcceptSecurityContext`` message with
+        ``data <code>`` is built, so the resolver's state mapping sees what AD would send.
+        ``user`` restricts the override to a bind for that DN (``None`` applies it to every bind).
+        """
+        if code is not None:
+            message = message or ("80090308: LdapErr: DSID-0C0904DC, comment: "
+                                  f"AcceptSecurityContext error, data {code}, v3839")
+        self.bind_result = {"dn": "", "referrals": None, "description": description,
+                            "result": int(result), "message": message or "",
+                            "type": "bindResponse"}
+        self.bind_result_user = user
+
+    def set_search_result(self, result=32, description="noSuchObject", message="",
+                          response=None):
+        """Force searches to answer with a directory result.
+
+        Covers e.g. ``4`` sizeLimitExceeded, ``32`` noSuchObject, ``50`` insufficientAccess.
+        ``response`` overrides the returned entries; when it is ``None`` the matches are kept
+        for a size-limit result and dropped for any other error, so an empty result can be told
+        apart from an error by ``connection.result["result"]``.
+        """
+        self.search_result = {"dn": "", "referrals": None, "description": description,
+                              "result": int(result), "message": message,
+                              "type": "searchResEntry"}
+        self.search_response = response
+
+    def set_tls_rejected(self, rejected=True):
+        """Make a connection that asked for TLS (ldaps or StartTLS) fail to open."""
+        self.tls_rejected = rejected
 
     def _load_data(self, directory):
         try:
@@ -711,9 +845,22 @@ class Ldap3Mock(object):
 
     def _on_Server(self, host, port, use_ssl, connect_timeout, get_info=None,
                    tls=None):
-        # mangle request packet
-
+        # Record what the resolver asked for (ldaps, StartTLS, timeout) so a test can assert it
+        # and so a TLS-rejecting directory fails only the connections that asked for TLS.
+        self.server_options.append({"host": host, "port": port, "use_ssl": use_ssl,
+                                    "connect_timeout": connect_timeout, "tls": tls})
         return "FakeServerObject"
+
+    def _tls_requested(self):
+        return any(opts.get("use_ssl") or opts.get("tls") is not None
+                   for opts in self.server_options)
+
+    def _bind_result_for(self, user):
+        if self.bind_result is None:
+            return None
+        if self.bind_result_user is not None and to_unicode(self.bind_result_user) != user:
+            return None
+        return self.bind_result
 
     def _on_Connection(self, server, user, password,
                        auto_bind=None, client_strategy=None,
@@ -732,7 +879,7 @@ class Ldap3Mock(object):
         """
         # Raise an exception, if we are told to do so
         if self.exception:
-            raise Exception("LDAP request failed")
+            raise self._exception_to_raise()
         # check the password
         correct_password = False
         # Anonymous bind
@@ -744,14 +891,20 @@ class Ldap3Mock(object):
         for entry in self.directory:
             if to_unicode(entry.get("dn")) == user:
                 pw = entry.get("attributes").get("userPassword")
-                # password can be unicode
-                if to_bytes(pw) == to_bytes(password):
+                # password can be unicode. Active Directory never returns ``userPassword``, so
+                # such an entry can only be authenticated through a forced bind result below.
+                if pw is not None and to_bytes(pw) == to_bytes(password):
                     correct_password = True
-                elif pw.startswith('{SSHA}'):
+                elif pw is not None and str(pw).startswith('{SSHA}'):
                     correct_password = ldap_salted_sha1.verify(password, pw)
                 else:
                     correct_password = False
-        self.con_obj = Connection(self.directory)
+        self.con_obj = Connection(
+            self.directory,
+            tls_rejected=self.tls_rejected and self._tls_requested(),
+            bind_result=self._bind_result_for(user),
+            search_result=self.search_result,
+            search_response=self.search_response)
         self.con_obj.bound = correct_password
         return self.con_obj
 

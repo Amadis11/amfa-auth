@@ -255,7 +255,7 @@ class HotpTokenClass(TokenClass):
         response_detail = TokenClass.get_init_detail(self, params, user)
         params = params or {}
         tokenlabel = params.get("tokenlabel", "<s>")
-        tokenissuer = params.get("tokenissuer", "privacyIDEA")
+        tokenissuer = params.get("tokenissuer", "AMFA")
         # If the init_details contain an OTP key the OTP key
         # should be displayed as an enrollment URL
         otpkey = self.init_details.get('otpkey')

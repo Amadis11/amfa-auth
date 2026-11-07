@@ -143,7 +143,7 @@ export class PrivacyideaServersComponent {
       .openDialog({
         component: SimpleConfirmationDialogComponent,
         data: {
-          title: $localize`:@@piServer.deletePrivacyideaServers:Delete privacyIDEA Servers`,
+          title: $localize`:@@piServer.deletePrivacyideaServers:Delete AMFA Servers`,
           items: selected.map((row) => row.identifier),
           itemType: "privacyidea-server",
           confirmAction: { label: $localize`:@@common.delete:Delete`, value: true, type: "destruct" }

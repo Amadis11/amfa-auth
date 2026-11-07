@@ -44,8 +44,8 @@
           >
         }
         <mat-hint i18n="@@tokenTypeConfig.registrationServer"
-          >The Registration Server is this privacyIDEA server. <br />
-          Note that the privacyIDEA server needs to be accessible from the users smartphone.</mat-hint
+          >The Registration Server is this AMFA server. <br />
+          Note that the AMFA server needs to be accessible from the users smartphone.</mat-hint
         >
       </mat-form-field>
     </div>
@@ -61,8 +61,8 @@
           matInput
           type="url" />
         <mat-hint i18n="@@tokenTypeConfig.authenticationServer"
-          >The Authentication Server is this privacyIDEA server. <br />
-          Note that the privacyIDEA server needs to be accessible from the users smartphone.</mat-hint
+          >The Authentication Server is this AMFA server. <br />
+          Note that the AMFA server needs to be accessible from the users smartphone.</mat-hint
         >
       </mat-form-field>
 
@@ -104,7 +104,7 @@
           [value]="formData()[TIQR_LOGO_URL] ?? ''"
           (input)="updateFormData(TIQR_LOGO_URL, $any($event.target).value)"
           matInput
-          placeholder="https://pi.server/static/css/privacyIDEA1.png"
+          placeholder="https://amfa.server/static/public/assets/amfa.svg"
           required
           type="url" />
         @if (logoUrlInput.validity.valueMissing) {

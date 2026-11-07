@@ -106,7 +106,12 @@ INTERNAL_OPTION_KEYS = frozenset({
 NO_UNQUOTE_USER_AGENTS = {
     'privacyidea-cp': None,
     'privacyidea-ldap-proxy': None,
-    'simplesamlphp': None
+    'simplesamlphp': None,
+    # Nasz dostawca poswiadczen (Windows) koduje wartosci formularza procentowo, tak jak nalezy, i
+    # wysyla wlasna nazwe produktu (`amfa-cp/<wersja> Windows/<maszyna>`). Bez tego wpisu silnik
+    # odkodowywal jego dane po raz drugi i haslo z `%` dochodzilo zmienione — uzytkownik widzial
+    # `wrong otp pin` mimo poprawnego hasla (zgloszenie #35).
+    'amfa-cp': None,
 }
 
 SESSION_KEY_LENGTH = 32

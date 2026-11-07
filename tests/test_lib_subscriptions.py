@@ -143,10 +143,25 @@ class SubscriptionApplicationTestCase(MyTestCase):
         self.assertTrue(s)
 
     def test_03_check_subscription(self):
-        # A valid subscription
+        # AMFA: zaczynamy od czystego stanu subskrypcji. Test podstawy zaklada, ze w bazie nie ma
+        # niczego po poprzednim przebiegu — a baza testowa zyje dluzej niz jeden przebieg, wiec
+        # pozostawiona wygasla subskrypcja decydowala o wyniku (ten sam kod, raz zielony, raz czerwony).
+        delete_subscription("demo_application")
+        # The signed fixture is immutable (its signature covers date_till)
+        # and expires on 2026-10-22. Test the VALID branch at a frozen date
+        # within the signed subscription's actual range. Otherwise this
+        # test started failing after 2026-10-22 with no product code change.
+        # Production expiry enforcement is deliberately NOT mocked away.
         r = save_subscription(SUBSCRIPTION1)
         self.assertTrue(r)
-        s = check_subscription("demo_application")
+
+        class FixtureDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return datetime(2026, 10, 1, tzinfo=tz)
+
+        with mock.patch.object(subscriptions_module.datetime, "datetime", FixtureDateTime):
+            s = check_subscription("demo_application")
         self.assertTrue(s)
 
         # A subscription, that has expired
@@ -164,21 +179,35 @@ class SubscriptionApplicationTestCase(MyTestCase):
         save_subscription(SUBSCRIPTION4)
 
         # We have only one user with tokens, so having a subscription of 3 is fine!
-        s = check_subscription("demo_application")
+        # SUBSCRIPTION4 uses the same immutable signed date_till=2026-10-22
+        # as SUBSCRIPTION1. Check this VALID branch under the same historical
+        # clock, without weakening production expiry enforcement. On the real
+        # clock it correctly expires and cannot be used for a valid-branch test.
+        with mock.patch.object(subscriptions_module.datetime, "datetime", FixtureDateTime):
+            s = check_subscription("demo_application")
         self.assertTrue(s)
 
         init_token({"type": "spass"}, user=User("shadow", self.realm1))
         init_token({"type": "spass"}, user=User("nopw", self.realm1))
         # Now we have three users with tokens, but only two are allowed. We fail with a probabiliy of 1/3
         # Fail subscription check
-        with mock.patch("random.randrange") as mock_random:
+        # AMFA: silnik nie liczy tokenow i nie blokuje subskrypcja (krok 2 z #199, usuniecie
+        # subskrypcji, licznika i telefonu do domu). Podstawa losowala, ktore konto przekracza limit;
+        # u nas limit nie istnieje, wiec kontrola przechodzi — trzy konta z tokenami przy subskrypcji
+        # na dwa nie koncza sie bledem. Reszta pliku (podpis, data, dostawca) zostaje bez zmian.
+        # Wylacznik ustawiamy wprost: zalezy od konfiguracji instalacji (lokalnie inna niz w CI),
+        # a test ma mierzyc zachowanie naszego produktu, nie cudza konfiguracje.
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 3
-            self.assertRaises(SubscriptionError, check_subscription, "demo_application")
+            self.assertTrue(check_subscription("demo_application"))
         # succeed subscription check
-        with mock.patch("random.randrange") as mock_random:
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 2
             self.assertTrue(check_subscription("demo_application"))
-        with mock.patch("random.randrange") as mock_random:
+        with mock.patch("privacyidea.lib.subscriptions.subscription_enforced", return_value=False), \
+                mock.patch("random.randrange") as mock_random:
             mock_random.return_value = 1
             self.assertTrue(check_subscription("demo_application"))
 

@@ -30,6 +30,7 @@ __author__ = "Cornelius Kölbel <cornelius@privacyidea.org>"
 
 import logging
 import os
+from urllib.parse import urlparse
 
 from flask import (Blueprint, render_template, request,
                    current_app, g, redirect, abort, Response)
@@ -47,10 +48,18 @@ from privacyidea.lib.policies.actions import PolicyAction, PasskeyLoginButtonOpt
 from privacyidea.lib.policy import PolicyClass, SCOPE, Match, REMOTE_USER
 from privacyidea.lib.queue import has_job_queue
 from privacyidea.lib.realm import get_realms
-from privacyidea.lib.subscriptions import subscription_status
 from privacyidea.lib.utils import get_client_ip, get_version_number, get_plugin_info_from_useragent
 
 log = logging.getLogger(__name__)
+
+#: Schematy, ktore wolno podac jako adres dokumentacji konsoli. Adres idzie do `window.open`, wiec
+#: `javascript:` albo `data:` wykonalyby kod w kontekscie zalogowanej konsoli (zgloszenie #34).
+SAFE_DOCUMENTATION_SCHEMES = ("http", "https")
+
+
+def is_safe_documentation_url(address) -> bool:
+    """Czy adres dokumentacji wolno otworzyc w przegladarce (tylko `http` i `https`)."""
+    return urlparse(str(address or "")).scheme.lower() in SAFE_DOCUMENTATION_SCHEMES
 
 DEFAULT_THEME = "/static/contrib/css/bootstrap-theme.css"
 # Layout of the compiled WebUI below the static folder. It mirrors "outputPath" in
@@ -183,14 +192,26 @@ def get_render_context():
     #    PI_CUSTOMIZATION/views/includes/token.enroll.post.top.html
     #    PI_CUSTOMIZATION/views/includes/token.enroll.post.bottom.html
     # Get the hidden external links
-    external_links = current_app.config.get("PI_EXTERNAL_LINKS", True)
+    external_links = current_app.config.get("PI_EXTERNAL_LINKS", False)
     # Read the UI translation warning
     translation_warning = current_app.config.get("PI_TRANSLATION_WARNING", False)
     # Get the logo file
-    logo = current_app.config.get("PI_LOGO", "privacyIDEA1.png")
+    logo = current_app.config.get("PI_LOGO", "amfa.svg")
     browser_lang = get_accepted_language()
     # The page title can be configured in pi.cfg
-    page_title = current_app.config.get("PI_PAGE_TITLE", "privacyIDEA Authentication System")
+    page_title = current_app.config.get("PI_PAGE_TITLE", "AMFA")
+    # The address of our own product documentation (the AMITRONIC knowledge base). Like the logo
+    # and the page title this is provided by the server, not baked into the console: an admin sets
+    # it in the system configuration (key ``documentation_url``) or in pi.cfg
+    # (``PI_DOCUMENTATION_URL``). Empty means the console shows no documentation links.
+    documentation_url = get_from_config("documentation_url",
+                                        current_app.config.get("PI_DOCUMENTATION_URL", ""))
+    # Tylko `http` i `https`: nieznany schemat (np. `javascript:`) traktujemy jak brak adresu, zeby
+    # konsola nie wykonala kodu podanego w konfiguracji (zgloszenie #34).
+    if not is_safe_documentation_url(documentation_url):
+        if documentation_url:
+            log.warning("documentation_url ma niedozwolony schemat — konsola nie pokaze odnosnika.")
+        documentation_url = ""
     # check if login with REMOTE_USER is allowed.
     remote_user = ""
     force_remote_user = False
@@ -226,34 +247,31 @@ def get_render_context():
 
     # Use policies to determine the customization of menu
     # and baseline. get_action_values returns an array!
-    sub_state = subscription_status()
     customization_menu_file = Match.action_only(g, action=PolicyAction.CUSTOM_MENU,
                                                 scope=SCOPE.WEBUI) \
         .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
-    if len(customization_menu_file) and list(customization_menu_file)[0] \
-            and sub_state not in [1, 2]:
+    if len(customization_menu_file) and list(customization_menu_file)[0] :
         customization_menu_file = list(customization_menu_file)[0]
     else:
         customization_menu_file = "templates/menu.html"
     customization_baseline_file = Match.action_only(g, action=PolicyAction.CUSTOM_BASELINE,
                                                     scope=SCOPE.WEBUI) \
         .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
-    if len(customization_baseline_file) and list(customization_baseline_file)[0] \
-            and sub_state not in [1, 2]:
+    if len(customization_baseline_file) and list(customization_baseline_file)[0] :
         customization_baseline_file = list(customization_baseline_file)[0]
     else:
         customization_baseline_file = "templates/baseline.html"
 
     login_text = Match.action_only(g, action=PolicyAction.LOGIN_TEXT, scope=SCOPE.WEBUI) \
         .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
-    if len(login_text) and list(login_text)[0] and sub_state not in [1, 2]:
+    if len(login_text) and list(login_text)[0]:
         login_text = list(login_text)[0]
     else:
         login_text = ""
 
     gdpr_link = Match.action_only(g, action=PolicyAction.GDPR_LINK, scope=SCOPE.WEBUI) \
         .action_values(unique=True, allow_white_space_in_action=True, write_to_audit_log=False)
-    if len(gdpr_link) and list(gdpr_link)[0] and sub_state not in [1, 2]:
+    if len(gdpr_link) and list(gdpr_link)[0]:
         gdpr_link = list(gdpr_link)[0]
     else:
         gdpr_link = ""
@@ -297,6 +315,7 @@ def get_render_context():
         'gdpr_link': gdpr_link,
         'logo': logo,
         'page_title': page_title,
+        'documentation_url': documentation_url,
         'otp_pin_set_random_user': otp_pin_set_random_user,
         'privacyideaVersionNumber': version_number,
         'passkey_login': passkey_login,

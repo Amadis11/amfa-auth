@@ -19,7 +19,6 @@
 import { Component, HostListener, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { UiPreferencesService, UiPreferencesServiceInterface } from "@services/user-settings/ui-preferences.service";
-import { WelcomeDialogService } from "@services/welcome/welcome-dialog.service";
 import { AuthService, AuthServiceInterface } from "./services/auth/auth.service";
 import { SessionTimerService, SessionTimerServiceInterface } from "./services/session-timer/session-timer.service";
 
@@ -120,10 +119,6 @@ export class AppComponent {
       this.sessionTimerService.initialTimerStart();
       this.uiPreferencesService.sync();
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _welcomeInit = inject(WelcomeDialogService);
-    /** Uncomment to enable subscription expiry dialog
-     * const _subscriptionExpiryInit = inject(SubscriptionExpiryService); **/
   }
 
   @HostListener("document:click")

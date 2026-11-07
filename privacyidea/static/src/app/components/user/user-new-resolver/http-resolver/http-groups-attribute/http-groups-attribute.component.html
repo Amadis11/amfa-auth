@@ -29,13 +29,13 @@
     </div>
 
     <mat-form-field class="input-width-l">
-      <mat-label i18n="@@resolver.privacyideaUser">privacyIDEA User Groups Key</mat-label>
+      <mat-label i18n="@@resolver.privacyideaUser">AMFA User Groups Key</mat-label>
       <input
         (input)="model.update(m => ({ ...m, pi_user_groups_key: $any($event.target).value }))"
         [disabled]="!model().active"
         [value]="model().pi_user_groups_key"
         matInput />
-      <mat-hint i18n="@@resolver.keyStoreGroups">Key to store the groups of the user in privacyIDEA.</mat-hint>
+      <mat-hint i18n="@@resolver.keyStoreGroups">Key to store the groups of the user in AMFA.</mat-hint>
     </mat-form-field>
 
     <mat-form-field class="input-width-l">
@@ -107,7 +107,7 @@
   <div
     class="hint margin-top-16 margin-bottom-16"
     i18n="@@resolver.userGroupsReceived"
-    >User groups are received in a separate request and stored under the privacyIDEA attribute
+    >User groups are received in a separate request and stored under the AMFA attribute
     <code>groups</code> .</div
   >
 }

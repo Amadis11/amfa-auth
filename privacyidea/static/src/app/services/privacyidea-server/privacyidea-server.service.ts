@@ -98,7 +98,7 @@ export class PrivacyideaServerService implements PrivacyideaServerServiceInterfa
 
   constructor() {
     effect(() => {
-      this.notificationService.handleResourceError(this.remoteServerResource.error(), "privacyIDEA servers");
+      this.notificationService.handleResourceError(this.remoteServerResource.error(), "AMFA servers");
     });
   }
 
@@ -109,14 +109,14 @@ export class PrivacyideaServerService implements PrivacyideaServerServiceInterfa
     return lastValueFrom(request)
       .then(() => {
         this.notificationService.success(
-          $localize`:@@piServer.successfullySaved:Successfully saved privacyIDEA server.`
+          $localize`:@@piServer.successfullySaved:Successfully saved AMFA server.`
         );
         this.remoteServerResource.reload();
       })
       .catch((error) => {
         const message = error.error?.result?.error?.message || "";
         this.notificationService.error(
-          $localize`:@@piServer.failedSavePrivacyidea:Failed to save privacyIDEA server. ${message}:MESSAGE:`
+          $localize`:@@piServer.failedSavePrivacyidea:Failed to save AMFA server. ${message}:MESSAGE:`
         );
         throw new Error("post-failed");
       });
@@ -132,14 +132,14 @@ export class PrivacyideaServerService implements PrivacyideaServerServiceInterfa
     return lastValueFrom(request)
       .then(() => {
         this.notificationService.success(
-          $localize`:@@piServer.successfullyDeleted:Successfully deleted privacyIDEA server: ${identifier}:IDENTIFIER:.`
+          $localize`:@@piServer.successfullyDeleted:Successfully deleted AMFA server: ${identifier}:IDENTIFIER:.`
         );
         this.remoteServerResource.reload();
       })
       .catch((error) => {
         const message = error.error?.result?.error?.message || "";
         this.notificationService.error(
-          $localize`:@@piServer.failedDeletePrivacyidea:Failed to delete privacyIDEA server. ${message}:MESSAGE:`
+          $localize`:@@piServer.failedDeletePrivacyidea:Failed to delete AMFA server. ${message}:MESSAGE:`
         );
         throw new Error("delete-failed");
       });

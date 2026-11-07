@@ -229,6 +229,20 @@ def version_check_enabled() -> bool:
     return is_true(get_app_config_value("PI_SUBSCRIPTION_VERSION_CHECK", True))
 
 
+def subscription_enforced() -> bool:
+    """
+    Whether this installation counts tokens, meters the clients and enforces the free tier.
+
+    ``PI_SUBSCRIPTION_ENFORCE = False`` switches all of that off installation-wide: the token count
+    is not run, :func:`subscription_status` reports ``0`` -- the state this module itself describes
+    as "never counted or enforced" -- and :func:`check_subscription` never refuses a request. Set by
+    an installation that licenses its own product and must not have a customer's login or token
+    enrollment stopped by a missing subscription file. Defaults to ``True``: an untouched
+    installation keeps behaving exactly like the base.
+    """
+    return is_true(get_app_config_value("PI_SUBSCRIPTION_ENFORCE", True))
+
+
 def _fetch_latest_release(repo: str) -> GithubRelease | None:
     """
     Return the latest :class:`GithubRelease` of a GitHub ``owner/repo``, or None if it
@@ -540,6 +554,10 @@ def subscription_status(component: str = "privacyidea") -> int:
 
     :return: subscription state
     """
+    if not subscription_enforced():
+        # Nasze wdrożenie nie jest rozliczane: 0 to stan "nie liczymy i nie ograniczamy", więc
+        # licznik tokenów nie chodzi, a konsola nie ma czego pokazywać.
+        return 0
     component = get_metered_application(component)
     free_users = APPLICATIONS.get(component, 50)
     if free_users is None:
@@ -789,6 +807,11 @@ def check_subscription(application, max_free_subscriptions=None):
         without a subscription file. If not given, the default is used.
     :return: bool
     """
+    if not subscription_enforced():
+        # Bez tego sprawdzenia login albo wydanie tokenu zatrzymałyby się po przekroczeniu progu
+        # podstawy — dekorator ``CheckSubscription`` siedzi na ``/validate/check``,
+        # ``/validate/polltransaction``, ``/token/init`` i ``/token/assign``.
+        return True
     # Metered clients (e.g. pam-passkey, FreeRADIUS) count against another application's
     # subscription; resolve to that application before looking up its subscription and
     # free limit. A client that is not metered resolves to a name that is no application

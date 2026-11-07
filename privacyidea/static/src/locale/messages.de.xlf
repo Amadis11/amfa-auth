@@ -508,7 +508,7 @@
       </trans-unit>
       <trans-unit id="audit.privacyideaServer" datatype="html">
         <source>PrivacyIDEA Server</source>
-        <target>privacyIDEA-Server</target>
+        <target>AMFA-Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.ts</context>
           <context context-type="linenumber">116</context>
@@ -1878,182 +1878,6 @@
           <context context-type="linenumber">237</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="common.subscriptions" datatype="html">
-        <source>Subscriptions</source>
-        <target>Subscriptions</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">33</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">105</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.application" datatype="html">
-        <source>Application:</source>
-        <target>Anwendung:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">52</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.deleteSubscription" datatype="html">
-        <source>Delete Subscription</source>
-        <target>Subscription löschen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.ts</context>
-          <context context-type="linenumber">86</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.validSubscription" datatype="html">
-        <source>Valid subscription</source>
-        <target>Gültige Subscription</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">73</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.subscriptionAbout" datatype="html">
-        <source>Subscription about to expire</source>
-        <target>Subscription läuft bald ab</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">80</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.subscriptionExpired" datatype="html">
-        <source>Subscription expired</source>
-        <target>Subscription abgelaufen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">87</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.level" datatype="html">
-        <source>Level:</source>
-        <target>Stufe:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">92</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.users" datatype="html">
-        <source>Users:</source>
-        <target>Benutzer:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">95</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.distinctUsers" datatype="html">
-        <source>distinct users with active tokens</source>
-        <target>verschiedene Benutzer mit aktiven Token</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">98</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.remaining" datatype="html">
-        <source>remaining</source>
-        <target>verbleibend</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">100</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">108</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.tokens" datatype="html">
-        <source>Tokens:</source>
-        <target>Token:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">103</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.activeAssigned" datatype="html">
-        <source>active, assigned tokens</source>
-        <target>aktive, zugewiesene Token</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">106</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.clients" datatype="html">
-        <source>Clients:</source>
-        <target>Clients:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">111</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.from" datatype="html">
-        <source>From:</source>
-        <target>Von:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">114</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.to" datatype="html">
-        <source>To:</source>
-        <target>Bis:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">117</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.subscriptionIssued" datatype="html">
-        <source>Subscription Issued To:</source>
-        <target>Subscription ausgestellt für:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">124</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.issuer" datatype="html">
-        <source>Issuer:</source>
-        <target>Aussteller:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">149</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.fileUploadedSuccessfully" datatype="html">
-        <source>File uploaded successfully.</source>
-        <target>Datei erfolgreich hochgeladen.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.ts</context>
-          <context context-type="linenumber">74</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.subscription" datatype="html">
-        <source>subscription</source>
-        <target>Subscription</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.ts</context>
-          <context context-type="linenumber">88</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.subscriptionDeleted" datatype="html">
-        <source>Subscription deleted successfully.</source>
-        <target>Subscription erfolgreich gelöscht.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.ts</context>
-          <context context-type="linenumber">97</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="systemConfig.systemConfiguration" datatype="html">
         <source>System Configuration</source>
         <target>Systemkonfiguration</target>
@@ -2180,14 +2004,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/system/system-config.component.html</context>
           <context context-type="linenumber">165</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="systemConfig.none" datatype="html">
-        <source>None</source>
-        <target>Keiner</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/system/system-config.component.html</context>
-          <context context-type="linenumber">172</context>
         </context-group>
       </trans-unit>
       <trans-unit id="systemConfig.selectPredefined" datatype="html">
@@ -2755,8 +2571,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.remoteTokenForwards" datatype="html">
-        <source>The Remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Der Remote-Token leitet die Authentifizierungsanfrage an einen anderen privacyIDEA-Server weiter.</target>
+        <source>The Remote token forwards the authentication request to another AMFA server.</source>
+        <target>Der Remote-Token leitet die Authentifizierungsanfrage an einen anderen AMFA-Server weiter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/remote-config/remote-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2871,8 +2687,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.registrationServer" datatype="html">
-        <source>The Registration Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>Der Registrierungsserver ist dieser privacyIDEA-Server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Beachten Sie, dass der privacyIDEA-Server vom Smartphone des Benutzers erreichbar sein muss.</target>
+        <source>The Registration Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>Der Registrierungsserver ist dieser AMFA-Server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Beachten Sie, dass der AMFA-Server vom Smartphone des Benutzers erreichbar sein muss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">47</context>
@@ -2887,8 +2703,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationServer" datatype="html">
-        <source>The Authentication Server is this privacyIDEA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the privacyIDEA server needs to be accessible from the users smartphone.</source>
-        <target>Der Authentifizierungsserver ist dieser privacyIDEA-Server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Beachten Sie, dass der privacyIDEA-Server vom Smartphone des Benutzers erreichbar sein muss.</target>
+        <source>The Authentication Server is this AMFA server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Note that the AMFA server needs to be accessible from the users smartphone.</source>
+        <target>Der Authentifizierungsserver ist dieser AMFA-Server. <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Beachten Sie, dass der AMFA-Server vom Smartphone des Benutzers erreichbar sein muss.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/tiqr-config/tiqr-config.component.html</context>
           <context context-type="linenumber">64</context>
@@ -3055,8 +2871,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.youNeedSetCorrect" datatype="html">
-        <source>You need to set the correct appId, which in fact is the URL of your privacyIDEA installation.</source>
-        <target>Sie müssen die korrekte appId festlegen, die tatsächlich die URL Ihrer privacyIDEA-Installation ist.</target>
+        <source>You need to set the correct appId, which in fact is the URL of your AMFA installation.</source>
+        <target>Sie müssen die korrekte appId festlegen, die tatsächlich die URL Ihrer AMFA-Installation ist.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">28</context>
@@ -3079,8 +2895,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.urlYourPrivacyidea" datatype="html">
-        <source>The URL of your privacyIDEA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
-        <target>Die URL Ihrer privacyIDEA-Installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Dies muss ein gültiger FQDN mit einer gültigen Top-Level-Domain sein – andernfalls erhalten Sie möglicherweise einen U2F-Fehler 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
+        <source>The URL of your AMFA installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> This must be a valid FQDN with also a valid top level domain - otherwise you might receive a U2F Error 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></source>
+        <target>Die URL Ihrer AMFA-Installation.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> Dies muss ein gültiger FQDN mit einer gültigen Top-Level-Domain sein – andernfalls erhalten Sie möglicherweise einen U2F-Fehler 2 (Bad Request).<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/u2f-config/u2f-config.component.html</context>
           <context context-type="linenumber">52</context>
@@ -3147,8 +2963,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.shouldPathLocal" datatype="html">
-        <source>This should be a path to a local directory on the server, that privacyIDEA has read access to.</source>
-        <target>Dies sollte ein Pfad zu einem lokalen Verzeichnis auf dem Server sein, auf das privacyIDEA Lesezugriff hat.</target>
+        <source>This should be a path to a local directory on the server, that AMFA has read access to.</source>
+        <target>Dies sollte ein Pfad zu einem lokalen Verzeichnis auf dem Server sein, auf das AMFA Lesezugriff hat.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">49</context>
@@ -3171,8 +2987,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.doesNotNeedSet" datatype="html">
-        <source>This does not need to be set for WebAuthn to work, however without this, privacyIDEA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
-        <target>Dies muss nicht gesetzt werden, damit WebAuthn funktioniert; ohne diese Einstellung kann privacyIDEA jedoch nicht prüfen, ob einem Attestation-Zertifikat tatsächlich vertraut wird (es wird weiterhin auf Gültigkeit geprüft).</target>
+        <source>This does not need to be set for WebAuthn to work, however without this, AMFA can not check, whether an attestation certificate is actually trusted (it will still be checked for validity).</source>
+        <target>Dies muss nicht gesetzt werden, damit WebAuthn funktioniert; ohne diese Einstellung kann AMFA jedoch nicht prüfen, ob einem Attestation-Zertifikat tatsächlich vertraut wird (es wird weiterhin auf Gültigkeit geprüft).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/webauthn-config/webauthn-config.component.html</context>
           <context context-type="linenumber">56</context>
@@ -3319,8 +3135,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.yubikeyYubico" datatype="html">
-        <source>This is a Yubikey in the Yubico Mode authenticated against privacyIDEA.</source>
-        <target>Dies ist ein Yubikey im Yubico-Modus, der gegen privacyIDEA authentifiziert wird.</target>
+        <source>This is a Yubikey in the Yubico Mode authenticated against AMFA.</source>
+        <target>Dies ist ein Yubikey im Yubico-Modus, der gegen AMFA authentifiziert wird.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3335,8 +3151,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationRequestHandled" datatype="html">
-        <source>The authentication request can be handled by the default privacyIDEA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> but can also be handled by the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>Yubico Validation Protocol. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Die Authentifizierungsanfrage kann von der Standard-privacyIDEA-<x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/api/validate.html&quot; target=&quot;_blank&quot; &gt;"/>Validate-API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> verarbeitet werden, kann aber auch über das <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/yubikey.html#privacyidea.lib.tokens.yubikeytoken.YubikeyTokenClass.api_endpoint&quot; target=&quot;_blank&quot; &gt;"/>Yubico-Validierungsprotokoll <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> verarbeitet werden.</target>
+        <source>The authentication request can be handled by the default AMFA validate API but can also be handled by the Yubico Validation Protocol.</source>
+        <target>Die Authentifizierungsanfrage kann von der Standard-AMFA-Validate-API verarbeitet werden, kann aber auch über das Yubico-Validierungsprotokoll verarbeitet werden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">29</context>
@@ -4272,7 +4088,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCodePrivacyidea" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to complete the rollover of your container. It will send the missing data to the configured endpoint.</source>
-        <target>Bitte scannen Sie den QR-Code mit der privacyIDEA Authenticator App oder klicken Sie auf Ihrem Smartphone auf diesen <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, um den Rollover Ihres Containers abzuschließen. Dadurch werden die fehlenden Daten an den konfigurierten Endpunkt gesendet.</target>
+        <target>Bitte scannen Sie den QR-Code mit der AMFA Authenticator App oder klicken Sie auf Ihrem Smartphone auf diesen <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value }}&quot;&gt;"/>Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, um den Rollover Ihres Containers abzuschließen. Dadurch werden die fehlenden Daten an den konfigurierten Endpunkt gesendet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-registration/container-registration-finalize-dialog/container-registration-finalize-dialog.component.html</context>
           <context context-type="linenumber">37</context>
@@ -4280,7 +4096,7 @@
       </trans-unit>
       <trans-unit id="container.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator App or click this <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone to register your container. It will send the missing registration data to the configured endpoint.</source>
-        <target>Bitte scannen Sie den QR-Code mit der privacyIDEA Authenticator App oder klicken Sie auf Ihrem Smartphone auf diesen <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, um Ihren Container zu registrieren. Dadurch werden die fehlenden Registrierungsdaten an den konfigurierten Endpunkt gesendet.</target>
+        <target>Bitte scannen Sie den QR-Code mit der AMFA Authenticator App oder klicken Sie auf Ihrem Smartphone auf diesen <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data()?.response?.result?.value?.container_url?.value ?? &apos;&apos; }}&quot;&gt;"/>Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, um Ihren Container zu registrieren. Dadurch werden die fehlenden Registrierungsdaten an den konfigurierten Endpunkt gesendet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/container/container-create/container-created-dialog/container-created-dialog.component.html</context>
           <context context-type="linenumber">49</context>
@@ -5551,16 +5367,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.editPrivacyidea" datatype="html">
-        <source>Edit privacyIDEA Server</source>
-        <target>privacyIDEA-Server bearbeiten</target>
+        <source>Edit AMFA Server</source>
+        <target>AMFA-Server bearbeiten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyidea" datatype="html">
-        <source>Create privacyIDEA Server</source>
-        <target>privacyIDEA-Server erstellen</target>
+        <source>Create AMFA Server</source>
+        <target>AMFA-Server erstellen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">34</context>
@@ -5647,32 +5463,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.uniqueIdentifying" datatype="html">
-        <source>This is the unique identifying name of the privacyIDEA server definition.</source>
-        <target>Dies ist der eindeutige Name der privacyIDEA-Serverdefinition.</target>
+        <source>This is the unique identifying name of the AMFA server definition.</source>
+        <target>Dies ist der eindeutige Name der AMFA-Serverdefinition.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyidea" datatype="html">
-        <source>URL of the privacyIDEA Server</source>
-        <target>URL des privacyIDEA-Servers</target>
+        <source>URL of the AMFA Server</source>
+        <target>URL des AMFA-Servers</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.urlPrivacyideaServer" datatype="html">
-        <source>URL of the privacyIDEA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
-        <target>URL des privacyIDEA-Servers ist <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>erforderlich<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
+        <source>URL of the AMFA Server is <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>required<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></source>
+        <target>URL des AMFA-Servers ist <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>erforderlich<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.pleaseProvide" datatype="html">
-        <source>Please provide the base URL of the privacyIDEA server.</source>
-        <target>Bitte geben Sie die Basis-URL des privacyIDEA-Servers an.</target>
+        <source>Please provide the base URL of the AMFA server.</source>
+        <target>Bitte geben Sie die Basis-URL des AMFA-Servers an.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">116</context>
@@ -5739,8 +5555,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.filterPrivacyidea" datatype="html">
-        <source>Filter privacyIDEA Servers...</source>
-        <target>privacyIDEA-Server filtern...</target>
+        <source>Filter AMFA Servers...</source>
+        <target>AMFA-Server filtern...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">28</context>
@@ -5903,8 +5719,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServers" datatype="html">
-        <source>Delete privacyIDEA Servers</source>
-        <target>privacyIDEA-Server löschen</target>
+        <source>Delete AMFA Servers</source>
+        <target>AMFA-Server löschen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.ts</context>
           <context context-type="linenumber">140</context>
@@ -6671,59 +6487,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.openSourceProject" datatype="html">
-        <source>An open-source project <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>maintained by NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>Ein Open-Source-Projekt <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/&quot; target=&quot;_blank&quot; &gt;"/>gepflegt von NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>AMFA — authentication system by AMITRONIC</source>
+        <target>AMFA — Authentifizierungssystem von AMITRONIC</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.collaborationCommunity" datatype="html">
-        <source>in collaboration with <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>community contributors <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target>in Zusammenarbeit mit der <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea&quot; target=&quot;_blank&quot; &gt;"/>Community <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>AMITRONIC · Amadeusz Kusz</source>
+        <target>AMITRONIC · Amadeusz Kusz</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">119</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.netknights" datatype="html">
-        <source>NetKnights</source>
-        <target>NetKnights</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.maintainedByNetknights" datatype="html">
-        <source>Maintained by NetKnights</source>
-        <target>Gepflegt von NetKnights</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">134</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.github" datatype="html">
-        <source>GitHub</source>
-        <target>GitHub</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">141</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.communityContributors" datatype="html">
-        <source>Community contributors on GitHub</source>
-        <target>Community-Mitwirkende auf GitHub</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">143</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.support" datatype="html">
-        <source>Support</source>
-        <target>Support</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.documentation" datatype="html">
@@ -7076,7 +6852,7 @@
       </trans-unit>
       <trans-unit id="nav.privacyideaServers" datatype="html">
         <source>PrivacyIDEA Servers</source>
-        <target>privacyIDEA-Server</target>
+        <target>AMFA-Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">882</context>
@@ -7084,7 +6860,7 @@
       </trans-unit>
       <trans-unit id="nav.privacyideaServer" datatype="html">
         <source>PrivacyIDEA Server Details</source>
-        <target>privacyIDEA-Server-Details</target>
+        <target>AMFA-Server-Details</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
           <context context-type="linenumber">893</context>
@@ -7092,7 +6868,7 @@
       </trans-unit>
       <trans-unit id="common.createPrivacyidea" datatype="html">
         <source>Create PrivacyIDEA Server</source>
-        <target>privacyIDEA-Server erstellen</target>
+        <target>AMFA-Server erstellen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">59</context>
@@ -7202,18 +6978,6 @@
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="nav.subscription" datatype="html">
-        <source>Subscription</source>
-        <target>Subscription</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.ts</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="nav.audit" datatype="html">
         <source>Audit</source>
         <target>Audit</target>
@@ -7283,8 +7047,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="login.youAuthenticated" datatype="html">
-        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to privacyIDEA without any further credentials.</source>
-        <target>Sie sind vom Webserver als Benutzer <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/> authentifiziert. Sie können sich als dieser Benutzer ohne weitere Anmeldedaten bei privacyIDEA anmelden.</target>
+        <source>You are authenticated by the web server as user <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/>. You may log in as this user to AMFA without any further credentials.</source>
+        <target>Sie sind vom Webserver als Benutzer <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ remoteUser() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong &gt;"/> authentifiziert. Sie können sich als dieser Benutzer ohne weitere Anmeldedaten bei AMFA anmelden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">63</context>
@@ -8532,148 +8296,12 @@
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="subscription.subscriptionExpires" datatype="html">
-        <source>Subscription expires soon</source>
-        <target>Subscription läuft bald ab</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">5</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.oneMoreSubscriptions" datatype="html">
-        <source>One or more subscriptions will expire within the next month. Please review your subscriptions.</source>
-        <target>Eine oder mehrere Subscriptions laufen innerhalb des nächsten Monats ab. Bitte überprüfen Sie Ihre Subscriptions.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.validUntil" datatype="html">
-        <source>Valid until:</source>
-        <target>Gültig bis:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.remainingDays" datatype="html">
-        <source>Remaining days:</source>
-        <target>Verbleibende Tage:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/subscription-expiry-dialog/subscription-expiry-dialog.component.html</context>
-          <context context-type="linenumber">25</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="common.switchTheme" datatype="html">
         <source>Switch theme</source>
         <target>Design wechseln</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/theme-switcher/theme-switcher.component.html</context>
           <context context-type="linenumber">25</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.welcome" datatype="html">
-        <source>Welcome</source>
-        <target>Willkommen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">50</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.firstWeWouldLike" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>First, we would like to give you some background information on privacyIDEA.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA is an <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Enterprise Level<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> Multi Factor Authentication System. It is open source. The core developers are employed at NetKnights GmbH, Germany. NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Zunächst möchten wir Ihnen einige Hintergrundinformationen zu privacyIDEA geben.<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> privacyIDEA ist ein <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Enterprise-Level<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>-Multi-Faktor-Authentifizierungssystem. Es ist Open Source. Die Kernentwickler sind bei der NetKnights GmbH in Deutschland angestellt. NetKnights stellt die <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> einschließlich <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support und Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> bereit. Darüber hinaus bietet NetKnights Dienstleistungen, Beratung und die bezahlte Programmierung neuer Funktionen an. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">10</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.valueOpenSource" datatype="html">
-        <source>The value of open source</source>
-        <target>Der Wert von Open Source</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.youReadingBooks" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You are reading books, which do not belong to you anymore. Your ebook reader only provides them for the time of reading. You are using software as a service and you do not have any control, when the software will be updated, which features will be added or removed or if the service might even be stopped. You only get a legal right of time limited use. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> You could install proprietary software on your own server, but you also have only limited rights in regards to this installation. You are not allowed to modify or pass along this proprietary software. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> The open source software privacyIDEA now is <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>your property<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! No one can take away this software or this installation. According to the license AGPLv3 you can modify or distribute this software. You do not have to worry about end-of-life. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Using open source is not about spending no money, but it is about full control you get over your own system! Forever!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Sie lesen Bücher, die Ihnen nicht mehr gehören. Ihr E-Book-Reader stellt sie nur für die Dauer des Lesens bereit. Sie nutzen Software als Dienst und haben keinerlei Kontrolle darüber, wann die Software aktualisiert wird, welche Funktionen hinzugefügt oder entfernt werden oder ob der Dienst sogar eingestellt wird. Sie erhalten lediglich ein zeitlich begrenztes Nutzungsrecht. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Sie könnten proprietäre Software auf Ihrem eigenen Server installieren, haben aber auch hinsichtlich dieser Installation nur eingeschränkte Rechte. Sie dürfen diese proprietäre Software nicht verändern oder weitergeben. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Die Open-Source-Software privacyIDEA ist nun <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Ihr Eigentum<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/>! Niemand kann Ihnen diese Software oder diese Installation wegnehmen. Gemäß der Lizenz AGPLv3 dürfen Sie diese Software verändern oder weitergeben. Sie müssen sich keine Sorgen um End-of-Life machen. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b &gt;"/>Bei Open Source geht es nicht darum, kein Geld auszugeben, sondern um die vollständige Kontrolle, die Sie über Ihr eigenes System erhalten! Für immer!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b &gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">30</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.addedValuePrivacyidea" datatype="html">
-        <source>The added value of privacyIDEA Enterprise Edition</source>
-        <target>Der Mehrwert der privacyIDEA Enterprise Edition</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">46</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.accordingAgplv3" datatype="html">
-        <source>According to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target>Gemäß der <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://github.com/privacyidea/privacyidea/blob/master/LICENSE&quot; target=&quot;_blank&quot; &gt;"/>AGPLv3 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">56</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.softwareComes" datatype="html">
-        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>THIS SOFTWARE COMES WITHOUT ANY WARRANTY!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
-        <target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>DIESE SOFTWARE WIRD OHNE JEGLICHE GEWÄHRLEISTUNG BEREITGESTELLT!<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.addedValuesPrivacyidea" datatype="html">
-        <source>The added values of the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> are:</source>
-        <target>Die Mehrwerte der <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> sind:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">69</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.supportService" datatype="html">
-        <source><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Support and <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>Service Level Agreements by NetKnights<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>, Germany. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Stable enterprise packages for Ubuntu and RHEL allow for an easy update and secure operations.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> An exclusive <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Appliance<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>-Tool, which allows easy setup of RADIUS clients, MySQL replications, backup and restore... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Exclusive timely news and bug reports.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Depending on the support level you get help with updates and yearly consultancy.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> By buying the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> you ensure that professional developers can work full time on privacyIDEA, add new features and fix bugs in a timely manner. In addition, you allow for external services like code audits. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></source>
-        <target><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Support und <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/leistungen/service-level-agreements/&quot; target=&quot;_blank&quot; &gt;"/>Service Level Agreements durch NetKnights <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, Deutschland. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Stabile Enterprise-Pakete für Ubuntu und RHEL ermöglichen einfache Updates und einen sicheren Betrieb.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Ein exklusives <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Appliance<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>-Tool, das die einfache Einrichtung von RADIUS-Clients, MySQL-Replikationen, Backup und Wiederherstellung ermöglicht... <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Exklusive aktuelle Neuigkeiten und Fehlerberichte.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/>Je nach Support-Level erhalten Sie Hilfe bei Updates und jährliche Beratung.<x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/><x id="START_LIST_ITEM" ctype="x-li" equiv-text="&lt;li&gt;"/> Durch den Kauf der <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> stellen Sie sicher, dass professionelle Entwickler in Vollzeit an privacyIDEA arbeiten, neue Funktionen hinzufügen und Fehler zeitnah beheben können. Zudem ermöglichen Sie externe Dienstleistungen wie Code-Audits. <x id="CLOSE_LIST_ITEM" ctype="x-li" equiv-text="&lt;/li&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.askPrivacyidea" datatype="html">
-        <source><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>Ask for the privacyIDEA Enterprise Edition, now!<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/></source>
-        <target><x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/unternehmen/kontakt/&quot; target=&quot;_blank&quot; &gt;"/>Fragen Sie jetzt nach der privacyIDEA Enterprise Edition! <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">106</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.thankYouImproving" datatype="html">
-        <source>Thank you for improving your security!</source>
-        <target>Vielen Dank, dass Sie Ihre Sicherheit verbessern!</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">48</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.thankYouUsing" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for using privacyIDEA and making your network and thus this world a more secure place!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Have fun using privacyIDEA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Vielen Dank, dass Sie privacyIDEA nutzen und Ihr Netzwerk und damit diese Welt zu einem sichereren Ort machen!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Viel Spaß mit privacyIDEA!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">118</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.youUsingPrivacyidea" datatype="html">
-        <source><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>You are using privacyIDEA with more than 50 users.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Thank you for your trust!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> For the productive enterprise use, we recommend the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/>. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights provides the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a &gt;"/> including <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support and Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>. Moreover, NetKnights provides services, consultancy and paid programming of new features. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></source>
-        <target><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Sie verwenden privacyIDEA mit mehr als 50 Benutzern.<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>Vielen Dank für Ihr Vertrauen!<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> Für den produktiven Enterprise-Einsatz empfehlen wir die <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/><x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/><x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/> NetKnights stellt die <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://netknights.it/en/produkte/privacyidea/&quot; target=&quot;_blank&quot; &gt;"/>privacyIDEA Enterprise Edition <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> einschließlich <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Support und Service Level Agreements<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> bereit. Darüber hinaus bietet NetKnights Dienstleistungen, Beratung und die bezahlte Programmierung neuer Funktionen an. <x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.html</context>
-          <context context-type="linenumber">127</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.assignTokenSelf" datatype="html">
@@ -10082,7 +9710,7 @@
       </trans-unit>
       <trans-unit id="token.useTwoStepEnrollment" datatype="html">
         <source>Use two-step enrollment with the privacyIDEA Authenticator App.</source>
-        <target>Ausrollen in zwei Schritten mit der privacyIDEA Authenticator App verwenden.</target>
+        <target>Ausrollen in zwei Schritten mit der AMFA Authenticator App verwenden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-hotp/enroll-hotp.component.html</context>
           <context context-type="linenumber">28</context>
@@ -10581,8 +10209,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.vascoSerialRead" datatype="html">
-        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within privacyIDEA, activate the checkbox. Otherwise, privacyIDEA will create a new unique serial number.</source>
-        <target>Die VASCO-Seriennummer wird aus dem VASCO-Blob gelesen. Wenn Sie diese VASCO-Seriennummer in privacyIDEA verwenden möchten, aktivieren Sie das Kontrollkästchen. Andernfalls erstellt privacyIDEA eine neue eindeutige Seriennummer.</target>
+        <source>The VASCO serial is read from the VASCO blob. If you want to use this VASCO serial number within AMFA, activate the checkbox. Otherwise, AMFA will create a new unique serial number.</source>
+        <target>Die VASCO-Seriennummer wird aus dem VASCO-Blob gelesen. Wenn Sie diese VASCO-Seriennummer in AMFA verwenden möchten, aktivieren Sie das Kontrollkästchen. Andernfalls erstellt AMFA eine neue eindeutige Seriennummer.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/enroll-vasco/enroll-vasco.component.html</context>
           <context context-type="linenumber">51</context>
@@ -10754,7 +10382,7 @@
       </trans-unit>
       <trans-unit id="token.pleaseScanQrCode" datatype="html">
         <source>Please scan the QR code with the privacyIDEA Authenticator app and enter the generated code below.</source>
-        <target>Bitte scannen Sie den QR-Code mit der privacyIDEA Authenticator App und geben Sie den generierten Code unten ein.</target>
+        <target>Bitte scannen Sie den QR-Code mit der AMFA Authenticator App und geben Sie den generierten Code unten ein.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-complete-enrollment/token-complete-enrollment.component.html</context>
           <context context-type="linenumber">46</context>
@@ -10938,7 +10566,7 @@
       </trans-unit>
       <trans-unit id="token.yourTokenSerialNumber" datatype="html">
         <source>Your token with serial number <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> is not completely enrolled, yet. Please scan the QR code with the privacyIDEA Authenticator App or click <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>this link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> on your smartphone. It will send the missing registration data to the configured endpoint. Please note, that your smartphone needs internet access during the authentication process.</source>
-        <target>Ihr Token mit der Seriennummer <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ist noch nicht vollständig ausgerollt. Bitte scannen Sie den QR-Code mit der privacyIDEA Authenticator App oder klicken Sie auf Ihrem Smartphone auf <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>diesen Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Dadurch werden die fehlenden Registrierungsdaten an den konfigurierten Endpunkt gesendet. Bitte beachten Sie, dass Ihr Smartphone während des Authentifizierungsvorgangs Internetzugang benötigt.</target>
+        <target>Ihr Token mit der Seriennummer <x id="INTERPOLATION" equiv-text="{{ data.enrollmentResponse.detail.serial }}"/> ist noch nicht vollständig ausgerollt. Bitte scannen Sie den QR-Code mit der AMFA Authenticator App oder klicken Sie auf Ihrem Smartphone auf <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;{{ data.enrollmentResponse.detail.pushurl.value }}&quot;&gt;"/>diesen Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Dadurch werden die fehlenden Registrierungsdaten an den konfigurierten Endpunkt gesendet. Bitte beachten Sie, dass Ihr Smartphone während des Authentifizierungsvorgangs Internetzugang benötigt.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/token/token-enrollment/token-enrollment-firtst-step-dialog/token-enrollment-first-step-dialog.component.html</context>
           <context context-type="linenumber">67</context>
@@ -12715,16 +12343,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.privacyideaUser" datatype="html">
-        <source>privacyIDEA User Groups Key</source>
-        <target>privacyIDEA-Benutzergruppen-Schlüssel</target>
+        <source>AMFA User Groups Key</source>
+        <target>AMFA-Benutzergruppen-Schlüssel</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.keyStoreGroups" datatype="html">
-        <source>Key to store the groups of the user in privacyIDEA.</source>
-        <target>Schlüssel zum Speichern der Gruppen des Benutzers in privacyIDEA.</target>
+        <source>Key to store the groups of the user in AMFA.</source>
+        <target>Schlüssel zum Speichern der Gruppen des Benutzers in AMFA.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">38</context>
@@ -12791,8 +12419,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userGroupsReceived" datatype="html">
-        <source>User groups are received in a separate request and stored under the privacyIDEA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
-        <target>Benutzergruppen werden in einer separaten Anfrage empfangen und unter dem privacyIDEA-Attribut <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> gespeichert.</target>
+        <source>User groups are received in a separate request and stored under the AMFA attribute <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> .</source>
+        <target>Benutzergruppen werden in einer separaten Anfrage empfangen und unter dem AMFA-Attribut <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>groups<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> gespeichert.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-groups-attribute/http-groups-attribute.component.html</context>
           <context context-type="linenumber">110</context>
@@ -12976,7 +12604,7 @@
       </trans-unit>
       <trans-unit id="resolver.privacyideaAttribute" datatype="html">
         <source>PrivacyIDEA Attribute</source>
-        <target>privacyIDEA-Attribut</target>
+        <target>AMFA-Attribut</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">191</context>
@@ -12984,7 +12612,7 @@
       </trans-unit>
       <trans-unit id="resolver.selectPrivacyidea" datatype="html">
         <source>Select PrivacyIDEA Attribute</source>
-        <target>privacyIDEA-Attribut auswählen</target>
+        <target>AMFA-Attribut auswählen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">205</context>
@@ -13015,8 +12643,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.leftColumnDefines" datatype="html">
-        <source>The left column defines the user attributes used in privacyIDEA and the right column the equivalent attribute in the user store.</source>
-        <target>Die linke Spalte definiert die in privacyIDEA verwendeten Benutzerattribute und die rechte Spalte das entsprechende Attribut in der Benutzerquelle.</target>
+        <source>The left column defines the user attributes used in AMFA and the right column the equivalent attribute in the user store.</source>
+        <target>Die linke Spalte definiert die in AMFA verwendeten Benutzerattribute und die rechte Spalte das entsprechende Attribut in der Benutzerquelle.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">306</context>
@@ -13043,16 +12671,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataUserStore" datatype="html">
-        <source>The user data in this user store can be modified from within privacyIDEA.</source>
-        <target>Die Benutzerdaten in dieser Benutzerquelle können innerhalb von privacyIDEA geändert werden.</target>
+        <source>The user data in this user store can be modified from within AMFA.</source>
+        <target>Die Benutzerdaten in dieser Benutzerquelle können innerhalb von AMFA geändert werden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">337</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.timeSecondsPrivacyidea" datatype="html">
-        <source>Time in seconds privacyIDEA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
-        <target>Zeit in Sekunden, die privacyIDEA versucht, <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> den Server der Benutzerquelle zu erreichen.</target>
+        <source>Time in seconds AMFA tries <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> to reach the user store server.</source>
+        <target>Zeit in Sekunden, die AMFA versucht, <x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br /&gt;"/> den Server der Benutzerquelle zu erreichen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">353</context>
@@ -13091,8 +12719,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllowsConfigure" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
-        <target>Dieser Abschnitt ermöglicht die Konfiguration eines Endpunkts, gegenüber dem sich der privacyIDEA-Server authentifizieren muss, um ein Access-Token zu erhalten. Dieses Token kann dann für den Zugriff auf die API der Benutzerquelle verwendet werden. Die meisten dieser Einstellungen finden Sie in der App-Registrierung im Entra Admin Center, oder Sie müssen sie dort ebenfalls hinzufügen.</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API. You can find most of these settings in the app registration in the Entra Admin Center or you also have to add them there.</source>
+        <target>Dieser Abschnitt ermöglicht die Konfiguration eines Endpunkts, gegenüber dem sich der AMFA-Server authentifizieren muss, um ein Access-Token zu erhalten. Dieses Token kann dann für den Zugriff auf die API der Benutzerquelle verwendet werden. Die meisten dieser Einstellungen finden Sie in der App-Registrierung im Entra Admin Center, oder Sie müssen sie dort ebenfalls hinzufügen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">398</context>
@@ -13179,8 +12807,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.sectionAllows" datatype="html">
-        <source>This section allows to configure an endpoint to which the privacyIDEA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
-        <target>Dieser Abschnitt ermöglicht die Konfiguration eines Endpunkts, gegenüber dem sich der privacyIDEA-Server authentifizieren muss, um ein Access-Token zu erhalten. Dieses Token kann dann für den Zugriff auf die API der Benutzerquelle verwendet werden.</target>
+        <source>This section allows to configure an endpoint to which the AMFA server must authenticate in order to receive an access token. This token can then be used to access the user store API.</source>
+        <target>Dieser Abschnitt ermöglicht die Konfiguration eines Endpunkts, gegenüber dem sich der AMFA-Server authentifizieren muss, um ein Access-Token zu erhalten. Dieses Token kann dann für den Zugriff auf die API der Benutzerquelle verwendet werden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/http-resolver/http-resolver.component.html</context>
           <context context-type="linenumber">541</context>
@@ -13459,8 +13087,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="resolver.userDataDatabase" datatype="html">
-        <source>The user data in this database can be modified from within privacyIDEA.</source>
-        <target>Die Benutzerdaten in dieser Datenbank können innerhalb von privacyIDEA geändert werden.</target>
+        <source>The user data in this database can be modified from within AMFA.</source>
+        <target>Die Benutzerdaten in dieser Datenbank können innerhalb von AMFA geändert werden.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/ldap-resolver/ldap-resolver.component.html</context>
           <context context-type="linenumber">269</context>
@@ -14871,32 +14499,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullySaved" datatype="html">
-        <source>Successfully saved privacyIDEA server.</source>
-        <target>privacyIDEA-Server erfolgreich gespeichert.</target>
+        <source>Successfully saved AMFA server.</source>
+        <target>AMFA-Server erfolgreich gespeichert.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedSavePrivacyidea" datatype="html">
-        <source>Failed to save privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target>privacyIDEA-Server konnte nicht gespeichert werden. <x id="MESSAGE" equiv-text="message"/></target>
+        <source>Failed to save AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target>AMFA-Server konnte nicht gespeichert werden. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">119</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.successfullyDeleted" datatype="html">
-        <source>Successfully deleted privacyIDEA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
-        <target>privacyIDEA-Server erfolgreich gelöscht: <x id="IDENTIFIER" equiv-text="identifier"/>.</target>
+        <source>Successfully deleted AMFA server: <x id="IDENTIFIER" equiv-text="identifier"/>.</source>
+        <target>AMFA-Server erfolgreich gelöscht: <x id="IDENTIFIER" equiv-text="identifier"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.failedDeletePrivacyidea" datatype="html">
-        <source>Failed to delete privacyIDEA server. <x id="MESSAGE" equiv-text="message"/></source>
-        <target>privacyIDEA-Server konnte nicht gelöscht werden. <x id="MESSAGE" equiv-text="message"/></target>
+        <source>Failed to delete AMFA server. <x id="MESSAGE" equiv-text="message"/></source>
+        <target>AMFA-Server konnte nicht gelöscht werden. <x id="MESSAGE" equiv-text="message"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/privacyidea-server/privacyidea-server.service.ts</context>
           <context context-type="linenumber">142</context>
@@ -15202,14 +14830,6 @@
           <context context-type="linenumber">105</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="welcome.okay" datatype="html">
-        <source>Okay</source>
-        <target>Okay</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">76</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="common.deActivate" datatype="html">
         <source>(De)activate</source>
         <target>(De)aktivieren</target>
@@ -15228,14 +14848,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-details/user-details-token-table/user-details-token-table.component.html</context>
           <context context-type="linenumber">61</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="welcome.readAgain" datatype="html">
-        <source>Read again</source>
-        <target>Erneut lesen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="token.verifyOtpValue" datatype="html">
@@ -15406,14 +15018,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="welcome.diveIn" datatype="html">
-        <source>Dive In!</source>
-        <target>Loslegen!</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/shared/welcome-dialog/welcome-dialog.component.ts</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="user.detailsUser" datatype="html">
         <source>Details for User:</source>
         <target>Details für Benutzer:</target>
@@ -15440,18 +15044,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/language-switcher/language-switcher.component.html</context>
           <context context-type="linenumber">26</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.upload" datatype="html">
-        <source>Upload</source>
-        <target>Hochladen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">186</context>
         </context-group>
       </trans-unit>
       <trans-unit id="systemConfig.generateSystem" datatype="html">
@@ -15488,7 +15080,7 @@
       </trans-unit>
       <trans-unit id="token.hotpTokenEvent" datatype="html">
         <source>The HOTP token is an event based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Der HOTP-Token ist ein ereignisbasierter Token. Mit einer Smartphone-App wie dem privacyIDEA Authenticator können Sie Ihr Smartphone in ein Authentifizierungsgerät verwandeln.</target>
+        <target>Der HOTP-Token ist ein ereignisbasierter Token. Mit einer Smartphone-App wie dem AMFA Authenticator können Sie Ihr Smartphone in ein Authentifizierungsgerät verwandeln.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">26</context>
@@ -15496,7 +15088,7 @@
       </trans-unit>
       <trans-unit id="token.totpTokenTime" datatype="html">
         <source>The TOTP token is a time based token. With a smartphone app like the privacyIDEA Authenticator you can turn your smartphone into an authentication device.</source>
-        <target>Der TOTP-Token ist ein zeitbasierter Token. Mit einer Smartphone-App wie dem privacyIDEA Authenticator können Sie Ihr Smartphone in ein Authentifizierungsgerät verwandeln.</target>
+        <target>Der TOTP-Token ist ein zeitbasierter Token. Mit einer Smartphone-App wie dem AMFA Authenticator können Sie Ihr Smartphone in ein Authentifizierungsgerät verwandeln.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">33</context>
@@ -15535,8 +15127,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.remoteTokenForwards" datatype="html">
-        <source>The remote token forwards the authentication request to another privacyIDEA server.</source>
-        <target>Der Remote-Token leitet die Authentifizierungsanfrage an einen anderen privacyIDEA-Server weiter.</target>
+        <source>The remote token forwards the authentication request to another AMFA server.</source>
+        <target>Der Remote-Token leitet die Authentifizierungsanfrage an einen anderen AMFA-Server weiter.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">68</context>
@@ -15599,8 +15191,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.indexedSecret" datatype="html">
-        <source>The indexed secret Token is based on a shared secret between privacyIDEA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
-        <target>Der Indexed-Secret-Token basiert auf einem gemeinsamen Geheimnis zwischen privacyIDEA und dem Benutzer. Während der Authentifizierung wird der Benutzer nach Zeichen an zufälligen Positionen dieses bekannten Geheimnisses gefragt.</target>
+        <source>The indexed secret Token is based on a shared secret between AMFA and the user. During authentication, the user is asked for characters at random positions of this known secret.</source>
+        <target>Der Indexed-Secret-Token basiert auf einem gemeinsamen Geheimnis zwischen AMFA und dem Benutzer. Während der Authentifizierung wird der Benutzer nach Zeichen an zufälligen Positionen dieses bekannten Geheimnisses gefragt.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">131</context>
@@ -15615,8 +15207,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="token.pushTokenWorks" datatype="html">
-        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach privacyIDEA for this token to work.</source>
-        <target>Der Push-Token funktioniert mit der privacyIDEA Authenticator App. Er sendet eine Authentifizierungsanfrage an die App, die durch einfaches Tippen auf eine Schaltfläche bestätigt werden kann. Optional kann verlangt werden, dass Benutzer zum Bestätigen den konfigurierten Entsperrmechanismus (PIN/Biometrie) auf ihrem Smartphone verwenden. Das Smartphone muss privacyIDEA erreichen können, damit dieser Token funktioniert.</target>
+        <source>The PUSH token works with the privacyIDEA Authenticator App. It will send an authentication request to the app, which can be accepted by just tapping a button. Optionally, it can require users to use the configured unlock mechanism (PIN/Biometric) on their smartphone to accept. The smartphone needs to be able to reach AMFA for this token to work.</source>
+        <target>Der Push-Token funktioniert mit der privacyIDEA Authenticator App. Er sendet eine Authentifizierungsanfrage an die App, die durch einfaches Tippen auf eine Schaltfläche bestätigt werden kann. Optional kann verlangt werden, dass Benutzer zum Bestätigen den konfigurierten Entsperrmechanismus (PIN/Biometrie) auf ihrem Smartphone verwenden. Das Smartphone muss AMFA erreichen können, damit dieser Token funktioniert.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">145</context>
@@ -15684,42 +15276,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/token.utils.ts</context>
           <context context-type="linenumber">201</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslate" datatype="html">
-        <source>Help translate</source>
-        <target>Beim Übersetzen helfen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">195</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.helpTranslateInterface" datatype="html">
-        <source>Help translate this interface on Weblate</source>
-        <target>Diese Oberfläche auf Weblate übersetzen helfen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">197</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nav.getEnterprise" datatype="html">
-        <source>Get enterprise support</source>
-        <target>Enterprise-Support erhalten</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">155</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">157</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">166</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/layout/navigation/navigation.component.html</context>
-          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.answersRequired" datatype="html">
@@ -16279,16 +15835,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunning" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
-        <target>privacyIDEA läuft im DEBUG-Modus. Sie können den Debug-Level in pi.cfg ändern.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg.</source>
+        <target>AMFA läuft im DEBUG-Modus. Sie können den Debug-Level in pi.cfg ändern.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebug" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
-        <target>privacyIDEA läuft im DEBUG-Modus. Sie können den Debug-Level in pi.cfg ändern. Zum Ausblenden klicken.</target>
+        <source>AMFA is running in DEBUG mode. You can change the debug level in pi.cfg. Click to dismiss.</source>
+        <target>AMFA läuft im DEBUG-Modus. Sie können den Debug-Level in pi.cfg ändern. Zum Ausblenden klicken.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">32</context>
@@ -16311,8 +15867,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="nav.privacyideaRunningDebugMode" datatype="html">
-        <source>privacyIDEA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
-        <target>privacyIDEA läuft im DEBUG-Modus und schreibt PASSWÖRTER in die Logdatei. Sie können den Debug-Level in pi.cfg ändern. Löschen Sie die Logdatei anschließend unbedingt! Zum Ausblenden klicken.</target>
+        <source>AMFA is running in DEBUG mode with PASSWORDS being written to the log file. You can change the debug level in pi.cfg. Afterwards be sure to remove the logfile! Click to dismiss.</source>
+        <target>AMFA läuft im DEBUG-Modus und schreibt PASSWÖRTER in die Logdatei. Sie können den Debug-Level in pi.cfg ändern. Löschen Sie die Logdatei anschließend unbedingt! Zum Ausblenden klicken.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/layout/debug-notice/debug-notice.component.html</context>
           <context context-type="linenumber">45</context>
@@ -16943,8 +16499,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="policy.condition.piNodes" datatype="html">
-        <source>privacyIDEA Nodes</source>
-        <target>privacyIDEA-Knoten</target>
+        <source>AMFA Nodes</source>
+        <target>AMFA-Knoten</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/policies-table/view-conditions-column/view-conditions-column.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -17646,22 +17202,6 @@
           <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="subscription.failedToDeleteSubscription" datatype="html">
-        <source>Failed to delete subscription. <x id="MESSAGE" equiv-text="message"/></source>
-        <target>Subscription konnte nicht gelöscht werden. <x id="MESSAGE" equiv-text="message"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/services/subscription/subscription.service.ts</context>
-          <context context-type="linenumber">130</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.failedToUploadSubscriptionFile" datatype="html">
-        <source>Failed to upload subscription file. <x id="MESSAGE" equiv-text="message"/></source>
-        <target>Subscription-Datei konnte nicht hochgeladen werden. <x id="MESSAGE" equiv-text="message"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/services/subscription/subscription.service.ts</context>
-          <context context-type="linenumber">147</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="token.failedToUnassignTokens" datatype="html">
         <source>Failed to unassign tokens. <x id="MESSAGE" equiv-text="message"/></source>
         <target>Zuweisung der Token konnte nicht aufgehoben werden. <x id="MESSAGE" equiv-text="message"/></target>
@@ -17919,8 +17459,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="audit.everyActionPerformed" datatype="html">
-        <source>Every action performed in privacyIDEA is recorded in the audit log.</source>
-        <target>Jede in privacyIDEA ausgeführte Aktion wird im Audit-Log aufgezeichnet.</target>
+        <source>Every action performed in AMFA is recorded in the audit log.</source>
+        <target>Jede in AMFA ausgeführte Aktion wird im Audit-Log aufgezeichnet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/audit/audit.component.html</context>
           <context context-type="linenumber">209</context>
@@ -17967,27 +17507,11 @@
         </context-group>
       </trans-unit>
       <trans-unit id="periodicTask.createPeriodicTask" datatype="html">
-        <source>Create a periodic task to run recurring jobs on your privacyIDEA nodes.</source>
-        <target>Erstellen Sie eine periodische Aufgabe, um wiederkehrende Jobs auf Ihren privacyIDEA-Knoten auszuführen.</target>
+        <source>Create a periodic task to run recurring jobs on your AMFA nodes.</source>
+        <target>Erstellen Sie eine periodische Aufgabe, um wiederkehrende Jobs auf Ihren AMFA-Knoten auszuführen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/periodic-task/periodic-task.component.html</context>
           <context context-type="linenumber">258</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.noSubscriptionsYet" datatype="html">
-        <source>No subscriptions yet</source>
-        <target>Noch keine Subscriptions</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">176</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="subscription.uploadSubscriptionFile" datatype="html">
-        <source>Upload a subscription file to record the subscription for an application.</source>
-        <target>Laden Sie eine Subscription-Datei hoch, um die Subscription für eine Anwendung zu hinterlegen.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/configuration/subscription/subscription.component.html</context>
-          <context context-type="linenumber">177</context>
         </context-group>
       </trans-unit>
       <trans-unit id="uiSettings.pendingRequests" datatype="html">
@@ -18218,22 +17742,6 @@
           <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="dashboard.toggleDetailedView" datatype="html">
-        <source>Toggle detailed view</source>
-        <target>Detailansicht umschalten</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">38</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.usage" datatype="html">
-        <source>Usage</source>
-        <target>Nutzung</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">61</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="dashboard.expires" datatype="html">
         <source>Expires</source>
         <target>Läuft ab</target>
@@ -18244,198 +17752,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/api-clients/api-client-remembered-devices/api-client-remembered-devices.component.html</context>
           <context context-type="linenumber">153</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.versions" datatype="html">
-        <source>Versions</source>
-        <target>Versionen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">77</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.currentVersion" datatype="html">
-        <source>Current version</source>
-        <target>Aktuelle Version</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">82</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.useCases" datatype="html">
-        <source>Use Cases</source>
-        <target>Anwendungsfälle</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">77</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.systemLogin" datatype="html">
-        <source>System Login</source>
-        <target>System-Anmeldung</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.singleSignOn" datatype="html">
-        <source>Single Sign On</source>
-        <target>Single Sign-On</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.compactView" datatype="html">
-        <source>Compact view</source>
-        <target>Kompakte Ansicht</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">154</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.detailedView" datatype="html">
-        <source>Detailed view</source>
-        <target>Detailansicht</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">155</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.inUseThisIsThe" datatype="html">
-        <source>In use: this is the privacyIDEA server itself.</source>
-        <target>In Nutzung: Dies ist der privacyIDEA-Server selbst.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">274</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.notInUseNoSubscription" datatype="html">
-        <source>Not in use: no subscription, and not seen in the last 7 days.</source>
-        <target>Nicht in Nutzung: keine Subscription und in den letzten 7 Tagen nicht gesehen.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">277</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.inUseSeenWithinThe" datatype="html">
-        <source>In use: seen within the last 7 days.</source>
-        <target>In Nutzung: in den letzten 7 Tagen gesehen.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">280</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.inUseCoveredByA" datatype="html">
-        <source>In use: covered by a subscription.</source>
-        <target>In Nutzung: durch eine Subscription abgedeckt.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">281</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateToday" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, today</source>
-        <target><x id="STATE" equiv-text="state"/>, heute</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">313</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysAgo" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="-daysLeft"/> days ago</source>
-        <target><x id="STATE" equiv-text="state"/>, vor <x id="DAYS" equiv-text="-daysLeft"/> Tagen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">320</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysLeft" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="daysLeft"/> days left</source>
-        <target><x id="STATE" equiv-text="state"/>, noch <x id="DAYS" equiv-text="daysLeft"/> Tage</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">327</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.valid" datatype="html">
-        <source>valid</source>
-        <target>gültig</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">335</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.expiring" datatype="html">
-        <source>expiring</source>
-        <target>läuft bald ab</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">337</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.exceeded" datatype="html">
-        <source>exceeded</source>
-        <target>überschritten</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">339</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.expired" datatype="html">
-        <source>expired</source>
-        <target>abgelaufen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">341</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.noSubscription" datatype="html">
-        <source>no subscription</source>
-        <target>keine Subscription</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">343</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.validSubscriptionInPlaceAnd" datatype="html">
-        <source>Valid: subscription in place and no other condition applies.</source>
-        <target>Gültig: Eine Subscription ist vorhanden und keine andere Bedingung trifft zu.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">350</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.expiringTheSubscriptionEndsIn" datatype="html">
-        <source>Expiring: the subscription ends in less than 60 days.</source>
-        <target>Läuft bald ab: Die Subscription endet in weniger als 60 Tagen.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">352</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.exceededSubscriptionIsValidBut" datatype="html">
-        <source>Exceeded: subscription is valid, but more tokens are in use than it allows.</source>
-        <target>Überschritten: Die Subscription ist gültig, aber es sind mehr Token in Benutzung, als sie erlaubt.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">354</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.expiredTheSubscriptionSEnd" datatype="html">
-        <source>Expired: the subscription&apos;s end date has passed.</source>
-        <target>Abgelaufen: Das Enddatum der Subscription ist überschritten.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">356</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.noSubscriptionGetASubscription" datatype="html">
-        <source>No subscription. Get a subscription for enterprise support.</source>
-        <target>Keine Subscription. Schließen Sie eine Subscription ab, um Enterprise-Support zu erhalten.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">358</context>
         </context-group>
       </trans-unit>
       <trans-unit id="event.noEventHandlers" datatype="html">
@@ -18463,24 +17779,24 @@
         </context-group>
       </trans-unit>
       <trans-unit id="caConnector.createCAConnector" datatype="html">
-        <source>Create a CA connector to issue and manage certificates from privacyIDEA.</source>
-        <target>Erstellen Sie einen CA-Connector, um Zertifikate aus privacyIDEA heraus auszustellen und zu verwalten.</target>
+        <source>Create a CA connector to issue and manage certificates from AMFA.</source>
+        <target>Erstellen Sie einen CA-Connector, um Zertifikate aus AMFA heraus auszustellen und zu verwalten.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/ca-connectors/ca-connectors.component.html</context>
           <context context-type="linenumber">159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.noPrivacyIDEAServers" datatype="html">
-        <source>No privacyIDEA servers yet</source>
-        <target>Noch keine privacyIDEA-Server</target>
+        <source>No AMFA servers yet</source>
+        <target>Noch keine AMFA-Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.createPrivacyIDEAServer" datatype="html">
-        <source>Create a privacyIDEA server to forward authentication requests to another instance.</source>
-        <target>Erstellen Sie einen privacyIDEA-Server, um Authentifizierungsanfragen an eine andere Instanz weiterzuleiten.</target>
+        <source>Create an AMFA server to forward authentication requests to another instance.</source>
+        <target>Erstellen Sie einen AMFA-Server, um Authentifizierungsanfragen an eine andere Instanz weiterzuleiten.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/privacyidea-servers.component.html</context>
           <context context-type="linenumber">199</context>
@@ -18715,8 +18031,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="common.theRequestFailedCheckThe" datatype="html">
-        <source>The request failed. Check the connection to the privacyIDEA server and try again.</source>
-        <target>Die Anfrage ist fehlgeschlagen. Überprüfen Sie die Verbindung zum privacyIDEA-Server und versuchen Sie es erneut.</target>
+        <source>The request failed. Check the connection to the AMFA server and try again.</source>
+        <target>Die Anfrage ist fehlgeschlagen. Überprüfen Sie die Verbindung zum AMFA-Server und versuchen Sie es erneut.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/shared/table-state/table-state.component.html</context>
           <context context-type="linenumber">94</context>
@@ -19062,34 +18378,6 @@
           <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="dashboard.copySubscriptionInfoAsJson" datatype="html">
-        <source>Copy subscription info as JSON</source>
-        <target>Subscription-Informationen als JSON kopieren</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.html</context>
-          <context context-type="linenumber">30</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateOneDayAgo" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, 1 day ago</source>
-        <target><x id="STATE" equiv-text="state"/>, vor 1 Tag</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">317</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateOneDayLeft" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, 1 day left</source>
-        <target><x id="STATE" equiv-text="state"/>, noch 1 Tag</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">324</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="common.containerRealms" datatype="html">
         <source>Container Realms</source>
         <target>Container-Realms</target>
@@ -19176,38 +18464,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/i18n.utils.ts</context>
           <context context-type="linenumber">22</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysAgoFew" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="-daysLeft"/> days ago</source>
-        <target><x id="STATE" equiv-text="state"/>, vor <x id="DAYS" equiv-text="-daysLeft"/> Tagen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">318</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysAgoMany" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="-daysLeft"/> days ago</source>
-        <target><x id="STATE" equiv-text="state"/>, vor <x id="DAYS" equiv-text="-daysLeft"/> Tagen</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">319</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysLeftFew" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="daysLeft"/> days left</source>
-        <target><x id="STATE" equiv-text="state"/>, noch <x id="DAYS" equiv-text="daysLeft"/> Tage</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">325</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="dashboard.stateDaysLeftMany" datatype="html">
-        <source><x id="STATE" equiv-text="state"/>, <x id="DAYS" equiv-text="daysLeft"/> days left</source>
-        <target><x id="STATE" equiv-text="state"/>, noch <x id="DAYS" equiv-text="daysLeft"/> Tage</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/dashboard/widgets/subscriptions-widget/subscriptions-widget.component.ts</context>
-          <context context-type="linenumber">326</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.apiClients" datatype="html">
@@ -19543,8 +18799,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="apiClient.apiClientsIntro" datatype="html">
-        <source>API clients authenticate against privacyIDEA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
-        <target>API-Clients authentifizieren sich bei privacyIDEA mit einem API-Key, der im Header <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> gesendet wird. Klicken Sie auf einen Client, um seine gemerkten Geräte und die zugehörigen Benutzer zu sehen.</target>
+        <source>API clients authenticate against AMFA with an API key sent in the <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> header. Click on a client to see its remembered devices and the users behind them.</source>
+        <target>API-Clients authentifizieren sich bei AMFA mit einem API-Key, der im Header <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>X-API-Key<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/> gesendet wird. Klicken Sie auf einen Client, um seine gemerkten Geräte und die zugehörigen Benutzer zu sehen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/policies/api-clients/api-clients.component.html</context>
           <context context-type="linenumber">78</context>
@@ -22686,54 +21942,6 @@
           <context context-type="linenumber">254</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="common.filterUser" datatype="html">
-        <source>Filter by this user</source>
-        <target>Nach diesem Benutzer filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">262</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
-          <context context-type="linenumber">158</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterSourceIp" datatype="html">
-        <source>Filter by this source IP</source>
-        <target>Nach dieser Quell-IP filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">263</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.html</context>
-          <context context-type="linenumber">38</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterSerial" datatype="html">
-        <source>Filter by this serial</source>
-        <target>Nach dieser Seriennummer filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">264</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterTransactionId" datatype="html">
-        <source>Filter by this transaction ID</source>
-        <target>Nach dieser Transaktions-ID filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">265</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="authLog.filterAttemptId" datatype="html">
-        <source>Filter by this attempt ID</source>
-        <target>Nach dieser Versuchs-ID filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.ts</context>
-          <context context-type="linenumber">266</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="authLog.dateRange" datatype="html">
         <source>Date range</source>
         <target>Zeitraum</target>
@@ -22878,14 +22086,6 @@
           <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="authLog.filterPeerAddress" datatype="html">
-        <source>Filter by this peer address</source>
-        <target>Nach dieser Peer-Adresse filtern</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.html</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="authLog.claimedPath" datatype="html">
         <source>Claimed path:</source>
         <target>Angegebener Pfad:</target>
@@ -22903,8 +22103,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="authLog.addressPrivacyideaSawConnection" datatype="html">
-        <source>The address privacyIDEA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
-        <target>Die Adresse, von der privacyIDEA die Verbindung kommen sah. Es ist keine Client-Überschreibung konfiguriert, daher wird keine weitergeleitete Adresse berücksichtigt.</target>
+        <source>The address AMFA saw the connection come from. No client override is configured, so no forwarded address is honoured.</source>
+        <target>Die Adresse, von der AMFA die Verbindung kommen sah. Es ist keine Client-Überschreibung konfiguriert, daher wird keine weitergeleitete Adresse berücksichtigt.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs/authentication-log/cells/source-ip-cell/source-ip-cell.ts</context>
           <context context-type="linenumber">33</context>
@@ -24143,16 +23343,16 @@
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.deletePrivacyideaServer" datatype="html">
-        <source>Delete privacyIDEA Server</source>
-        <target>privacyIDEA-Server löschen</target>
+        <source>Delete AMFA Server</source>
+        <target>AMFA-Server löschen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="piServer.privacyideaServer" datatype="html">
-        <source>privacyIDEA server</source>
-        <target>privacyIDEA-Server</target>
+        <source>AMFA server</source>
+        <target>AMFA-Server</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.ts</context>
           <context context-type="linenumber">194</context>
@@ -24432,7 +23632,7 @@
       </trans-unit>
       <trans-unit id="dashboard.selectRealm" datatype="html">
         <source>Select realm</source>
-        <target state="new">Select realm</target>
+        <target state="new">Realm auswählen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">27</context>
@@ -24444,7 +23644,7 @@
       </trans-unit>
       <trans-unit id="dashboard.noRealms" datatype="html">
         <source>There is no realm to count. Create one to see its tokens and users.</source>
-        <target state="new">There is no realm to count. Create one to see its tokens and users.</target>
+        <target state="new">Es gibt kein Realm zum Zählen. Erstellen Sie eines, um dessen Token und Benutzer zu sehen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">56</context>
@@ -24452,7 +23652,7 @@
       </trans-unit>
       <trans-unit id="dashboard.usersWithTokens" datatype="html">
         <source>Users with tokens</source>
-        <target state="new">Users with tokens</target>
+        <target state="new">Benutzer mit Token</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">158</context>
@@ -24460,7 +23660,7 @@
       </trans-unit>
       <trans-unit id="dashboard.usersWithoutTokens" datatype="html">
         <source>Users without tokens</source>
-        <target state="new">Users without tokens</target>
+        <target state="new">Benutzer ohne Token</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">170</context>
@@ -24468,7 +23668,7 @@
       </trans-unit>
       <trans-unit id="dashboard.userListIncomplete" datatype="html">
         <source>Excluding <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, which did not answer.</source>
-        <target state="new">Excluding <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, which did not answer.</target>
+        <target state="new">Ausgenommen <x id="INTERPOLATION" equiv-text="{{ skippedResolverNames() }}"/>, der nicht geantwortet hat.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/dashboard/widgets/tokens-widget/tokens-widget.component.html</context>
           <context context-type="linenumber">181</context>
@@ -24476,7 +23676,7 @@
       </trans-unit>
       <trans-unit id="common.cannotBeNamed" datatype="html">
         <source>Cannot be named &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot;.</source>
-        <target state="new">Cannot be named &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot;.</target>
+        <target state="new">Kann nicht &quot;<x id="INTERPOLATION" equiv-text="{{ privacyideaForm.identifier().value() }}"/>&quot; heißen.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/external-services/privacyidea-servers/new-privacyidea-server/new-privacyidea-server.component.html</context>
           <context context-type="linenumber">92</context>
@@ -24496,6 +23696,254 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/user/user-new-resolver/user-new-resolver.component.html</context>
           <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="token.offlineHotpNotRecommended" datatype="html">
+        <source>Not recommended for offline use: offline data for a HOTP token keeps the secret on the workstation and is not bound to the machine, so a copied file works on any hardware. The preferred offline path is a FIDO2 key.</source>
+        <target state="translated">Nicht für den Offline-Betrieb empfohlen: Offline-Daten für einen HOTP-Token bewahren das Geheimnis auf der Arbeitsstation und sind nicht an das Gerät gebunden, daher funktioniert eine kopierte Datei auf beliebiger Hardware. Der bevorzugte Offline-Weg ist ein FIDO2-Schlüssel.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/token/token-details/token-machine-attach-dialog/token-hotp-machine-attach-dialog/token-hotp-machine-attach-dialog.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="authLog.authenticationRequestsRecorded" datatype="html">
+        <source>Authentication requests are recorded here as they arrive.</source>
+        <target state="translated">Authentifizierungsanfragen werden hier laufend aufgezeichnet.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.html</context>
+          <context context-type="linenumber">503</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="authLog.noAuthenticationLogEntriesYet" datatype="html">
+        <source>No authentication log entries yet</source>
+        <target state="translated">Noch keine Einträge im Authentifizierungsprotokoll</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/authentication-log/authentication-log.html</context>
+          <context context-type="linenumber">502</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blocklist.ipsBlockedByPolicy" datatype="html">
+        <source>IP addresses blocked by a conditional-access policy are listed here.</source>
+        <target state="translated">Hier werden IP-Adressen aufgelistet, die durch eine Richtlinie für bedingten Zugriff blockiert wurden.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/blocklist/blocklist.component.html</context>
+          <context context-type="linenumber">316</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="blocklist.noBlockedIps" datatype="html">
+        <source>No blocked IP addresses</source>
+        <target state="translated">Keine blockierten IP-Adressen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/blocklist/blocklist.component.html</context>
+          <context context-type="linenumber">315</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAction" datatype="html">
+        <source>Filter by this action</source>
+        <target state="translated">Nach dieser Aktion filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByActionDetail" datatype="html">
+        <source>Filter by this action detail</source>
+        <target state="translated">Nach diesem Aktionsdetail filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAdministrator" datatype="html">
+        <source>Filter by this administrator</source>
+        <target state="translated">Nach diesem Administrator filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByAttemptId" datatype="html">
+        <source>Filter by this attempt ID</source>
+        <target state="translated">Nach dieser Versuchs-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByClient" datatype="html">
+        <source>Filter by this client</source>
+        <target state="translated">Nach diesem Client filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByContainer" datatype="html">
+        <source>Filter by this container</source>
+        <target state="translated">Nach diesem Container filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByDay" datatype="html">
+        <source>Filter by this day</source>
+        <target state="translated">Nach diesem Tag filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByErrorMessage" datatype="html">
+        <source>Filter by this error message</source>
+        <target state="translated">Nach dieser Fehlermeldung filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByEvent" datatype="html">
+        <source>Filter by this event</source>
+        <target state="translated">Nach diesem Ereignis filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByPeerAddress" datatype="html">
+        <source>Filter by this peer address</source>
+        <target state="translated">Nach dieser Peer-Adresse filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByPolicy" datatype="html">
+        <source>Filter by this policy</source>
+        <target state="translated">Nach dieser Richtlinie filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByRealm" datatype="html">
+        <source>Filter by this realm</source>
+        <target state="translated">Nach diesem Realm filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByResolver" datatype="html">
+        <source>Filter by this resolver</source>
+        <target state="translated">Nach diesem Resolver filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterBySerial" datatype="html">
+        <source>Filter by this serial</source>
+        <target state="translated">Nach dieser Seriennummer filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByServer" datatype="html">
+        <source>Filter by this server</source>
+        <target state="translated">Nach diesem Server filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByServiceId" datatype="html">
+        <source>Filter by this service ID</source>
+        <target state="translated">Nach dieser Dienst-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterBySourceIp" datatype="html">
+        <source>Filter by this source IP</source>
+        <target state="translated">Nach dieser Quell-IP filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByTransactionId" datatype="html">
+        <source>Filter by this transaction ID</source>
+        <target state="translated">Nach dieser Transaktions-ID filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByUser" datatype="html">
+        <source>Filter by this user</source>
+        <target state="translated">Nach diesem Benutzer filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.filterByUserAgent" datatype="html">
+        <source>Filter by this user agent</source>
+        <target state="translated">Nach diesem User-Agent filtern</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/filter-tooltip.utils.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="lockedUsers.noLockedUsers" datatype="html">
+        <source>No locked users</source>
+        <target state="translated">Keine gesperrten Benutzer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
+          <context context-type="linenumber">422</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="lockedUsers.usersLockedByPolicy" datatype="html">
+        <source>Users locked by a conditional-access policy are listed here.</source>
+        <target state="translated">Hier werden Benutzer aufgelistet, die durch eine Richtlinie für bedingten Zugriff gesperrt wurden.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs/locked-users/locked-users.component.html</context>
+          <context context-type="linenumber">423</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.pageRangeCompact" datatype="html">
+        <source><x id="START" equiv-text="startIndex + 1"/> – <x id="END" equiv-text="endIndex"/></source>
+        <target state="translated"><x id="START" equiv-text="startIndex + 1"/> – <x id="END" equiv-text="endIndex"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/paginator-intl.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.pageRangeCompact.zero" datatype="html">
+        <source>0</source>
+        <target state="translated">0</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/paginator-intl.ts</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
     </body>

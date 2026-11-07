@@ -55,7 +55,6 @@ import { ServiceIdService } from "@services/service-id/service-id.service";
 import { SessionTimerService } from "@services/session-timer/session-timer.service";
 import { SmsGatewayService } from "@services/sms-gateway/sms-gateway.service";
 import { SmtpService } from "@services/smtp/smtp.service";
-import { SubscriptionService } from "@services/subscription/subscription.service";
 import { SystemService } from "@services/system/system.service";
 import { ChallengesService } from "@services/token/challenges/challenges.service";
 import { TokenService } from "@services/token/token.service";
@@ -99,7 +98,6 @@ import {
 import { MockAuthService } from "@testing/mock-services/mock-auth-service";
 import { MockEventService } from "@testing/mock-services/mock-event-service";
 import { MockResolverService } from "@testing/mock-services/mock-resolver-service";
-import { MockSubscriptionService } from "@testing/mock-services/mock-subscription-service";
 import { of } from "rxjs";
 import { UserUtilsPanelComponent } from "./user-utils-panel.component";
 
@@ -158,7 +156,6 @@ describe("UserUtilsPanelComponent", () => {
         { provide: PolicyService, useClass: MockPolicyService },
         { provide: ConditionalAccessPolicyService, useClass: MockConditionalAccessPolicyService },
         { provide: ConditionalAccessStateService, useClass: MockConditionalAccessStateService },
-        { provide: SubscriptionService, useClass: MockSubscriptionService },
         { provide: MachineResolverService, useClass: MockMachineResolverService },
         { provide: ContainerTemplateService, useClass: MockContainerTemplateService },
         { provide: ContentService, useClass: MockContentService },
@@ -238,18 +235,14 @@ describe("UserUtilsPanelComponent", () => {
     });
 
     it("refreshes the conditional-access page", () => {
-      const caService = TestBed.inject(
-        ConditionalAccessPolicyService
-      ) as unknown as MockConditionalAccessPolicyService;
+      const caService = TestBed.inject(ConditionalAccessPolicyService) as unknown as MockConditionalAccessPolicyService;
       content.routeUrl.set(ROUTE_PATHS.POLICIES_CONDITIONAL_ACCESS);
       component.refreshPage();
       expect(caService.policiesResource.reload).toHaveBeenCalled();
     });
 
     it("refreshes the conditional-access details page", () => {
-      const caService = TestBed.inject(
-        ConditionalAccessPolicyService
-      ) as unknown as MockConditionalAccessPolicyService;
+      const caService = TestBed.inject(ConditionalAccessPolicyService) as unknown as MockConditionalAccessPolicyService;
       content.routeUrl.set(`${ROUTE_PATHS.POLICIES_CONDITIONAL_ACCESS_DETAILS}5`);
       component.refreshPage();
       expect(caService.policiesResource.reload).toHaveBeenCalled();
@@ -313,18 +306,14 @@ describe("UserUtilsPanelComponent", () => {
     });
 
     it("refreshes locked-users route", () => {
-      const casService = TestBed.inject(
-        ConditionalAccessStateService
-      ) as unknown as MockConditionalAccessStateService;
+      const casService = TestBed.inject(ConditionalAccessStateService) as unknown as MockConditionalAccessStateService;
       content.routeUrl.set(ROUTE_PATHS.LOCKED_USERS);
       component.refreshPage();
       expect(casService.lockedUsersResource.reload).toHaveBeenCalled();
     });
 
     it("refreshes blocklist route", () => {
-      const casService = TestBed.inject(
-        ConditionalAccessStateService
-      ) as unknown as MockConditionalAccessStateService;
+      const casService = TestBed.inject(ConditionalAccessStateService) as unknown as MockConditionalAccessStateService;
       content.routeUrl.set(ROUTE_PATHS.BLOCKLIST);
       component.refreshPage();
       expect(casService.blocklistResource.reload).toHaveBeenCalled();

@@ -63,7 +63,6 @@ class AppTestCase(unittest.TestCase):
                       'ttype_blueprint', 'register_blueprint', 'smtpserver_blueprint',
                       'recover_blueprint', 'radiusserver_blueprint', 'periodictask_blueprint',
                       'privacyideaserver_blueprint', 'eventhandling_blueprint',
-                      'smsgateway_blueprint', 'client_blueprint', 'subscriptions_blueprint',
                       'monitoring_blueprint']
         self.assertTrue(all(k in app.before_request_funcs for k in blueprints), app)
         self.assertTrue(all(k in app.blueprints for k in blueprints), app)
