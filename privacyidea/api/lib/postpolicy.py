@@ -475,14 +475,15 @@ def preferred_client_mode(request, response):
         if detail.get("multi_challenge"):
             multi_challenge = detail.get("multi_challenge")
 
-            # AMFA #1468: a mode explicitly chosen by the authentication engine
-            # takes precedence over historical per-user preferences and defaults.
-            # Only trust a choice offered by this actual multi-challenge; an
-            # unavailable/malformed mode must fall back to the existing policy.
+            # AMFA #1468: an engine-selected WebAuthn challenge must not
+            # be overwritten by the default 'interactive' preference. Other
+            # client_mode values can merely be the engine's DEFAULT (not an
+            # explicit selection), and overriding on 'interactive' would
+            # regress the existing per-user Push/poll preference.
             client_modes = [challenge.get('client_mode') for challenge in multi_challenge]
-            preferred = detail.get("client_mode")
-            if not isinstance(preferred, str) or preferred not in client_modes:
-                preferred = None
+            preferred = "webauthn" if (
+                detail.get("client_mode") == "webauthn" and "webauthn" in client_modes
+            ) else None
             if preferred:
                 detail["preferred_client_mode"] = preferred
 
