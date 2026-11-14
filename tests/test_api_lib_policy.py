@@ -1887,12 +1887,13 @@ class PostPolicyDecoratorTestCase(MyApiTestCase):
             preferred_client_mode(request, response)
             self.assertEqual("webauthn", response.json["detail"]["preferred_client_mode"])
 
-            # An explicit interactive decision also takes precedence: this
-            # fix must not turn every multi-challenge into mandatory WebAuthn.
+            # Interactive may simply be the engine's default. Preserve the
+            # existing opt-in per-user Push preference (integration regression
+            # test: test_06_preferred_client_mode_for_user).
             data["detail"]["client_mode"] = "interactive"
             response = jsonify(data)
             preferred_client_mode(request, response)
-            self.assertEqual("interactive", response.json["detail"]["preferred_client_mode"])
+            self.assertEqual("poll", response.json["detail"]["preferred_client_mode"])
 
             # The response must not invent a mode that was never offered.
             # With an invalid engine choice the old per-user preference wins.
