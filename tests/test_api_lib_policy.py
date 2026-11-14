@@ -1852,6 +1852,75 @@ class PostPolicyDecoratorTestCase(MyApiTestCase):
 
         delete_policy("user_client_mode")
 
+    def test_21b_engine_chosen_webauthn_beats_default_and_user_preference(self):
+        """
+        AMFA #1468: the engine's explicit choice must reach the Windows
+        Credential Provider even when interactive is the default mode or
+        the user has previously used a push token.
+        """
+        builder = EnvironBuilder(method="POST", data={}, headers=Headers({"user_agent": "privacyidea-cp"}))
+        request = Request(builder.get_environ())
+        request.all_data = {}
+        self.setUp_user_realms()
+        user = User("hans", self.realm1)
+        request.User = user
+        g.policy_object = PolicyClass()
+
+        data = {"jsonrpc": "2.0", "result": {"status": True, "value": True},
+                "detail": {"client_mode": "webauthn", "multi_challenge": [
+                    {"client_mode": "interactive", "type": "hotp"},
+                    {"client_mode": "poll", "type": "push"},
+                    {"client_mode": "webauthn", "type": "webauthn"},
+                ]}}
+        response = jsonify(data)
+        preferred_client_mode(request, response)
+        self.assertEqual("webauthn", response.json["detail"]["preferred_client_mode"])
+
+        set_policy("amfa_1468_preference", scope=SCOPE.AUTH,
+                   action={PolicyAction.PREFERREDCLIENTMODE: "interactive poll webauthn"})
+        set_policy("amfa_1468_user_mode", scope=SCOPE.AUTH,
+                   action=PolicyAction.CLIENT_MODE_PER_USER)
+        user.set_internal_attribute(InternalUserAttributes.LAST_USED_TOKEN,
+                                    {"privacyidea-cp": "push"})
+        try:
+            response = jsonify(data)
+            preferred_client_mode(request, response)
+            self.assertEqual("webauthn", response.json["detail"]["preferred_client_mode"])
+
+            # An explicit interactive decision also takes precedence: this
+            # fix must not turn every multi-challenge into mandatory WebAuthn.
+            data["detail"]["client_mode"] = "interactive"
+            response = jsonify(data)
+            preferred_client_mode(request, response)
+            self.assertEqual("interactive", response.json["detail"]["preferred_client_mode"])
+
+            # The response must not invent a mode that was never offered.
+            # With an invalid engine choice the old per-user preference wins.
+            data["detail"]["client_mode"] = "nonexistent"
+            response = jsonify(data)
+            preferred_client_mode(request, response)
+            self.assertEqual("poll", response.json["detail"]["preferred_client_mode"])
+        finally:
+            delete_policy("amfa_1468_preference")
+            delete_policy("amfa_1468_user_mode")
+
+    def test_21c_engine_choice_unavailable_falls_back_to_default(self):
+        """AMFA #1468: engine mode not offered by the challenge is ignored."""
+        builder = EnvironBuilder(method="POST", data={}, headers=Headers({"user_agent": "privacyidea-cp"}))
+        request = Request(builder.get_environ())
+        request.all_data = {}
+        self.setUp_user_realms()
+        request.User = User("hans", self.realm1)
+        g.policy_object = PolicyClass()
+
+        data = {"jsonrpc": "2.0", "result": {"status": True, "value": True},
+                "detail": {"client_mode": "webauthn", "multi_challenge": [
+                    {"client_mode": "interactive", "type": "hotp"},
+                ]}}
+        response = jsonify(data)
+        preferred_client_mode(request, response)
+        self.assertEqual("interactive", response.json["detail"]["preferred_client_mode"])
+
     def test_22_preferred_client_mode_for_user_denied(self):
         """
         Tests the preferred_client_mode function when the policy client_mode_per_user is not activated.
