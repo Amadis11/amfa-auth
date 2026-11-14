@@ -475,9 +475,19 @@ def preferred_client_mode(request, response):
         if detail.get("multi_challenge"):
             multi_challenge = detail.get("multi_challenge")
 
-            # First, try to use the users' preferred token type
-            preferred = None
-            if last_used_token_type:
+            # AMFA #1468: a mode explicitly chosen by the authentication engine
+            # takes precedence over historical per-user preferences and defaults.
+            # Only trust a choice offered by this actual multi-challenge; an
+            # unavailable/malformed mode must fall back to the existing policy.
+            client_modes = [challenge.get('client_mode') for challenge in multi_challenge]
+            preferred = detail.get("client_mode")
+            if not isinstance(preferred, str) or preferred not in client_modes:
+                preferred = None
+            if preferred:
+                detail["preferred_client_mode"] = preferred
+
+            # With no engine decision, use the users' preferred token type.
+            if not preferred and last_used_token_type:
                 for challenge in multi_challenge:
                     if challenge.get('type') == last_used_token_type:
                         preferred = challenge.get('client_mode')
@@ -486,7 +496,6 @@ def preferred_client_mode(request, response):
 
             if not preferred:
                 # User preferred_client_mode not found, check the policy
-                client_modes = [x.get('client_mode') for x in multi_challenge]
                 try:
                     preferred = [x for x in preferred_client_mode_list if x in client_modes][0]
                     content.setdefault("detail", {})["preferred_client_mode"] = preferred
