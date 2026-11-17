@@ -72,6 +72,25 @@ class SignedOfflineBatchTests(unittest.TestCase):
         self.assertEqual(envelope["signature"],
             "qvGdNXzxtAk+rwVwzLHALhZfKjNu0IYZOM6OAO2UP9c9uavQJCQdkcgyGU/IZwTzGUErR5K/zklfCkBkNZUEBg==")
 
+    def test_two_refills_within_one_second_have_distinct_signed_order(self):
+        # Expiry has one-second precision and MUST NOT be used as a
+        # freshness/anti-replay sequence number across HA refill calls.
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
+            with patch.object(_module.time, "time", return_value=1799996400.001):
+                first = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+            with patch.object(_module.time, "time", return_value=1799996400.002):
+                second = sign_item(dict(TEST_ITEM, refilltoken="next"), TEST_KEY, "test-only")
+        first_item = __import__("json").loads(base64.b64decode(first["signed_payload"]))
+        second_item = __import__("json").loads(base64.b64decode(second["signed_payload"]))
+        self.assertEqual(first_item["expiration"], second_item["expiration"])
+        self.assertLess(first_item["issued_at_us"], second_item["issued_at_us"])
+        self.assertNotEqual(first["signed_payload"], second["signed_payload"])
+        for envelope in (first, second):
+            TEST_PUBLIC.verify(
+                base64.b64decode(envelope["signature"]),
+                SIGNING_CONTEXT + base64.b64decode(envelope["signed_payload"]),
+            )
+
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         blob = base64.b64decode(signed["signed_payload"])
