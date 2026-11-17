@@ -65,7 +65,15 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
     if not 60 <= validity <= 30 * 24 * 3600:
         raise OfflineSigningError("signed offline TTL must be between 60 seconds and 30 days")
     item = dict(item)
-    item["expiration"] = int(time.time()) + validity
+    now = time.time()
+    # Seconds-resolution expiry is NOT a sequence number: two refill requests
+    # within one second can issue different signed snapshots sharing the same
+    # expiration. Put microsecond issuance time INTO the signed payload; CP
+    # rejects earlier/equal snapshots rather than reviving spent HOTP values.
+    # Safe fail-closed across HA clock skew: a behind-clock signer cannot
+    # resurrect a previously accepted issuance.
+    item["issued_at_us"] = int(now * 1_000_000)
+    item["expiration"] = int(now) + validity
     item["format_version"] = 1
     payload = canonical_item(item)
     # OfflineSignedBatch::kMaxPayload in CP is 256 KiB; a signer must not
