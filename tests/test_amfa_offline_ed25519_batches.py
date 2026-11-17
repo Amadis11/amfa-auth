@@ -130,6 +130,24 @@ class SignedOfflineBatchTests(unittest.TestCase):
         with self.assertRaises(OfflineSigningError):
             canonical_item({"serial": "X", "response": {}})
 
+    def test_signer_rejects_payloads_windows_client_cannot_use(self):
+        # OfflineSignedBatch::VerifyEnvelopeWithKey on Windows requires
+        # nonempty identity and rejects payloads larger than 256 KiB.
+        for bad in (
+            dict(TEST_ITEM, username=""),
+            dict(TEST_ITEM, username=None),
+            dict(TEST_ITEM, username="   "),
+            dict(TEST_ITEM, username="bad\nuser"),
+            dict(TEST_ITEM, serial=""),
+            dict(TEST_ITEM, refilltoken=""),
+            dict(TEST_ITEM, refilltoken=1),
+            dict(TEST_ITEM, username="u" * 257),
+            dict(TEST_ITEM, response={"0": "x" * (256 * 1024)}),
+        ):
+            with self.subTest(bad_keys=list(bad)):
+                with self.assertRaises(OfflineSigningError):
+                    sign_item(bad, TEST_KEY, "test-only")
+
     def test_missing_or_wrong_issuance_grant_fails_closed(self):
         with self.assertRaises(OfflineSigningError):
             sign_item(dict(TEST_ITEM, offline_grant=""), TEST_KEY, "test-only")
