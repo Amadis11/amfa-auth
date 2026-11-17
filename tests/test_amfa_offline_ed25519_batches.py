@@ -150,6 +150,59 @@ class SignedOfflineBatchTests(unittest.TestCase):
             with self.assertRaises(OfflineSigningError):
                 signed_auth_items({"offline": [dict(TEST_ITEM)]})
 
+    def test_private_signing_key_must_be_owner_only_and_not_a_symlink(self):
+        """A compromised group-readable key must not silently sign offline access."""
+        with tempfile.TemporaryDirectory() as tmp:
+            keypath = os.path.join(tmp, "amfa-ed25519.pem")
+            with open(keypath, "wb") as fh:
+                fh.write(TEST_KEY.private_bytes(
+                    serialization.Encoding.PEM,
+                    serialization.PrivateFormat.PKCS8,
+                    serialization.NoEncryption(),
+                ))
+            os.chmod(keypath, 0o600)
+            vars = {
+                "AMFA_OFFLINE_ED25519_ENABLED": "1",
+                "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
+                "AMFA_OFFLINE_ED25519_KEY_ID": "installation-2026",
+            }
+            with patch.dict(os.environ, vars):
+                # Positive control: true private file signs normally.
+                self.assertEqual(len(signed_auth_items(
+                    {"offline": [dict(TEST_ITEM)]})["offline"]), 1)
+                for mode in (0o640, 0o644, 0o666, 0o400):
+                    os.chmod(keypath, mode)
+                    with self.subTest(mode=oct(mode)):
+                        if mode == 0o400:
+                            self.assertEqual(len(signed_auth_items(
+                                {"offline": [dict(TEST_ITEM)]})["offline"]), 1)
+                        else:
+                            with self.assertRaises(OfflineSigningError):
+                                signed_auth_items({"offline": [dict(TEST_ITEM)]})
+                os.chmod(keypath, 0o600)
+                link = os.path.join(tmp, "key-symlink.pem")
+                os.symlink(keypath, link)
+                with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": link}):
+                    with self.assertRaises(OfflineSigningError):
+                        signed_auth_items({"offline": [dict(TEST_ITEM)]})
+                with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": tmp}):
+                    with self.assertRaises(OfflineSigningError):
+                        signed_auth_items({"offline": [dict(TEST_ITEM)]})
+
+    def test_signer_rejects_unreadable_or_invalid_key_and_never_emits_unsigned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad_path = os.path.join(tmp, "bad.pem")
+            with open(bad_path, "wb") as fh:
+                fh.write(b"not a valid private signing key")
+            os.chmod(bad_path, 0o600)
+            with patch.dict(os.environ, {
+                "AMFA_OFFLINE_ED25519_ENABLED": "1",
+                "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": bad_path,
+                "AMFA_OFFLINE_ED25519_KEY_ID": "installation-2026",
+            }):
+                with self.assertRaises(OfflineSigningError):
+                    signed_auth_items({"offline": [dict(TEST_ITEM)]})
+
     def test_enabled_signs_every_item_or_raises(self):
         with tempfile.TemporaryDirectory() as tmp:
             keypath = os.path.join(tmp, "test-key.pem")
@@ -161,6 +214,7 @@ class SignedOfflineBatchTests(unittest.TestCase):
                 ))
             # #1692: podpisywanie wlacza sie tylko z kotwica podpisana kluczem root.
             # Test mieli wlasna pare root i podpisuje nia kotwice dla swojego klucza.
+            os.chmod(keypath, 0o600)  # required release condition; open() uses umask
             environment = {
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
