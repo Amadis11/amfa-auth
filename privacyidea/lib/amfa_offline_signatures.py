@@ -134,6 +134,16 @@ def _load_anchor(path: str, private_key: Ed25519PrivateKey, key_id: str) -> dict
 
 def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
               anchor: dict | None = None) -> dict:
+    # The Windows client demands these exact identity fields. Never emit a
+    # cryptographically valid but unusable snapshot (e.g. a batch without
+    # username): the issuer must fail atomically, not make the client guess.
+    if not isinstance(item, dict):
+        raise OfflineSigningError("offline item must be an object")
+    for name, limit in (("serial", 128), ("username", 256), ("refilltoken", 1024)):
+        value = item.get(name)
+        if (not isinstance(value, str) or not value.strip() or len(value) > limit
+                or any(ord(c) < 32 for c in value)):
+            raise OfflineSigningError(f"offline batch has invalid {name}")
     if not key_id or len(key_id) > 128 or not all(
             (c.isascii() and (c.isalnum() or c in "._-")) for c in key_id):
         raise OfflineSigningError("invalid signing key identifier")
@@ -170,6 +180,10 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
     item["expiration"] = issued_at_us // 1_000_000 + validity
     item["format_version"] = 3
     payload = canonical_item(item)
+    # OfflineSignedBatch::kMaxPayload in CP is 256 KiB; a signer must not
+    # return a payload that the pinned release will inevitably reject.
+    if len(payload) > 256 * 1024:
+        raise OfflineSigningError("signed offline payload exceeds Windows CP limit")
     signature = private_key.sign(SIGNING_CONTEXT + payload)
     envelope = {
         "alg": ALG,
