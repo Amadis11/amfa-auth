@@ -96,7 +96,7 @@ class SignedOfflineBatchTests(unittest.TestCase):
             dict(TEST_ITEM, username=""),
             dict(TEST_ITEM, username=None),
             dict(TEST_ITEM, username="   "),
-            dict(TEST_ITEM, username="bad\\nuser"),
+            dict(TEST_ITEM, username="bad\nuser"),
             dict(TEST_ITEM, serial=""),
             dict(TEST_ITEM, refilltoken=""),
             dict(TEST_ITEM, refilltoken=1),
