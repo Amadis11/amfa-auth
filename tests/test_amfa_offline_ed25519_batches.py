@@ -66,11 +66,11 @@ class SignedOfflineBatchTests(unittest.TestCase):
                        return_value=1799996400):
                 envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         self.assertEqual(envelope["signed_payload"],
-            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwicmVmaWxsdG9rZW4iOi"
-            "JyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwi"
-            "OiJURVNUMSIsInVzZXJuYW1lIjoiYWxpY2UifQ==")
+            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwiaXNzdWVkX2F0X3VzIjox"
+        "Nzk5OTk2NDAwMDAwMDAwLCJyZWZpbGx0b2tlbiI6InJlZmlsbC10ZXN0IiwicmVzcG9uc2UiOnsiMCI6"
+        "Imhhc2gwIiwiMSI6Imhhc2gxIn0sInNlcmlhbCI6IlRFU1QxIiwidXNlcm5hbWUiOiJhbGljZSJ9")
         self.assertEqual(envelope["signature"],
-            "t94EvyT0n8YghZrzFSHp9A/5+Jf5h5e7yihfRFz/IioNvRNeM7/j0UdfLN5zjHpOD7T6M17sgu8vXgcGosAAAw==")
+            "qvGdNXzxtAk+rwVwzLHALhZfKjNu0IYZOM6OAO2UP9c9uavQJCQdkcgyGU/IZwTzGUErR5K/zklfCkBkNZUEBg==")
 
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
