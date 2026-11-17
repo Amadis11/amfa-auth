@@ -22,6 +22,7 @@ import json
 import logging
 import os
 import re
+import stat
 import time
 
 from cryptography.hazmat.primitives import serialization
@@ -183,15 +184,44 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
 
 
 def _load_key(path: str) -> Ed25519PrivateKey:
+    """Read the private signing key only from a regular owner-private file.
+
+    The signing key is a server secret, unlike the PUBLIC release anchor.
+    A readable-for-everyone volume mount or a symlink must not silently turn
+    offline issuance into a compromised signer. Check the OPEN file descriptor
+    (not a racy os.stat(path) before opening it). This daemon runs on Linux.
+    """
     if not os.path.isabs(path):
         raise OfflineSigningError("private key path must be absolute")
-    # The key must be provisioned outside the repository, protected by OS ACL
-    # (root/service account only), and identical on all signing HA nodes.
-    with open(path, "rb") as fh:
-        pem = fh.read(8192)
-        if len(pem) >= 8192:
-            raise OfflineSigningError("offline signing PEM is unexpectedly large")
-    key = serialization.load_pem_private_key(pem, password=None)
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "geteuid"):
+        raise OfflineSigningError("secure offline signing key access requires Linux")
+    flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise OfflineSigningError("cannot securely open offline signing key") from exc
+    try:
+        with os.fdopen(fd, "rb") as fh:
+            info = os.fstat(fh.fileno())
+            if (not stat.S_ISREG(info.st_mode)
+                    or info.st_uid not in (0, os.geteuid())
+                    or info.st_mode & 0o077
+                    or not info.st_mode & stat.S_IRUSR):
+                raise OfflineSigningError(
+                    "offline signing key must be a regular owner-readable file,"
+                    " owned by root/service, without group/other permissions"
+                )
+            if info.st_size <= 0 or info.st_size >= 8192:
+                raise OfflineSigningError("offline signing PEM size is invalid")
+            pem = fh.read(8192)
+            if len(pem) != info.st_size:
+                raise OfflineSigningError("offline signing PEM changed while being read")
+    except OSError as exc:
+        raise OfflineSigningError("cannot securely read offline signing key") from exc
+    try:
+        key = serialization.load_pem_private_key(pem, password=None)
+    except (ValueError, TypeError) as exc:
+        raise OfflineSigningError("offline signing PEM is invalid") from exc
     if not isinstance(key, Ed25519PrivateKey):
         raise OfflineSigningError("offline signing PEM does not contain Ed25519")
     return key
