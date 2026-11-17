@@ -66,11 +66,30 @@ class SignedOfflineBatchTests(unittest.TestCase):
                        return_value=1799996400):
                 envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         self.assertEqual(envelope["signed_payload"],
-            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwicmVmaWxsdG9rZW4iOi"
-            "JyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwi"
-            "OiJURVNUMSIsInVzZXJuYW1lIjoiYWxpY2UifQ==")
+            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwiaXNzdWVkX2F0X3VzIjox"
+        "Nzk5OTk2NDAwMDAwMDAwLCJyZWZpbGx0b2tlbiI6InJlZmlsbC10ZXN0IiwicmVzcG9uc2UiOnsiMCI6"
+        "Imhhc2gwIiwiMSI6Imhhc2gxIn0sInNlcmlhbCI6IlRFU1QxIiwidXNlcm5hbWUiOiJhbGljZSJ9")
         self.assertEqual(envelope["signature"],
-            "t94EvyT0n8YghZrzFSHp9A/5+Jf5h5e7yihfRFz/IioNvRNeM7/j0UdfLN5zjHpOD7T6M17sgu8vXgcGosAAAw==")
+            "qvGdNXzxtAk+rwVwzLHALhZfKjNu0IYZOM6OAO2UP9c9uavQJCQdkcgyGU/IZwTzGUErR5K/zklfCkBkNZUEBg==")
+
+    def test_two_refills_within_one_second_have_distinct_signed_order(self):
+        # Expiry has one-second precision and MUST NOT be used as a
+        # freshness/anti-replay sequence number across HA refill calls.
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
+            with patch.object(_module.time, "time", return_value=1799996400.001):
+                first = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+            with patch.object(_module.time, "time", return_value=1799996400.002):
+                second = sign_item(dict(TEST_ITEM, refilltoken="next"), TEST_KEY, "test-only")
+        first_item = __import__("json").loads(base64.b64decode(first["signed_payload"]))
+        second_item = __import__("json").loads(base64.b64decode(second["signed_payload"]))
+        self.assertEqual(first_item["expiration"], second_item["expiration"])
+        self.assertLess(first_item["issued_at_us"], second_item["issued_at_us"])
+        self.assertNotEqual(first["signed_payload"], second["signed_payload"])
+        for envelope in (first, second):
+            TEST_PUBLIC.verify(
+                base64.b64decode(envelope["signature"]),
+                SIGNING_CONTEXT + base64.b64decode(envelope["signed_payload"]),
+            )
 
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
@@ -89,6 +108,24 @@ class SignedOfflineBatchTests(unittest.TestCase):
         with self.assertRaises(OfflineSigningError):
             canonical_item({"serial": "X", "response": {}})
 
+    def test_signer_rejects_payloads_windows_client_cannot_use(self):
+        # OfflineSignedBatch::VerifyEnvelopeWithKey on Windows requires
+        # nonempty identity and rejects payloads larger than 256 KiB.
+        for bad in (
+            dict(TEST_ITEM, username=""),
+            dict(TEST_ITEM, username=None),
+            dict(TEST_ITEM, username="   "),
+            dict(TEST_ITEM, username="bad\nuser"),
+            dict(TEST_ITEM, serial=""),
+            dict(TEST_ITEM, refilltoken=""),
+            dict(TEST_ITEM, refilltoken=1),
+            dict(TEST_ITEM, username="u" * 257),
+            dict(TEST_ITEM, response={"0": "x" * (256 * 1024)}),
+        ):
+            with self.subTest(bad_keys=list(bad)):
+                with self.assertRaises(OfflineSigningError):
+                    sign_item(bad, TEST_KEY, "test-only")
+
     def test_legacy_mode_unchanged_until_enabled(self):
         with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_ENABLED": "0"}):
             original = {"offline": [dict(TEST_ITEM)]}
@@ -99,6 +136,59 @@ class SignedOfflineBatchTests(unittest.TestCase):
             with self.assertRaises(OfflineSigningError):
                 signed_auth_items({"offline": [dict(TEST_ITEM)]})
 
+    def test_private_signing_key_must_be_owner_only_and_not_a_symlink(self):
+        """A compromised group-readable key must not silently sign offline access."""
+        with tempfile.TemporaryDirectory() as tmp:
+            keypath = os.path.join(tmp, "amfa-ed25519.pem")
+            with open(keypath, "wb") as fh:
+                fh.write(TEST_KEY.private_bytes(
+                    serialization.Encoding.PEM,
+                    serialization.PrivateFormat.PKCS8,
+                    serialization.NoEncryption(),
+                ))
+            os.chmod(keypath, 0o600)
+            vars = {
+                "AMFA_OFFLINE_ED25519_ENABLED": "1",
+                "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
+                "AMFA_OFFLINE_ED25519_KEY_ID": "installation-2026",
+            }
+            with patch.dict(os.environ, vars):
+                # Positive control: true private file signs normally.
+                self.assertEqual(len(signed_auth_items(
+                    {"offline": [dict(TEST_ITEM)]})["offline"]), 1)
+                for mode in (0o640, 0o644, 0o666, 0o400):
+                    os.chmod(keypath, mode)
+                    with self.subTest(mode=oct(mode)):
+                        if mode == 0o400:
+                            self.assertEqual(len(signed_auth_items(
+                                {"offline": [dict(TEST_ITEM)]})["offline"]), 1)
+                        else:
+                            with self.assertRaises(OfflineSigningError):
+                                signed_auth_items({"offline": [dict(TEST_ITEM)]})
+                os.chmod(keypath, 0o600)
+                link = os.path.join(tmp, "key-symlink.pem")
+                os.symlink(keypath, link)
+                with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": link}):
+                    with self.assertRaises(OfflineSigningError):
+                        signed_auth_items({"offline": [dict(TEST_ITEM)]})
+                with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": tmp}):
+                    with self.assertRaises(OfflineSigningError):
+                        signed_auth_items({"offline": [dict(TEST_ITEM)]})
+
+    def test_signer_rejects_unreadable_or_invalid_key_and_never_emits_unsigned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            bad_path = os.path.join(tmp, "bad.pem")
+            with open(bad_path, "wb") as fh:
+                fh.write(b"not a valid private signing key")
+            os.chmod(bad_path, 0o600)
+            with patch.dict(os.environ, {
+                "AMFA_OFFLINE_ED25519_ENABLED": "1",
+                "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": bad_path,
+                "AMFA_OFFLINE_ED25519_KEY_ID": "installation-2026",
+            }):
+                with self.assertRaises(OfflineSigningError):
+                    signed_auth_items({"offline": [dict(TEST_ITEM)]})
+
     def test_enabled_signs_every_item_or_raises(self):
         with tempfile.TemporaryDirectory() as tmp:
             keypath = os.path.join(tmp, "test-key.pem")
@@ -108,6 +198,7 @@ class SignedOfflineBatchTests(unittest.TestCase):
                     serialization.PrivateFormat.PKCS8,
                     serialization.NoEncryption(),
                 ))
+            os.chmod(keypath, 0o600)  # required release condition; open() uses umask
             environment = {
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
