@@ -22,6 +22,7 @@ class SignedOfflineTTL30Days(unittest.TestCase):
         self.private_key = Ed25519PrivateKey.generate()
         self.offline_item = {
             "serial": "WAN-TEST",
+            "username": "offline-ttl-test",
             "refilltoken": "local-test-refill-only",
             "response": {"pubKey": "test", "credentialId": "test", "rpId": "test.local"},
         }
