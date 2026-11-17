@@ -56,6 +56,10 @@ python3 tools/amfa_offline_ed25519_keygen.py \
   --private-key-file /etc/amfa/offline-signing/ed25519-2026-01.pem \
   --key-id amfa-offline-2026-01
 stat -c '%a %U %n' /etc/amfa/offline-signing/ed25519-2026-01.pem
+# MUSI być zwykłym plikiem (bez symlinków), z prawami właściciela
+# np. 0600/0400 i właścicielem root lub UID procesu privacyIDEA.
+# Tryby 0640/0644/0666 oraz dowiązania symboliczne są odrzucane
+# przez _load_key na podstawie fstat otwartego deskryptora (fail-closed).
 ```
 
 The script creates the file using `O_EXCL` with mode `0600`, refuses to
