@@ -36,6 +36,17 @@ element becomes an envelope:
 }
 ```
 
+Signed offline v1 now also includes `issued_at_us` (UTC Unix microseconds).
+Its signature prevents a previous, correctly signed refill from being replayed to
+restore used HOTP codes. Windows compares this signed issuance timestamp instead
+of `expiration`: two new snapshots can have the same expiration second.
+Older already-issued signed v1 payloads without `issued_at_us` remain verifiable
+for a one-time upgrade, but must not downgrade a timestamped snapshot.
+If HA node clocks move backwards, the workstation refuses the older timestamp
+(fail-closed); NTP synchronization on all signers is required. Physical rollback
+of the entire DPAPI disk image still requires TPM monotonic state or an online
+revalidation, and is NOT solved by the signed timestamp.
+
 The exact bytes signed are:
 `ASCII("AMFA-OFFLINE-BATCH-v1") || NUL || signed_payload_decoded_bytes`.
 
