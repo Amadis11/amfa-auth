@@ -291,6 +291,13 @@ def offlinerefill():
         if not token.check_all(message_list):
             log.info(f"Failed to offline refill: {message_list}")
             raise ParameterError(_("The token is not valid."))
+        # Every successful refill is a NEW issuance: check membership in AD
+        # BEFORE reserving counters or rotating any refill credential.
+        from privacyidea.lib.amfa_offline_signatures import signing_enabled
+        offline_grant = None
+        if signing_enabled():
+            from privacyidea.lib.amfa_offline_entitlement import offline_grant_for_token
+            offline_grant = offline_grant_for_token(token)
         token_attachments = list_machine_tokens(serial=serial, application="offline")
         if token_attachments:
             # Serializacja refillu offline (audyt 26.10.2026, plaster 04, Z5): porownanie refilltokenu,
@@ -371,6 +378,8 @@ def offlinerefill():
                     refill_item.update({"refilltoken": refilltoken_new,
                                         "serial": serial,
                                         "username": token.user.login if token.user else ""})
+                if offline_grant:
+                    refill_item["offline_grant"] = offline_grant
                 content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                 response.set_data(json.dumps(content))
                 # The lock must cover the HOTP counter, signed full-window
