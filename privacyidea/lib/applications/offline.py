@@ -407,6 +407,11 @@ class MachineApplication(MachineApplicationBase):
         if token_type in ["hotp", "webauthn", "passkey"]:
             ret["response"] = {}
             token = get_one_token(serial=serial)
+            # Issue signed offline material only after ONLINE AD entitlement.
+            from privacyidea.lib.amfa_offline_signatures import signing_enabled
+            if signing_enabled():
+                from privacyidea.lib.amfa_offline_entitlement import offline_grant_for_token
+                ret["offline_grant"] = offline_grant_for_token(token)
             user = token.user
             if user:
                 user_info = user.get_specific_info(["username", FIDO2TokenInfo.USER_ID])
