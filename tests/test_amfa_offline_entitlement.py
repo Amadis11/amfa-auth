@@ -37,7 +37,7 @@ class TestOfflineEntitlement(unittest.TestCase):
         self.resolver = SimpleNamespace(
             group_attribute_mapping_key="groups",
             get_available_info_keys=lambda: ["groups"],
-            get_user_info=lambda _uid, attributes: {"groups": ["AMFA-haslo-fido"]},
+            get_user_info=lambda _uid, attributes=None: {"groups": ["AMFA-haslo-fido"]},
         )
         self.save_policy()
         self.patcher = patch.dict(os.environ, {
