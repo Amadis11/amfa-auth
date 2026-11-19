@@ -33,7 +33,7 @@ TEST_KEY = Ed25519PrivateKey.from_private_bytes(SEED)
 TEST_PUBLIC = TEST_KEY.public_key()
 TEST_ITEM = {
     "serial": "TEST1", "username": "alice", "refilltoken": "refill-test",
-    "response": {"0": "hash0", "1": "hash1"},
+    "response": {"0": "hash0", "1": "hash1"}, "offline_grant": "hotp",
 }
 
 
@@ -54,17 +54,24 @@ class SignedOfflineBatchTests(unittest.TestCase):
         decoded = __import__("json").loads(blob)
         self.assertEqual(decoded["serial"], "TEST1")
         self.assertGreater(decoded["expiration"], __import__("time").time())
-        self.assertEqual(decoded["format_version"], 1)
+        self.assertEqual(decoded["format_version"], 2)
+        self.assertEqual(decoded["offline_grant"], "hotp")
         with self.assertRaises(Exception):
             TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"hash0", b"evil0"))
 
     def test_cpp_cross_language_fixture(self):
         # Exact bytes checked by tests/ParserTests/main.cpp in the Windows repo.
         # Freeze time so the issued expiry is 1800000000 (test only).
-        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
-            with patch.object(_module.time, "time",
-                       return_value=1799996400):
-                envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+        # Keep the pre-v2 signed v1 fixture to verify parsing/migration.
+        # The issuer MUST NOT produce it via sign_item anymore.
+        legacy = dict(TEST_ITEM)
+        legacy.pop("offline_grant")
+        legacy.update({"expiration": 1800000000, "format_version": 1})
+        blob = canonical_item(legacy)
+        envelope = {
+            "signed_payload": base64.b64encode(blob).decode("ascii"),
+            "signature": base64.b64encode(TEST_KEY.sign(SIGNING_CONTEXT + blob)).decode("ascii"),
+        }
         self.assertEqual(envelope["signed_payload"],
             "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwicmVmaWxsdG9rZW4iOi"
             "JyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwi"
@@ -88,6 +95,16 @@ class SignedOfflineBatchTests(unittest.TestCase):
             sign_item(TEST_ITEM, TEST_KEY, "bad key id!")
         with self.assertRaises(OfflineSigningError):
             canonical_item({"serial": "X", "response": {}})
+
+    def test_missing_or_wrong_issuance_grant_fails_closed(self):
+        with self.assertRaises(OfflineSigningError):
+            sign_item(dict(TEST_ITEM, offline_grant=""), TEST_KEY, "test-only")
+        with self.assertRaises(OfflineSigningError):
+            sign_item(dict(TEST_ITEM, offline_grant="fido2"), TEST_KEY, "test-only")
+        without_grant = dict(TEST_ITEM)
+        without_grant.pop("offline_grant")
+        with self.assertRaises(OfflineSigningError):
+            sign_item(without_grant, TEST_KEY, "test-only")
 
     def test_legacy_mode_unchanged_until_enabled(self):
         with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_ENABLED": "0"}):
