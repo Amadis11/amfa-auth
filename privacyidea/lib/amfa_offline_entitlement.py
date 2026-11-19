@@ -113,7 +113,10 @@ def offline_grant_for_token(token) -> str:
         raise OfflineEntitlementError("resolver cannot return AD group membership")
     # A direct lookup rather than cached_user_info prevents a stale user-cache
     # membership verdict from authorising a new offline batch.
-    info = resolver.get_user_info(user.uid, attributes=[group_key])
+    # LDAP recursive group filters may interpolate other mapped attributes
+    # (e.g. {username}); requesting only [groups] strips those fields before
+    # building the group filter and silently yields empty membership.
+    info = resolver.get_user_info(user.uid)
     members = info.get(group_key) if isinstance(info, dict) else None
     if not isinstance(members, (list, tuple)):
         raise OfflineEntitlementError("directory did not return a complete group list")
