@@ -475,9 +475,20 @@ def preferred_client_mode(request, response):
         if detail.get("multi_challenge"):
             multi_challenge = detail.get("multi_challenge")
 
-            # First, try to use the users' preferred token type
-            preferred = None
-            if last_used_token_type:
+            # AMFA #1468: an engine-selected WebAuthn challenge must not
+            # be overwritten by the default 'interactive' preference. Other
+            # client_mode values can merely be the engine's DEFAULT (not an
+            # explicit selection), and overriding on 'interactive' would
+            # regress the existing per-user Push/poll preference.
+            client_modes = [challenge.get('client_mode') for challenge in multi_challenge]
+            preferred = "webauthn" if (
+                detail.get("client_mode") == "webauthn" and "webauthn" in client_modes
+            ) else None
+            if preferred:
+                detail["preferred_client_mode"] = preferred
+
+            # With no engine decision, use the users' preferred token type.
+            if not preferred and last_used_token_type:
                 for challenge in multi_challenge:
                     if challenge.get('type') == last_used_token_type:
                         preferred = challenge.get('client_mode')
@@ -486,7 +497,6 @@ def preferred_client_mode(request, response):
 
             if not preferred:
                 # User preferred_client_mode not found, check the policy
-                client_modes = [x.get('client_mode') for x in multi_challenge]
                 try:
                     preferred = [x for x in preferred_client_mode_list if x in client_modes][0]
                     content.setdefault("detail", {})["preferred_client_mode"] = preferred
