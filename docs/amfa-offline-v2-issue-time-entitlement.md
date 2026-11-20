@@ -84,6 +84,32 @@ receive offline material) while a **masks-off server error is a fault of ours**
 key id mismatch). A signing fault never produces an unsigned batch and never
 consumes counters, so the station keeps using its last valid snapshot.
 
+## Deployment sequence (both AUTH/HA nodes)
+
+1. Publish the **same signed deployment-flags envelope** the stations receive to
+   every AUTH node (do not maintain a second list) and place the pinned RSA
+   public key next to it; the file is operator-owned and read-only for the
+   service.
+2. Set `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE`, `..._PUBLIC_KEY_FILE` and
+   `..._KEY_ID` in the service environment of **both** nodes and reload the
+   service. Publishing the document while the signer is already enabled is safe:
+   until the document is there no batch is signed, while authentication and
+   enrollment keep working.
+3. Verify the prerequisite is actually read by the running container, not only
+   present in a file on the host:
+
+   ```bash
+   podman exec amfa-auth env | grep -E "^AMFA_OFFLINE_DEPLOYMENT"
+   podman exec amfa-auth test -r "$AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE" && echo flags-readable
+   ```
+4. Check one entitled and one unentitled owner before rollout: the entitled
+   owner gets a v2 batch (`format_version: 2` with the matching
+   `offline_grant`) and the unentitled one is refused on refill with HTTP 400 /
+   code `905` while still authenticating online.
+5. Repeat the sequence on the partner node and keep the two documents in sync on
+   every signed revision (a node with a stale document refuses new issuance
+   instead of signing an outdated allowlist).
+
 ## Release blockers
 
 Native Windows LogonUI + LSA acceptance with NIC link down; FIDO2,
