@@ -75,8 +75,14 @@ jobs:
           MARIADB_PASSWORD: privacyidea
         ports:
           - 3306:3306
+        # MariaDB 11: healthcheck.sh's internal 'healthcheck' account can
+        # become unusable on a fresh GitHub runner (nightly #106), blocking
+        # the Redis suite *before pytest starts*. Probe a real authenticated
+        # SQL query using this disposable container's own test account.
+        # This waits for the database/user to be fully initialized, rather
+        # than merely accepting a TCP socket or the mysqladmin-ping response.
         options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-cmd="mariadb --protocol=tcp -h 127.0.0.1 -u privacyidea -pprivacyidea --batch --skip-column-names -e 'SELECT 1'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
