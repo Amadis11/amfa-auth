@@ -8,17 +8,30 @@ account string or a cached group decision).
 
 ## Deployment prerequisites
 
-Configure three required variables in the AUTH service:
+Configure the policy file plus **one** of the two accepted signature forms:
 
-- `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE`: absolute path to the **exact
+- `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE` (required): absolute path to the **exact
   signed deployment-flags envelope** published to the stations by the
   gateway/panel. This is JSON with `document.flags.offline_fido2_groups`
   and `document.flags.offline_hotp_groups`, NOT a second manually maintained
   list of groups. Mount it as an operator-owned read-only file and sync every
   signed revision to all AUTH/HA nodes.
-- `AMFA_OFFLINE_DEPLOYMENT_FLAGS_PUBLIC_KEY_FILE`: absolute path to the
-  pinned trusted RSA public key that verifies the deployment flags.
-- `AMFA_OFFLINE_DEPLOYMENT_FLAGS_KEY_ID`: exact expected issuer key ID.
+- **Issuer key form** — `AMFA_OFFLINE_DEPLOYMENT_FLAGS_PUBLIC_KEY_FILE`
+  (absolute path to the pinned trusted RSA public key) together with
+  `AMFA_OFFLINE_DEPLOYMENT_FLAGS_KEY_ID` (the exact expected issuer key ID).
+  The envelope must not carry a certificate.
+- **Customer CA form** (#1550) — `AMFA_OFFLINE_DEPLOYMENT_FLAGS_CA_FILE`
+  (absolute path to the PEM of the customer CA that also roots the stations'
+  trust). The envelope then carries the signing certificate in
+  `signature.cert_base64` and `signature.key_id` is
+  `cert-sha256:<SHA-256 of the DER certificate>`.
+
+Both forms are verified with the rules the workstations apply, so the document
+accepted here is the document the stations accept: `rsa-sha256` only, the
+signing certificate must be a currently valid RSA **leaf** that carries
+`digitalSignature`, is not a CA itself and is issued by the pinned CA, and the
+customer form additionally requires the document's monotonic `revision`.
+Configuring both forms is allowed; the envelope decides which one is used.
 
 For HOTP the signed document must additionally carry
 `document.flags.offline_hotp_allowed: true`. Without it the HOTP allowlist is
@@ -33,10 +46,12 @@ private key nor plaintext Windows password is transported to the station.
 
 **Do not enable rollout until the gateway/panel publication also updates the
 file mounted in AUTH.** A missing or invalid file results in NO new offline
-data (online login still succeeds). The current verifier supports issuer RSA
-signatures; if a customer CA-signed deployment document is used, add its
-proper pinned certificate-chain verification before enabling this pathway.
-Never treat an unverified or customer-supplied group list as authoritative.
+data (online login still succeeds). Every failure inside this module is a
+defined refusal: an unreadable, oversized, malformed, expired or unprovisioned
+policy, an unknown signing key, a stale or foreign certificate and a
+non-matching signature all raise the same error class instead of an unexpected
+server error. Never treat an unverified or customer-supplied group list as
+authoritative.
 
 The LDAP resolver must expose the group attribute as a list (normally
 `groups`, with recursive_group_search configured for nested membership).
@@ -87,14 +102,15 @@ consumes counters, so the station keeps using its last valid snapshot.
 ## Deployment sequence (both AUTH/HA nodes)
 
 1. Publish the **same signed deployment-flags envelope** the stations receive to
-   every AUTH node (do not maintain a second list) and place the pinned RSA
-   public key next to it; the file is operator-owned and read-only for the
-   service.
-2. Set `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE`, `..._PUBLIC_KEY_FILE` and
-   `..._KEY_ID` in the service environment of **both** nodes and reload the
-   service. Publishing the document while the signer is already enabled is safe:
-   until the document is there no batch is signed, while authentication and
-   enrollment keep working.
+   every AUTH node (do not maintain a second list) and place the trust anchor
+   next to it: either the pinned RSA public key or the customer CA certificate,
+   matching the form the envelope was signed with; the file is operator-owned
+   and read-only for the service.
+2. Set `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE` and the variables of the matching
+   form (`..._PUBLIC_KEY_FILE` + `..._KEY_ID`, or `..._CA_FILE`) in the service
+   environment of **both** nodes and reload the service. Publishing the document
+   while the signer is already enabled is safe: until the document is there no
+   batch is signed, while authentication and enrollment keep working.
 3. Verify the prerequisite is actually read by the running container, not only
    present in a file on the host:
 
