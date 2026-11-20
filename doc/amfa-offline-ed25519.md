@@ -38,9 +38,19 @@ The exact bytes signed are:
 
 The canonical JSON has ASCII escapes, `sort_keys=True`, separators
 `(',', ':')` and **no NaN**. It includes `serial`, `username`,
-`refilltoken`, `response`, `format_version:1` and a server-issued,
-signed Unix `expiration` in UTC. Never sign a reserialized JSON document on
-Windows: verify the **original signed bytes**.
+`refilltoken`, `response`, `format_version`, `offline_grant` and a
+server-issued, signed Unix `expiration` in UTC. Never sign a reserialized JSON
+document on Windows: verify the **original signed bytes**.
+
+`format_version: 2` is the current format. The signer only signs a batch that
+carries the issuance grant the online entitlement check attached: `fido2` for a
+response carrying `pubKey`/`credentialId`, `hotp` otherwise — any other
+combination fails signing. `format_version: 1` snapshots issued earlier are
+still parsed for migration, but they carry no grant and therefore never open an
+offline login; the client replaces them on the next online issuance or refill.
+Prerequisites and the fail-closed cases of the issue-time entitlement (which
+consumes the signed deployment flags published to the stations) are described in
+`docs/amfa-offline-v2-issue-time-entitlement.md`.
 
 An online refill produces a **new complete signed snapshot**. The client
 replaces the previous signed snapshot; it must not append new hashes to a
@@ -72,10 +82,13 @@ account.
 AMFA_OFFLINE_ED25519_ENABLED=1
 AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE=/etc/amfa/offline-signing/ed25519-2026-01.pem
 AMFA_OFFLINE_ED25519_KEY_ID=amfa-offline-2026-01
-AMFA_OFFLINE_ED25519_TTL_SECONDS=3888000
+AMFA_OFFLINE_ED25519_TTL_SECONDS=2592000
 ```
 
-The TTL is capped at **45 days** and must be between 60 and 3888000 seconds.
+The TTL is capped at **30 days** (`2592000` seconds) and must be between 60 and
+`2592000` seconds. This is the release contract pinned by
+`tests/test_amfa_offline_ttl_30.py`: a successful online authentication may
+renew a batch, but a batch is never signed for longer than 30 days.
 A signing error **does not produce an unsigned offline payload**: the online
 login remains available but no new offline batch is issued. Inspect server
 ERROR logs before enabling at scale.
@@ -88,7 +101,8 @@ nonempty pinned public key and matching key ID before enabling signatures.
 ## Checks and test scope
 
 ```bash
-python3 -m pytest tests/test_amfa_offline_ed25519_batches.py -q
+python3 -m pytest tests/test_amfa_offline_ed25519_batches.py \
+                   tests/test_amfa_offline_entitlement.py -q
 ```
 
 Required before production acceptance:
@@ -104,6 +118,11 @@ Required before production acceptance:
    visibly alarmed on the server.
 7. Windows build, TOKEN2 PIN/UV handling, GPO deployment, failover, rollback,
    server key permissions and correct signing on each HA node.
+8. Issue-time entitlement: offline data is signed only for a token owner whose
+   directory group is in the signed deployment flags. An unprovisioned policy,
+   unknown issuer, expired document, missing group mapping or unreachable
+   directory issues **no** offline data (online login unaffected) —
+   `tests/test_amfa_offline_entitlement.py`.
 
 ### Rollout/rotation warning
 
