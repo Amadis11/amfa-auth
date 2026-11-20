@@ -102,7 +102,10 @@ nonempty pinned public key and matching key ID before enabling signatures.
 
 ```bash
 python3 -m pytest tests/test_amfa_offline_ed25519_batches.py \
-                   tests/test_amfa_offline_entitlement.py -q
+                   tests/test_amfa_offline_entitlement.py \
+                   tests/test_amfa_offline_ttl_30.py \
+                   tests/test_api_validate_offline.py \
+                   tests/test_api_passkey.py -q
 ```
 
 Required before production acceptance:
@@ -123,6 +126,15 @@ Required before production acceptance:
    unknown issuer, expired document, missing group mapping or unreachable
    directory issues **no** offline data (online login unaffected) —
    `tests/test_amfa_offline_entitlement.py`.
+9. Issue-time entitlement never degrades an online path: an authentication and a
+   passkey enrollment whose owner may not receive offline material still succeed
+   (no `auth_items`), while a refill is refused with a defined answer — HTTP 400,
+   error code `905`, `Offline issuance is not allowed for this account`, with no
+   counter reserved and no refill credential rotated — instead of an HTTP 500.
+   Pinned by
+   `tests/test_api_validate_offline.py::AValidateOfflineTestCase::test_05_refill_without_entitlement_is_a_defined_refusal`
+   and
+   `tests/test_api_passkey.py::PasskeyAPITest::test_09b_offline_enrollment_without_entitlement_stays_online_only`.
 
 ### Rollout/rotation warning
 

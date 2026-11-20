@@ -265,8 +265,12 @@ def offlinerefill():
         ``refilltoken`` and OTP material under
         ``auth_items.offline``.
     :status 400: the token does not exist, is not marked for offline
-        use, the refilltoken is wrong, or the calling machine cannot
-        be identified from the user agent (WebAuthn/Passkey).
+        use, the refilltoken is wrong, the calling machine cannot be
+        identified from the user agent (WebAuthn/Passkey), or the
+        token owner is not entitled to offline issuance. With the
+        offline signer enabled the server re-checks the signed
+        deployment-flags allowlist on every refill; an unentitled
+        owner is refused here instead of being signed.
     """
     serial = get_required(request.all_data, "serial")
     refilltoken_request = get_required(request.all_data, "refilltoken")
@@ -296,8 +300,18 @@ def offlinerefill():
         from privacyidea.lib.amfa_offline_signatures import signing_enabled
         offline_grant = None
         if signing_enabled():
-            from privacyidea.lib.amfa_offline_entitlement import offline_grant_for_token
-            offline_grant = offline_grant_for_token(token)
+            from privacyidea.lib.amfa_offline_entitlement import (OfflineEntitlementError,
+                                                                 offline_grant_for_token)
+            try:
+                offline_grant = offline_grant_for_token(token)
+            except OfflineEntitlementError as ex:
+                # Fail closed, but as a DEFINED refusal: the station has to tell
+                # "this account may not receive offline material" from "the server
+                # is broken", while the directory-side reason stays in the log.
+                # Raised before any counter is reserved or refill credential
+                # rotated, so a refused refill leaves the token untouched (#1605).
+                log.info(f"Offline refill refused: {ex}")
+                raise ParameterError(_("Offline issuance is not allowed for this account"))
         token_attachments = list_machine_tokens(serial=serial, application="offline")
         if token_attachments:
             # Serializacja refillu offline (audyt 26.10.2026, plaster 04, Z5): porownanie refilltokenu,
@@ -881,9 +895,19 @@ def _handle_fido2_auth(context: dict, credential_id: str):
                 # has to travel with the offline data. It is the SCOPE.AUTH value, the same one the client sees
                 # in the online passkey challenge.
                 user_verification = get_user_verification_requirement(SCOPE.AUTH, user=user)
-                offline_data = get_auth_items(serial=token.get_serial(), application="offline",
-                                              user_agent=request.user_agent.string,
-                                              user_verification=user_verification)
+                from privacyidea.lib.amfa_offline_entitlement import OfflineEntitlementError
+                try:
+                    offline_data = get_auth_items(serial=token.get_serial(), application="offline",
+                                                  user_agent=request.user_agent.string,
+                                                  user_verification=user_verification)
+                except OfflineEntitlementError as ex:
+                    # Online AD entitlement for offline issuance is checked before signing.
+                    # A missing or stale signed deployment-flags document must not fail the
+                    # enrollment itself: the passkey stays enrolled and usable online, the
+                    # machine keeps the offline attachment, and the next online login can
+                    # still carry the bag once the allowlist is published (#1605).
+                    log.info(f"No offline data at passkey enrollment: {ex}")
+                    offline_data = None
                 if offline_data:
                     context["response_params"]["auth_items"] = offline_data
 

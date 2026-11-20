@@ -20,6 +20,13 @@ Configure three required variables in the AUTH service:
   pinned trusted RSA public key that verifies the deployment flags.
 - `AMFA_OFFLINE_DEPLOYMENT_FLAGS_KEY_ID`: exact expected issuer key ID.
 
+For HOTP the signed document must additionally carry
+`document.flags.offline_hotp_allowed: true`. Without it the HOTP allowlist is
+treated as empty and **no** HOTP batch is issued; FIDO2/Passkey issuance is
+unaffected. The flag is deliberately independent of the group list, so a
+deployment can withdraw HOTP offline access without touching the document's
+group membership.
+
 The existing `AMFA_OFFLINE_ED25519_ENABLED=1` and Ed25519 private key
 configuration are still required to sign the resulting v2 batch. Neither
 private key nor plaintext Windows password is transported to the station.
@@ -50,6 +57,32 @@ synthesize the domain prefix from a username.
   and local factor proof; removing membership from AD affects **future**
   issuance/refill only. Previously issued grants cannot be remotely revoked
   while the machine has no network.
+
+## Fail-closed behaviour (what a station sees)
+
+| Path | Document missing/invalid, or owner outside the allowlist |
+| --- | --- |
+| `/validate/check` (authentication) | login unchanged; **no** `auth_items.offline` — the bag is dropped and the reason logged on the server |
+| passkey enrollment with `enroll_via_multichallenge_passkey_offline` | the enrollment succeeds (`result.value: true`) with no offline data; the machine keeps the offline attachment, so the next online login carries the bag once the allowlist is published — no re-enrollment |
+| `/validate/offlinerefill` | defined refusal: HTTP 400, error code `905`, `Offline issuance is not allowed for this account`; no counter reserved and no refill credential rotated. The station keeps its current batch (valid until its signed expiry) and retries later |
+
+The directory-side reason (`offline issuance policy is not provisioned`,
+`token owner is outside offline allowlist`, `directory did not return a complete
+group list`, ...) is logged on the server only; it never travels to the station.
+An account outside the allowlist therefore never receives a **signed** batch,
+while no online path fails because of it — the signer can be enabled before the
+first flags document is published without breaking authentication or enrollment.
+
+Known boundary: the administrative machine fetch (`GET /machine/authitems`) is
+not covered by this contract; for an unentitled token that call fails instead of
+returning items. It is not part of any station issuance path.
+
+When triaging a station report, separate the two failures: **400/905 is a
+refusal** (the document or the group membership does not allow this owner to
+receive offline material) while a **masks-off server error is a fault of ours**
+(unreadable signing key, invalid `AMFA_OFFLINE_ED25519_TTL_SECONDS`, signing
+key id mismatch). A signing fault never produces an unsigned batch and never
+consumes counters, so the station keeps using its last valid snapshot.
 
 ## Release blockers
 

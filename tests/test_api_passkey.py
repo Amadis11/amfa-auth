@@ -44,6 +44,7 @@ from privacyidea.lib.crypto import CENSORED
 from privacyidea.lib.error import ResourceNotFoundError
 from privacyidea.lib.fido2.policy_action import FIDO2PolicyAction, PasskeyAction
 from privacyidea.lib.framework import get_app_config_value
+from privacyidea.lib.machine import list_machine_tokens
 from privacyidea.lib.policies.actions import PolicyAction
 from privacyidea.lib.policy import set_policy, SCOPE, delete_policy, LOGINMODE
 from privacyidea.lib.token import remove_token, init_token, get_tokens, get_one_token
@@ -962,6 +963,68 @@ class PasskeyAPITest(PasskeyAPITestBase):
                                         client_label="privacyidea-cp/1.1.1 Windows/Laptop-1231312",
                                         transaction_id=transaction_id, endpoint='/validate/check')
 
+        remove_token(spass_token.get_serial())
+        remove_token(passkey_serial)
+
+    def test_09b_offline_enrollment_without_entitlement_stays_online_only(self):
+        """Switching the signer on must not break the enrollment of a passkey (#1605).
+
+        Offline material is signed only for an account inside the published allowlist.
+        Without that document the enrollment itself still has to succeed: the passkey
+        stays enrolled and usable online, no offline bag is handed out, and the machine
+        keeps the offline attachment so a later online login can carry the bag once the
+        allowlist is published.
+        """
+        spass_token = init_token({"type": "spass", "pin": "1"}, self.user)
+        self.set_policy_with_cleanup("enroll_passkey_b", scope=SCOPE.AUTH,
+                                     action="enroll_via_multichallenge=PASSKEY, "
+                                            "enroll_via_multichallenge_text=enrollVia multichallenge test text")
+        self.set_policy_with_cleanup("enroll_passkey_offline_b", scope=SCOPE.AUTH,
+                                     action=f"{PolicyAction.ENROLL_VIA_MULTICHALLENGE_PASSKEY_OFFLINE}=true")
+        self.pk_headers.update({"User-Agent": "privacyidea-cp/1.1.1 Windows/Laptop-1231312"})
+        # The signer is on, but the signed deployment-flags document is not published.
+        unentitled = {"AMFA_OFFLINE_ED25519_ENABLED": "1",
+                      "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
+                      "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+                      POLICY_FILE: "", PUBLIC_KEY_FILE: "", EXPECTED_KID: ""}
+        with patch.dict(os.environ, unentitled), patch(
+                "privacyidea.lib.amfa_offline_signatures._load_key",
+                return_value=Ed25519PrivateKey.generate()):
+            with patch('privacyidea.lib.fido2.challenge.get_fido2_nonce') as get_nonce:
+                get_nonce.return_value = self.registration_challenge
+                with self.app.test_request_context('/validate/check', method='POST',
+                                                   data={"user": self.user.login, "pass": "1"}):
+                    res = self.app.full_dispatch_request()
+                    self.assertFalse(res.json["result"]["value"], res.json)
+                    self.assertEqual("CHALLENGE", res.json["result"]["authentication"], res.json)
+                    challenge = res.json["detail"]["multi_challenge"][0]
+                    transaction_id = challenge["transaction_id"]
+                    passkey_serial = res.json["detail"]["serial"]
+            data = {
+                "attestationObject": self.registration_attestation,
+                "clientDataJSON": self.registration_client_data,
+                "credential_id": self.credential_id,
+                "rawId": self.credential_id,
+                "authenticatorAttachment": self.authenticator_attachment,
+                FIDO2PolicyAction.RELYING_PARTY_ID: self.rp_id,
+                "transaction_id": transaction_id,
+                "type": "passkey",
+                "user": self.user.login,
+                "realm": self.user.realm,
+                "serial": passkey_serial
+            }
+            with self.app.test_request_context('/validate/check', method='POST', data=data,
+                                               headers=self.pk_headers):
+                res = self.app.full_dispatch_request()
+                # The enrollment succeeded although no offline material could be signed.
+                self._assert_result_value_true(res.json)
+                self.assertEqual("ACCEPT", res.json["result"]["authentication"], res.json)
+                self.assertNotIn("auth_items", res.json)
+        token = get_tokens(serial=passkey_serial)[0]
+        self.assertEqual(RolloutState.ENROLLED, token.rollout_state)
+        # The offline attachment stays, so the next online login can carry the bag once
+        # the allowlist is published - the passkey does not have to be enrolled again.
+        self.assertTrue(list_machine_tokens(serial=passkey_serial, application="offline"))
         remove_token(spass_token.get_serial())
         remove_token(passkey_serial)
 
