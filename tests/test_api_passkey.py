@@ -24,6 +24,16 @@ import os
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from unittest.mock import patch
 
+import shutil
+import tempfile
+from pathlib import Path
+from types import SimpleNamespace
+
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
+
+from privacyidea.lib.amfa_offline_entitlement import EXPECTED_KID, POLICY_FILE, PUBLIC_KEY_FILE
+
 from webauthn.helpers.structs import AttestationConveyancePreference
 
 from privacyidea.api.lib.utils import GENERIC_AUTH_FAILURE
@@ -731,15 +741,24 @@ class PasskeyAPITest(PasskeyAPITestBase):
         # Signed refill must return a COMPLETE FIDO snapshot with the effective
         # user/realm UV policy. Do not force "required" for a user whose
         # policy explicitly says "discouraged" (#80).
+        # A signed refill is a NEW offline issuance, so the server re-reads the
+        # signed deployment-flags allowlist and the owner's directory group
+        # online before signing (#1605). The gate and its fail-closed cases are
+        # pinned in tests/test_amfa_offline_entitlement.py; here only the
+        # directory lookup is stubbed, so the real entitlement code runs.
+        entitlement_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, entitlement_dir, ignore_errors=True)
         environment = {
             "AMFA_OFFLINE_ED25519_ENABLED": "1",
             "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
             "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+            **_signed_offline_issuance_env(entitlement_dir, [OFFLINE_FIDO2_GROUP]),
         }
         with patch.dict(os.environ, environment), patch(
             "privacyidea.lib.amfa_offline_signatures._load_key",
             return_value=Ed25519PrivateKey.generate(),
-        ):
+        ), patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+                 return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])):
             data = {"serial": serial, "refilltoken": refill_token, "pass": ""}
             with self.app.test_request_context('/validate/offlinerefill', method='POST',
                                                data=data, headers=headers):
@@ -749,6 +768,10 @@ class PasskeyAPITest(PasskeyAPITestBase):
                 self.assertEqual(envelope["alg"], "Ed25519")
                 signed_item = json.loads(base64.b64decode(envelope["signed_payload"], validate=True))
                 self.assertEqual(signed_item["serial"], serial)
+                # The refill is signed only with the grant the online entitlement
+                # check attached, in the v2 signed format (#1605).
+                self.assertEqual(signed_item["offline_grant"], "fido2")
+                self.assertEqual(signed_item["format_version"], 2)
                 self.assertEqual(signed_item["response"]["userVerification"], "discouraged")
                 self.assertEqual(signed_item["response"]["rpId"], self.rp_id)
                 self.assertIn("pubKey", signed_item["response"])
@@ -2593,4 +2616,52 @@ class PasskeyFailureClassificationTest(PasskeyAPITestBase):
             self._assert_owner_not_locked()
         finally:
             remove_token(serial)
+
+
+OFFLINE_FIDO2_GROUP = "AMFA-haslo-fido"
+OFFLINE_FLAGS_KEY_ID = "api-test-issuer"
+
+
+def _signed_offline_issuance_env(directory, fido2_groups):
+    """Provision the signed offline issuance policy used by the API tests.
+
+    Offline material is signed only for a route that the signed deployment-flags
+    document allows (#1605), so any test switching the signer on has to
+    provision that document. It is signed here with a throwaway RSA key whose
+    public half is pinned through the environment, the same way a deployment
+    does it.
+    """
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    document = {
+        "format_version": 1,
+        "type": "deployment-flags",
+        "valid_until": (datetime.now(timezone.utc).date() + timedelta(days=7)).isoformat(),
+        "flags": {"offline_fido2_groups": list(fido2_groups), "offline_hotp_groups": []},
+    }
+    payload = json.dumps(document, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False).encode("utf-8")
+    directory = Path(directory)
+    (directory / "flags.json").write_text(json.dumps({
+        "document": document,
+        "signature": {
+            "algorithm": "rsa-sha256",
+            "key_id": OFFLINE_FLAGS_KEY_ID,
+            "value": base64.b64encode(
+                key.sign(payload, padding.PKCS1v15(), hashes.SHA256())).decode("ascii"),
+        },
+    }), encoding="utf-8")
+    (directory / "public.pem").write_bytes(key.public_key().public_bytes(
+        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
+    return {POLICY_FILE: str(directory / "flags.json"),
+            PUBLIC_KEY_FILE: str(directory / "public.pem"),
+            EXPECTED_KID: OFFLINE_FLAGS_KEY_ID}
+
+
+def _directory_with_groups(groups):
+    """Stand-in for the AD resolver; only the reported group membership matters."""
+    return SimpleNamespace(
+        group_attribute_mapping_key="groups",
+        get_available_info_keys=lambda: ["groups"],
+        get_user_info=lambda _uid, attributes=None: {"groups": list(groups)},
+    )
 

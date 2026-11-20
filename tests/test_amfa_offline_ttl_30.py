@@ -24,6 +24,12 @@ class SignedOfflineTTL30Days(unittest.TestCase):
             "serial": "WAN-TEST",
             "refilltoken": "local-test-refill-only",
             "response": {"pubKey": "test", "credentialId": "test", "rpId": "test.local"},
+            # The signer only signs a batch that carries the issuance grant the
+            # online entitlement check attached (#1605). The TTL is the subject
+            # here, so the grant matching the FIDO2 response above is supplied
+            # directly; a missing or mismatched grant is pinned in
+            # tests/test_amfa_offline_ed25519_batches.py.
+            "offline_grant": "fido2",
         }
 
     def sign_with_ttl(self, ttl):
@@ -48,6 +54,8 @@ class SignedOfflineTTL30Days(unittest.TestCase):
     def test_exact_maximum_is_allowed(self):
         signed, item = self.sign_with_ttl(THIRTY_DAYS)
         self.assertEqual(item["expiration"], NOW + THIRTY_DAYS)
+        # The 30-day release contract is signed in the v2 envelope.
+        self.assertEqual(item["format_version"], 2)
         self.assertEqual(signed["alg"], "Ed25519")
 
     def test_exceeding_maximum_is_rejected(self):
