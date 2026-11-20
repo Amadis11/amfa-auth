@@ -58,5 +58,34 @@ jobs:
               for name,i,line in sorted(items,key=lambda x:(not bool(re.search(r"amfa|offline|fido|passkey|webauthn|privacyidea/lib",x[0],re.I)),x[0],x[1]))[:limit]:
                   print(f"AUDIT_{title} {name}:{i}: {line}")
           PY
+
+      - name: Separate inherited markers from AMFA changes
+        run: |
+          git fetch origin master --depth=1
+          python3 - <<'PY'
+          from pathlib import Path
+          from collections import Counter
+          import re, subprocess
+          marker=re.compile(r"(?i)\b(TODO|FIXME|HACK|TBD|WIP|XXX)\b")
+          ext={".py",".ts",".js",".cpp",".h",".sh",".ps1",".sql",".html",".vue"}
+          current=subprocess.check_output(["git","ls-files","-z"]).decode().split("\0")
+          upstream=set(subprocess.check_output(["git","ls-tree","-r","--name-only","origin/master"]).decode().splitlines())
+          delta=[]
+          for path in current:
+              p=Path(path)
+              if not p.is_file() or p.suffix not in ext: continue
+              now=p.read_text(encoding="utf-8-sig",errors="replace").splitlines()
+              before=[]
+              if path in upstream:
+                  proc=subprocess.run(["git","show","origin/master:"+path],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
+                  if proc.returncode==0: before=proc.stdout.decode("utf-8-sig","replace").splitlines()
+              baseline=Counter(x.strip() for x in before if marker.search(x))
+              for idx,line in enumerate(now,1):
+                  if marker.search(line) and baseline[line.strip()]<=0:
+                      delta.append((path,idx,line.strip()[:180]))
+                  elif marker.search(line):baseline[line.strip()]-=1
+          print("AMFA_NEW_DEBT_MARKERS",len(delta))
+          for path,line,text in delta[:100]:print(f"AMFA_NEW_MARKER {path}:{line}: {text}")
+          PY
       - name: Run Ruff
         run: ruff check privacyidea
