@@ -476,6 +476,13 @@ def _mysql_connection_args(url: URL) -> list[str]:
         args.extend(["-h", url.host])
     if url.port:
         args.extend(["-P", str(url.port)])
+    # PyMySQL's `ssl_disabled=true` explicitly disables TLS for the SQLAlchemy
+    # connection (e.g. a legacy MariaDB 10.11 test container with no TLS).
+    # Backup/restore must honor the same connection setting. Recent MariaDB
+    # CLI clients otherwise require SSL by default even when PyMySQL does not.
+    # Never disable TLS without an explicit flag in the configured database URI.
+    if str(url.query.get("ssl_disabled", "")).casefold() in ("1", "true", "yes"):
+        args.append("--skip-ssl")
     return args
 
 
