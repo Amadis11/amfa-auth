@@ -1,12 +1,18 @@
 # SPDX-FileCopyrightText: 2024 NetKnights GmbH <https://netknights.it>
 # SPDX-License-Identifier: AGPL-3.0-or-later
+import base64
 import datetime
 import json
 import logging
+import os
 import re
+import shutil
+import tempfile
 import time
 from base64 import b32encode
 from datetime import timezone
+from pathlib import Path
+from types import SimpleNamespace
 from urllib.parse import quote
 
 import mock
@@ -14,12 +20,14 @@ import responses
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from dateutil.tz import tzlocal
 from passlib.hash import argon2
 from testfixtures import Replace, test_datetime
 from testfixtures import log_capture
 
 from privacyidea.lib import _
+from privacyidea.lib.amfa_offline_entitlement import EXPECTED_KID, POLICY_FILE, PUBLIC_KEY_FILE
 from privacyidea.lib.applications.offline import REFILLTOKEN_LENGTH
 from privacyidea.lib.authcache import _hash_password
 from privacyidea.lib.challenge import get_challenges
@@ -69,6 +77,52 @@ from .api_validate_common import LDAPDirectory, OTPs, HOSTSFILE, DICT_FILE, setu
 
 
 REFILL_USER_AGENT = "privacyidea-cp/1.1.1"
+
+HOTP_OFFLINE_GROUP = "AMFA-hotp"
+OFFLINE_FLAGS_KEY_ID = "offline-test-issuer"
+
+
+def _signed_offline_flags_env(directory, hotp_groups, hotp_allowed=True):
+    """Provision the signed deployment-flags document a deployment publishes.
+
+    Offline issuance is authorised against this document (#1605), so any test
+    switching the signer on has to publish it next to the pinned public half.
+    """
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    document = {
+        "format_version": 1,
+        "type": "deployment-flags",
+        "valid_until": (datetime.datetime.now(timezone.utc).date()
+                        + datetime.timedelta(days=7)).isoformat(),
+        "flags": {"offline_hotp_allowed": bool(hotp_allowed),
+                  "offline_hotp_groups": list(hotp_groups)},
+    }
+    payload = json.dumps(document, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False).encode("utf-8")
+    directory = Path(directory)
+    (directory / "flags.json").write_text(json.dumps({
+        "document": document,
+        "signature": {
+            "algorithm": "rsa-sha256",
+            "key_id": OFFLINE_FLAGS_KEY_ID,
+            "value": base64.b64encode(
+                key.sign(payload, padding.PKCS1v15(), hashes.SHA256())).decode("ascii"),
+        },
+    }), encoding="utf-8")
+    (directory / "public.pem").write_bytes(key.public_key().public_bytes(
+        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
+    return {POLICY_FILE: str(directory / "flags.json"),
+            PUBLIC_KEY_FILE: str(directory / "public.pem"),
+            EXPECTED_KID: OFFLINE_FLAGS_KEY_ID}
+
+
+def _directory_with_groups(groups):
+    """Stand-in for the AD resolver; only the reported membership matters."""
+    return SimpleNamespace(
+        group_attribute_mapping_key="groups",
+        get_available_info_keys=lambda: ["groups"],
+        get_user_info=lambda _uid, attributes=None: {"groups": list(groups)},
+    )
 
 
 class AValidateOfflineTestCase(MyApiTestCase):
@@ -614,4 +668,95 @@ class AValidateOfflineTestCase(MyApiTestCase):
         self.assertNotEqual(refilltoken, replacement, "successful refill must rotate the secret")
         self.assertEqual(replacement, get_tokens(serial=serial)[0].get_tokeninfo("refilltoken"))
         remove_token(serial)
+
+
+    def test_05_refill_without_entitlement_is_a_defined_refusal(self):
+        """A refill is a NEW offline issuance, so it re-checks the published allowlist.
+
+        With the signer enabled and the signed deployment-flags document withdrawn or
+        not yet published, the station has to receive a defined refusal (not an HTTP
+        500), the token must stay untouched, and online authentication must keep
+        working (#1605).
+        """
+        serial = "AMFA-REFILL-UNENTITLED"
+        flags_directory = tempfile.mkdtemp()
+        try:
+            init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
+                       user=User("cornelius", self.realm1))
+            attach_token(serial, "offline", hostname="pippin",
+                         resolver_name="testresolver", options={"count": 3, "rounds": 1})
+            environment = {
+                "AMFA_OFFLINE_ED25519_ENABLED": "1",
+                "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
+                "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+                **_signed_offline_flags_env(flags_directory, [HOTP_OFFLINE_GROUP]),
+            }
+            # The allowlist is published and the owner is inside it: the online
+            # authentication hands out a signed HOTP batch with a refilltoken.
+            with mock.patch.dict(os.environ, environment), mock.patch(
+                    "privacyidea.lib.amfa_offline_signatures._load_key",
+                    return_value=Ed25519PrivateKey.generate()), mock.patch(
+                    "privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+                    return_value=_directory_with_groups([HOTP_OFFLINE_GROUP])):
+                token = get_tokens(serial=serial)[0]
+                success, _reason, values = token.get_multi_otp(count=1)
+                self.assertTrue(success)
+                password = "pin" + next(iter(values["otp"].values()))
+                with self.app.test_request_context("/validate/check", method="POST",
+                                                   data={"serial": serial, "pass": password},
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    online = self.app.full_dispatch_request()
+                self.assertTrue(online.json["result"]["value"], online.json)
+                envelope = online.json["auth_items"]["offline"][0]
+                signed_item = json.loads(base64.b64decode(envelope["signed_payload"], validate=True))
+                self.assertEqual("hotp", signed_item["offline_grant"])
+                self.assertEqual(2, signed_item["format_version"])
+                refilltoken = signed_item["refilltoken"]
+                db.session.expire_all()
+                before = get_tokens(serial=serial)[0]
+                counter_before = before.token.count
+                self.assertEqual(refilltoken, before.get_tokeninfo("refilltoken"))
+
+            # The published document is withdrawn (or never published yet) while the
+            # signer stays on: the stored refilltoken now meets the gate.
+            withdrawn = dict(environment, **{POLICY_FILE: "",
+                                            PUBLIC_KEY_FILE: "",
+                                            EXPECTED_KID: ""})
+            with mock.patch.dict(os.environ, withdrawn), mock.patch(
+                    "privacyidea.lib.amfa_offline_signatures._load_key",
+                    return_value=Ed25519PrivateKey.generate()):
+                with self.app.test_request_context("/validate/offlinerefill", method="POST",
+                                                   data={"serial": serial, "pass": "",
+                                                         "refilltoken": refilltoken},
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    refused = self.app.full_dispatch_request()
+                self.assertEqual(400, refused.status_code, refused.json)
+                self.assertFalse(refused.json["result"]["status"], refused.json)
+                error = refused.json["result"]["error"]
+                self.assertEqual(905, error["code"], error)
+                self.assertEqual("ERR905: Offline issuance is not allowed for this account",
+                                 error["message"])
+                # A defined refusal names the reason; the directory-side detail stays in the log.
+                self.assertNotIn("provisioned", error["message"])
+                self.assertNotIn("auth_items", refused.json)
+                # A refused refill must not reserve counters or rotate the credential.
+                db.session.expire_all()
+                after = get_tokens(serial=serial)[0]
+                self.assertEqual(counter_before, after.token.count,
+                                 "refused refill consumed offline counters")
+                self.assertEqual(refilltoken, after.get_tokeninfo("refilltoken"),
+                                 "refused refill rotated the refill credential")
+                # Online authentication is unaffected by the missing allowlist.
+                success, _reason, values = after.get_multi_otp(count=1)
+                self.assertTrue(success)
+                password = "pin" + next(iter(values["otp"].values()))
+                with self.app.test_request_context("/validate/check", method="POST",
+                                                   data={"serial": serial, "pass": password},
+                                                   environ_base={"REMOTE_ADDR": "192.168.0.2"}):
+                    online_after = self.app.full_dispatch_request()
+                self.assertTrue(online_after.json["result"]["value"], online_after.json)
+                self.assertNotIn("auth_items", online_after.json)
+        finally:
+            remove_token(serial)
+            shutil.rmtree(flags_directory, ignore_errors=True)
 
