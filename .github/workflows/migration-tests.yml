@@ -13,6 +13,7 @@ on:
   pull_request:
     types: [ opened, synchronize, reopened, ready_for_review ]
     branches:
+      - 'amfa'
       - 'master'
       - 'branch-*'
     paths:
@@ -65,7 +66,11 @@ jobs:
           # expression in image: is flagged by zizmor as an unpinned reference.
           # Each entry's db_url targets the right port.
           - label: MariaDB 10.11
-            db_url: "mysql+pymysql://privacyidea:privacyidea@127.0.0.1:3306/privacyidea_migration_test"
+            # Legacy 10.11 test container is deliberately non-TLS. MariaDB
+            # CLI 11.8 requires TLS by default, but SQLAlchemy does not.
+            # State the no-TLS exception explicitly in the test-only URI;
+            # production DB URLs preserve their own TLS policy.
+            db_url: "mysql+pymysql://privacyidea:privacyidea@127.0.0.1:3306/privacyidea_migration_test?ssl_disabled=true"
             pip_extra: "PyMySQL"
 
           - label: MariaDB 11
