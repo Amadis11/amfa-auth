@@ -53,9 +53,15 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
     validity = int(os.environ.get("AMFA_OFFLINE_ED25519_TTL_SECONDS", "2592000"))
     if not 60 <= validity <= 30 * 24 * 3600:
         raise OfflineSigningError("signed offline TTL must be between 60 seconds and 30 days")
+    # v2 ties offline entitlement to this issuer-signed batch.
+    grant = item.get("offline_grant")
+    response = item.get("response", {})
+    expected = "fido2" if ("credentialId" in response or "pubKey" in response) else "hotp"
+    if grant != expected:
+        raise OfflineSigningError("offline batch has no authenticated issuance grant")
     item = dict(item)
     item["expiration"] = int(time.time()) + validity
-    item["format_version"] = 1
+    item["format_version"] = 2
     payload = canonical_item(item)
     signature = private_key.sign(SIGNING_CONTEXT + payload)
     return {
