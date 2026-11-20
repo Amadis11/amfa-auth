@@ -28,5 +28,36 @@ jobs:
         # Pin the version so a new Ruff release that adds or tightens a lint
         # rule can't turn unrelated PRs red without an intentional bump here.
         run: python -m pip install "ruff==0.15.10"
+
+      - name: Audit tracked code comments and TODOs (inventory only)
+        run: |
+          python3 - <<'PY'
+          from collections import Counter
+          from pathlib import Path
+          import re, subprocess
+          names=subprocess.check_output(["git","ls-files","-z"]).decode("utf-8","replace").split("\0")
+          suffixes={".py",".ts",".tsx",".js",".jsx",".cpp",".h",".sh",".ps1",".sql",".html",".vue"}
+          marker=re.compile(r"(?i)\\b(TODO|FIXME|HACK|TBD|WIP|XXX)\\b")
+          weak=re.compile(r"(?i)\\b(unfinished|unimplemented|not implemented|not supported|obsolete|temporary workaround|placeholder|dead code)\\b")
+          rows=[]; markers=[]; weakrows=[]; count=0
+          for name in names:
+              p=Path(name)
+              if p.suffix not in suffixes or not p.is_file() or any(x in p.parts for x in ("node_modules","static_old","testdata","dist","build")):
+                  continue
+              count+=1
+              try: lines=p.read_text(encoding="utf-8-sig").splitlines()
+              except (UnicodeError,OSError): continue
+              for i,line in enumerate(lines,1):
+                  if marker.search(line):
+                      markers.append((name,i,line.strip()[:190]))
+                  if weak.search(line) and re.match(r"^\\s*(#|//|/\\*|\\*|--)",line):
+                      weakrows.append((name,i,line.strip()[:190]))
+          print("AUDIT_FILES",count,"MARKERS",len(markers),"STALE_WORDING",len(weakrows))
+          print("AUDIT_MARKER_BY_DIR",dict(Counter(x[0].split("/")[0] for x in markers)))
+          print("AUDIT_MARKER_BY_FILE",dict(Counter(x[0] for x in markers).most_common(35)))
+          for title,items,limit in (("MARKER",markers,150),("STALE_COMMENT",weakrows,120)):
+              for name,i,line in sorted(items,key=lambda x:(not bool(re.search(r"amfa|offline|fido|passkey|webauthn|privacyidea/lib",x[0],re.I)),x[0],x[1]))[:limit]:
+                  print(f"AUDIT_{title} {name}:{i}: {line}")
+          PY
       - name: Run Ruff
         run: ruff check privacyidea
