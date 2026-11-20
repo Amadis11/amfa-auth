@@ -37,8 +37,8 @@ jobs:
           import re, subprocess
           names=subprocess.check_output(["git","ls-files","-z"]).decode("utf-8","replace").split("\0")
           suffixes={".py",".ts",".tsx",".js",".jsx",".cpp",".h",".sh",".ps1",".sql",".html",".vue"}
-          marker=re.compile(r"(?i)\\b(TODO|FIXME|HACK|TBD|WIP|XXX)\\b")
-          weak=re.compile(r"(?i)\\b(unfinished|unimplemented|not implemented|not supported|obsolete|temporary workaround|placeholder|dead code)\\b")
+          marker=re.compile(r"(?i)\b(TODO|FIXME|HACK|TBD|WIP|XXX)\b")
+          weak=re.compile(r"(?i)\b(unfinished|unimplemented|not implemented|not supported|obsolete|temporary workaround|placeholder|dead code)\b")
           rows=[]; markers=[]; weakrows=[]; count=0
           for name in names:
               p=Path(name)
@@ -50,7 +50,7 @@ jobs:
               for i,line in enumerate(lines,1):
                   if marker.search(line):
                       markers.append((name,i,line.strip()[:190]))
-                  if weak.search(line) and re.match(r"^\\s*(#|//|/\\*|\\*|--)",line):
+                  if weak.search(line) and re.match(r"^\s*(#|//|/\*|\*|--)",line):
                       weakrows.append((name,i,line.strip()[:190]))
           print("AUDIT_FILES",count,"MARKERS",len(markers),"STALE_WORDING",len(weakrows))
           print("AUDIT_MARKER_BY_DIR",dict(Counter(x[0].split("/")[0] for x in markers)))
