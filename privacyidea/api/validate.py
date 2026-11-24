@@ -405,7 +405,11 @@ def offlinerefill():
             if isinstance(refilltoken_request, str):
                 # We need the options to pass the count and the rounds for the next offline OTP values,
                 # which could have changed in the meantime.
-                options = token_attachments[0].get("options")
+                from privacyidea.lib.applications.offline import refill_window_options
+                # which could have changed in the meantime. The window is the ACCEPTANCE window of the
+                # presented OTP, so one attachment's numbers must not be applied to a token whose other
+                # stations were configured differently (audit 20.11.2026, #1156).
+                options = refill_window_options(token_attachments)
                 try:
                     # atomic=True keeps the counter and the rotated refill token staged until the
                     # signature of the response material has been generated below.

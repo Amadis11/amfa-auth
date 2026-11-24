@@ -47,6 +47,37 @@ REFILLTOKEN_LENGTH = 40
 # SHA512 PBKDF2 iterations in one HTTP request while holding a token row lock.
 # Preserve the normal 1024 x 6549 batch but bound their combined CPU cost.
 MAX_OFFLINE_PBKDF2_WORK = 10_000_000
+# Window/rounds used when an offline attachment does not carry its own numbers.
+# These are the same defaults `get_refill()` applies to the acceptance window.
+DEFAULT_REFILL_COUNT = 100
+
+
+def refill_window_options(token_attachments):
+    """Return the count/rounds of a token's offline attachments, or refuse.
+
+    Each offline attachment carries the window its OWN station may use — the
+    user agent, the code length and the acceptance window of a refill all come
+    from it — but `get_refill()` applies the same numbers as the ACCEPTANCE
+    window of the presented OTP (`first_offline_counter = counter - count`).
+    Reading a single attachment therefore silently extends one station's policy
+    over every other station of the same token (audit 2026-11-20, #1156).
+
+    A plain HOTP refill does not name the requesting machine (webauthn/passkey
+    do, via the `refilltoken_<computer>` tokeninfo key), so a disagreement
+    cannot be resolved here. It is a configuration the server has to refuse as
+    a DEFINED error instead of picking one window and guessing.
+    """
+    if not token_attachments:
+        return {}
+    windows = set()
+    for attachment in token_attachments:
+        options = attachment.get("options") or {}
+        windows.add((int(options.get("count", DEFAULT_REFILL_COUNT)),
+                     int(options.get("rounds", ROUNDS))))
+    if len(windows) > 1:
+        raise ParameterError("Ambiguous offline refill: the offline attachments of this token "
+                             "disagree on count/rounds")
+    return token_attachments[0].get("options") or {}
 
 
 def _validate_otp_generation_work(amount, rounds):
