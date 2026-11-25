@@ -2686,11 +2686,15 @@ class PasskeyFailureClassificationTest(PasskeyAPITestBase):
 
 
 OFFLINE_FIDO2_GROUP = "AMFA-haslo-fido"
-def _directory_with_groups(groups):
-    """Stand-in for the AD resolver; only the reported group membership matters."""
+def _directory_with_groups(groups, username="hans"):
+    """Stand-in for the AD resolver; only the reported group membership matters.
+
+    The account name must be the one the token owner really has: the signed
+    subject binds the policy verdict to that name (#228).
+    """
     return SimpleNamespace(
         group_attribute_mapping_key="groups",
         get_available_info_keys=lambda: ["groups"],
-        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": "cornelius"},
+        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": username},
     )
 
