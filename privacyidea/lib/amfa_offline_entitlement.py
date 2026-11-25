@@ -12,6 +12,7 @@ This module deliberately does not perform any workstation-side group lookup.
 from __future__ import annotations
 
 import base64
+import copy
 import datetime
 import hashlib
 import json
@@ -193,26 +194,37 @@ def _require_enabled_path(path: str) -> None:
     else:
         _verify_pinned_signature(signature, canonical)
     flags = document.get("flags")
-    if not isinstance(flags, dict):
-        raise OfflineEntitlementError("missing deployment flag object")
+    if (not isinstance(flags, dict) or set(flags) - {"offline_fido2_allowed", "offline_hotp_allowed", "key_only_login_allowed"}
+            or any(type(value) is not bool for value in flags.values())):
+        raise OfflineEntitlementError("invalid deployment flag object")
     if flags.get("offline_" + path + "_allowed") is not True:
         raise OfflineEntitlementError("offline method disabled by deployment flags")
 
 
-def _policy_allows(user, grant: str) -> bool:
+def _policy_allows(user, grant: str, info: dict, token) -> bool:
     """Use the existing AUTH policy engine, including userinfo conditions."""
     from flask import g, has_request_context
     from privacyidea.lib.policy import PolicyClass, SCOPE
+    from privacyidea.lib.config import get_privacyidea_node
     from privacyidea.lib.policies.actions import PolicyAction
 
     action = PolicyAction.AMFA_OFFLINE_HOTP if grant == "hotp" else PolicyAction.AMFA_OFFLINE_FIDO2
     # No request context must not accidentally satisfy a client-scoped rule.
-    if not has_request_context():
+    if not has_request_context() or not g.get("client_ip"):
         return False
-    values = PolicyClass().get_action_values(
-        action, scope=SCOPE.AUTH, user_object=user,
-        client=g.get("client_ip") or "", user_agent=g.get("user_agent") or "",
-        unique=True)
+    # The owner is resolved by token UID. Evaluate userinfo against the same
+    # fresh resolver read, not cached membership or editable custom attributes.
+    current = copy.copy(user)
+    if isinstance(info.get("username"), str) and info["username"]:
+        current.login = current.used_login = info["username"]
+    current.get_specific_info = lambda keys=None: {
+        key: value for key, value in info.items() if keys is None or key in keys}
+    engine = PolicyClass()
+    policies = engine.match_policies(
+        scope=SCOPE.AUTH, action=action, active=True, user_object=current,
+        client=g.client_ip, pinode=get_privacyidea_node(),
+        serial=token.get_serial(), user_agent=g.get("user_agent") or "")
+    values = engine.extract_action_values(policies, action, unique=True)
     return set(values) == {"allow"}
 
 
@@ -233,7 +245,7 @@ def offline_grant_for_token(token) -> str:
         info = resolver.get_user_info(user.uid)
         if not isinstance(info, dict) or not info:
             raise OfflineEntitlementError("offline issuance owner could not be read")
-        if not _policy_allows(user, grant):
+        if not _policy_allows(user, grant, info, token):
             raise OfflineEntitlementError("offline issuance denied by owner policy")
     except OfflineEntitlementError:
         raise
