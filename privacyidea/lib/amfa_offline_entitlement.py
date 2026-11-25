@@ -158,7 +158,7 @@ def _verify_customer_ca_signature(document: dict, signature: dict, canonical: by
     _verify_signature_value(leaf.public_key(), signature, canonical)
 
 
-def _load_authorised_groups(path: str) -> list[str]:
+def _load_authorised_selectors(path: str) -> tuple[list[str], list[tuple[str, ...]]]:
     policy_path = os.environ.get(POLICY_FILE, "")
     if not policy_path or not os.path.isabs(policy_path):
         raise OfflineEntitlementError("offline issuance policy is not provisioned")
@@ -196,13 +196,29 @@ def _load_authorised_groups(path: str) -> list[str]:
     if not isinstance(flags, dict):
         raise OfflineEntitlementError("missing deployment flag object")
     group_key = "offline_hotp_groups" if path == "hotp" else "offline_fido2_groups"
-    groups = flags.get(group_key)
+    groups = flags.get(group_key, [])
     if (not isinstance(groups, list) or len(groups) > 32 or
             any(not isinstance(x, str) or not x or len(x) > 255 for x in groups)):
         raise OfflineEntitlementError("malformed offline group allowlist")
+    rule_key = "offline_hotp_rules" if path == "hotp" else "offline_fido2_rules"
+    raw_rules = flags.get(rule_key, [])
+    if not isinstance(raw_rules, list) or len(raw_rules) > 32:
+        raise OfflineEntitlementError("malformed offline rule allowlist")
+    rules = []
+    for entry in raw_rules:
+        if not isinstance(entry, str) or not entry or len(entry.encode("utf-8")) > 255:
+            raise OfflineEntitlementError("malformed offline selector")
+        source, sep, value = entry.partition(":")
+        parts = value.split("/", 2)
+        if (not sep or source not in ("realm", "user", "group")
+                or len(parts) != (1 if source == "realm" else 3)
+                or any(not part or part != part.strip() for part in parts)
+                or any(ord(ch) < 32 or ord(ch) == 127 for ch in entry)):
+            raise OfflineEntitlementError("malformed offline selector")
+        rules.append((source, *parts))
     if path == "hotp" and flags.get("offline_hotp_allowed") is not True:
-        return []
-    return groups
+        return [], []
+    return groups, rules
 
 
 def _same_group(member: str, permitted: str) -> bool:
@@ -215,17 +231,18 @@ def _same_group(member: str, permitted: str) -> bool:
 
 
 def offline_grant_for_token(token) -> str:
-    """Return signed grant kind only when the token owner is in an allowed AD group.
+    """Authorize the resolved token owner during online issuance, never on CP.
 
-    Always fetch group membership from the resolver in the ONLINE issuance call.
-    A cache or a workstation-provided name must not grant offline access.
+    Explicit rules are scoped to the authoritative realm/resolver/UID, not a
+    caller-provided username. A realm grant includes all its resolved users.
+    Legacy group entries retain their existing semantics.
     """
     kind = str(getattr(token, "type", "")).lower()
     grant = "hotp" if kind == "hotp" else ("fido2" if kind in ("webauthn", "passkey") else "")
     if not grant:
         raise OfflineEntitlementError("token kind cannot be used offline")
-    allowed = _load_authorised_groups(grant)
-    if not allowed:
+    allowed, rules = _load_authorised_selectors(grant)
+    if not allowed and not rules:
         raise OfflineEntitlementError("offline access not enabled for token owner")
     user = token.user
     if user is None or not user.resolver or not user.uid:
@@ -233,16 +250,30 @@ def offline_grant_for_token(token) -> str:
     resolver = get_resolver_object(user.resolver)
     if resolver is None:
         raise OfflineEntitlementError("offline issuance directory resolver is unavailable")
+    realm = getattr(user, "realm", "")
+    scoped = [rule for rule in rules if rule[1] == realm]
+    direct = any(rule[0] == "realm" or (
+        rule[0] == "user" and rule[2] == user.resolver and rule[3] == str(user.uid))
+        for rule in scoped)
+    # Verify current existence against the actual resolver even for explicit
+    # user/realm rights. No cache or local Windows username grants access.
+    try:
+        info = resolver.get_user_info(user.uid)
+    except Exception as error:
+        raise OfflineEntitlementError("offline issuance resolver lookup failed") from error
+    if not isinstance(info, dict) or not info:
+        raise OfflineEntitlementError("offline issuance owner could not be read")
+    if direct:
+        LOG.debug("AMFA offline %s issuance: explicit owner or realm entitlement", grant)
+        return grant
+    allowed = allowed + [rule[3] for rule in scoped
+                         if rule[0] == "group" and rule[2] == user.resolver]
+    if not allowed:
+        raise OfflineEntitlementError("token owner is outside offline allowlist")
     group_key = getattr(resolver, "group_attribute_mapping_key", None) or "groups"
     if group_key not in resolver.get_available_info_keys():
-        raise OfflineEntitlementError("resolver cannot return AD group membership")
-    # A direct lookup rather than cached_user_info prevents a stale user-cache
-    # membership verdict from authorising a new offline batch.
-    # LDAP recursive group filters may interpolate other mapped attributes
-    # (e.g. {username}); requesting only [groups] strips those fields before
-    # building the group filter and silently yields empty membership.
-    info = resolver.get_user_info(user.uid)
-    members = info.get(group_key) if isinstance(info, dict) else None
+        raise OfflineEntitlementError("resolver cannot return group membership")
+    members = info.get(group_key)
     if not isinstance(members, (list, tuple)):
         raise OfflineEntitlementError("directory did not return a complete group list")
     if not all(isinstance(x, str) for x in members):
@@ -250,5 +281,5 @@ def offline_grant_for_token(token) -> str:
     if not any(_same_group(member, allowed_group)
                for member in members for allowed_group in allowed):
         raise OfflineEntitlementError("token owner is outside offline allowlist")
-    LOG.debug("AMFA offline %s issuance: AD entitlement checked for token owner", grant)
+    LOG.debug("AMFA offline %s issuance: resolver group entitlement checked", grant)
     return grant
