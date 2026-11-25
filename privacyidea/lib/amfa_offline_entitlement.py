@@ -71,7 +71,11 @@ def require_owner_policy(token, grant: str, *, expected_sid: str | None = None) 
         resolver = get_resolver_object(user.resolver)
         if resolver is None:
             raise OfflineEntitlementError("offline issuance resolver is unavailable")
-        info = resolver.get_user_info(user.uid)
+        # LDAP get_user_info is cached; a revoked group must not mint a new
+        # grant from an earlier directory observation. SQL and passwd resolvers
+        # implement direct get_user_info and remain supported without AD.
+        fresh_lookup = getattr(resolver, "get_user_info_uncached", None)
+        info = fresh_lookup(user.uid) if callable(fresh_lookup) else resolver.get_user_info(user.uid)
         if not isinstance(info, dict) or not info:
             raise OfflineEntitlementError("offline issuance owner could not be read")
         if not _policy_allows(user, grant, info, token):

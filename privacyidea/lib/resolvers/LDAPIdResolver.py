@@ -862,6 +862,9 @@ class IdResolver(UserIdResolver):
     @track_resolver_op("get_user_info")
     @cache
     def get_user_info(self, user_id: int or str, attributes: list[str] = None) -> dict:
+        return self.get_user_info_uncached(user_id, attributes)
+
+    def get_user_info_uncached(self, user_id: int or str, attributes: list[str] = None) -> dict:
         """
         This function returns all user info for a given userid/object.
 
