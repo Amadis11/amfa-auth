@@ -38,7 +38,7 @@ class SignedOfflineTTL30Days(unittest.TestCase):
                 os.environ.pop("AMFA_OFFLINE_ED25519_TTL_SECONDS", None)
             else:
                 os.environ["AMFA_OFFLINE_ED25519_TTL_SECONDS"] = str(ttl)
-            with patch.object(signatures.time, "time", return_value=NOW):
+            with patch.object(signatures.time, "time_ns", return_value=NOW * 1_000_000_000):
                 signed = signatures.sign_item(self.offline_item, self.private_key, "test-key")
         item = json.loads(base64.b64decode(signed["signed_payload"]))
         return signed, item

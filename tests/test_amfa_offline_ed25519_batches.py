@@ -60,24 +60,14 @@ class SignedOfflineBatchTests(unittest.TestCase):
             TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"hash0", b"evil0"))
 
     def test_cpp_cross_language_fixture(self):
-        # Exact bytes checked by tests/ParserTests/main.cpp in the Windows repo.
-        # Freeze time so the issued expiry is 1800000000 (test only).
-        # Keep the pre-v2 signed v1 fixture to verify parsing/migration.
-        # The issuer MUST NOT produce it via sign_item anymore.
-        legacy = dict(TEST_ITEM)
-        legacy.pop("offline_grant")
-        legacy.update({"expiration": 1800000000, "format_version": 1})
-        blob = canonical_item(legacy)
-        envelope = {
-            "signed_payload": base64.b64encode(blob).decode("ascii"),
-            "signature": base64.b64encode(TEST_KEY.sign(SIGNING_CONTEXT + blob)).decode("ascii"),
-        }
+        # Exact v2 bytes verified by the Windows and portable CP harnesses.
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
+            with patch.object(_module.time, "time_ns", return_value=1799996400 * 1_000_000_000):
+                envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         self.assertEqual(envelope["signed_payload"],
-            "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MSwicmVmaWxsdG9rZW4iOi"
-            "JyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwi"
-            "OiJURVNUMSIsInVzZXJuYW1lIjoiYWxpY2UifQ==")
+                         "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MiwiaXNzdWVkX2F0X3VzIjoxNzk5OTk2NDAwMDAwMDAwLCJvZmZsaW5lX2dyYW50IjoiaG90cCIsInJlZmlsbHRva2VuIjoicmVmaWxsLXRlc3QiLCJyZXNwb25zZSI6eyIwIjoiaGFzaDAiLCIxIjoiaGFzaDEifSwic2VyaWFsIjoiVEVTVDEiLCJ1c2VybmFtZSI6ImFsaWNlIn0=")
         self.assertEqual(envelope["signature"],
-            "t94EvyT0n8YghZrzFSHp9A/5+Jf5h5e7yihfRFz/IioNvRNeM7/j0UdfLN5zjHpOD7T6M17sgu8vXgcGosAAAw==")
+                         "7R2MrYym4TVB2Aw6XhfEG8k6RaRRC4hovosg+ZUttMi8xVT9vQ3i9eM+BDyaFpdFXKIsTIU77pT25Jhi90UjCw==")
 
     def test_issuer_time_is_signed_and_not_caller_controlled(self):
         now_ns = 1_800_000_000_123_456_000
