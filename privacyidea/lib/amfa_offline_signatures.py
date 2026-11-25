@@ -60,7 +60,11 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
     if grant != expected:
         raise OfflineSigningError("offline batch has no authenticated issuance grant")
     item = dict(item)
-    item["expiration"] = int(time.time()) + validity
+    # One server clock sample binds the issuance order and the signed expiry.
+    # Never accept an issuance timestamp supplied by the caller.
+    issued_at_us = time.time_ns() // 1000
+    item["issued_at_us"] = issued_at_us
+    item["expiration"] = issued_at_us // 1_000_000 + validity
     item["format_version"] = 2
     payload = canonical_item(item)
     signature = private_key.sign(SIGNING_CONTEXT + payload)
