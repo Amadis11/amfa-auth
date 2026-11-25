@@ -146,6 +146,8 @@ class PolicyAction:
     ENROLL_VIA_MULTICHALLENGE_TEMPLATE = "enroll_via_multichallenge_template"
     ENROLL_VIA_MULTICHALLENGE_OPTIONAL = "enroll_via_multichallenge_optional"
     ENROLL_VIA_MULTICHALLENGE_PASSKEY_OFFLINE = "enroll_via_multichallenge_passkey_offline"
+    AMFA_OFFLINE_FIDO2 = "amfa_offline_fido2"
+    AMFA_OFFLINE_HOTP = "amfa_offline_hotp"
     CLIENTTYPE = "clienttype"
     REGISTERBODY = "registration_body"
     RESETALLTOKENS = "reset_all_user_tokens"
