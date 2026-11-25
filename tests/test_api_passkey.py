@@ -27,6 +27,11 @@ from unittest.mock import patch
 import shutil
 import tempfile
 from pathlib import Path
+
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from amfa_offline_lab_anchor import LAB_ANCHOR  # noqa: E402
 from types import SimpleNamespace
 
 from cryptography.hazmat.primitives import hashes, serialization
@@ -753,11 +758,14 @@ class PasskeyAPITest(PasskeyAPITestBase):
             "AMFA_OFFLINE_ED25519_ENABLED": "1",
             "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
             "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+            "AMFA_OFFLINE_ED25519_ANCHOR_FILE": "/test-only/anchor.json",
         }
         with patch.dict(os.environ, environment), patch(
             "privacyidea.lib.amfa_offline_signatures._load_key",
             return_value=Ed25519PrivateKey.generate(),
-        ), patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+        ), patch("privacyidea.lib.amfa_offline_signatures._load_anchor",
+                 return_value=dict(LAB_ANCHOR)), patch(
+            "privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
                  return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])), patch(
                      "privacyidea.lib.amfa_offline_subject.offline_subject",
                      side_effect=lambda user, resolver: {"account_sid": "S-1-5-21-1-2-3-1001",
@@ -990,10 +998,13 @@ class PasskeyAPITest(PasskeyAPITestBase):
         # The signer is on, but no native offline allow policy exists.
         unentitled = {"AMFA_OFFLINE_ED25519_ENABLED": "1",
                       "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
-                      "AMFA_OFFLINE_ED25519_KEY_ID": "test-only"}
+                      "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+                      "AMFA_OFFLINE_ED25519_ANCHOR_FILE": "/test-only/anchor.json"}
         with patch.dict(os.environ, unentitled), patch(
                 "privacyidea.lib.amfa_offline_signatures._load_key",
-                return_value=Ed25519PrivateKey.generate()):
+                return_value=Ed25519PrivateKey.generate()), patch(
+                "privacyidea.lib.amfa_offline_signatures._load_anchor",
+                return_value=dict(LAB_ANCHOR)):
             with patch('privacyidea.lib.fido2.challenge.get_fido2_nonce') as get_nonce:
                 get_nonce.return_value = self.registration_challenge
                 with self.app.test_request_context('/validate/check', method='POST',
@@ -2686,11 +2697,15 @@ class PasskeyFailureClassificationTest(PasskeyAPITestBase):
 
 
 OFFLINE_FIDO2_GROUP = "AMFA-haslo-fido"
-def _directory_with_groups(groups):
-    """Stand-in for the AD resolver; only the reported group membership matters."""
+def _directory_with_groups(groups, username="hans"):
+    """Stand-in for the AD resolver; only the reported group membership matters.
+
+    The account name must be the one the token owner really has: the signed
+    subject binds the policy verdict to that name (#228).
+    """
     return SimpleNamespace(
         group_attribute_mapping_key="groups",
         get_available_info_keys=lambda: ["groups"],
-        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": "cornelius"},
+        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": username},
     )
 

@@ -12,6 +12,11 @@ import time
 from base64 import b32encode
 from datetime import timezone
 from pathlib import Path
+
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from amfa_offline_lab_anchor import LAB_ANCHOR  # noqa: E402
 from types import SimpleNamespace
 from urllib.parse import quote
 
@@ -546,6 +551,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
                 "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
+                "AMFA_OFFLINE_ED25519_ANCHOR_FILE": "/test-only/anchor.json",
             }
             set_policy("amfa-test-offline-hotp", scope=SCOPE.AUTH, realm=self.realm1,
                        user="cornelius", action="amfa_offline_hotp=allow")
@@ -554,6 +560,8 @@ class AValidateOfflineTestCase(MyApiTestCase):
             with mock.patch.dict(os.environ, environment), mock.patch(
                     "privacyidea.lib.amfa_offline_signatures._load_key",
                     return_value=Ed25519PrivateKey.generate()), mock.patch(
+                    "privacyidea.lib.amfa_offline_signatures._load_anchor",
+                    return_value=dict(LAB_ANCHOR)), mock.patch(
                     "privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
                     return_value=_directory_with_groups([HOTP_OFFLINE_GROUP])), mock.patch(
                     "privacyidea.lib.amfa_offline_subject.offline_subject",

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import os
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -14,6 +15,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 # which imports Flask/SQLAlchemy dependencies irrelevant to this crypto test.
 import importlib.util
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from amfa_offline_lab_anchor import anchor_environment  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location(
     "amfa_offline_signatures",
@@ -155,11 +159,14 @@ class SignedOfflineBatchTests(unittest.TestCase):
                     serialization.PrivateFormat.PKCS8,
                     serialization.NoEncryption(),
                 ))
+            # #1692: podpisywanie wlacza sie tylko z kotwica podpisana kluczem root.
+            # Test mieli wlasna pare root i podpisuje nia kotwice dla swojego klucza.
             environment = {
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
                 "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
             }
+            environment.update(anchor_environment(tmp, TEST_KEY, "test-only"))
             with patch.dict(os.environ, environment):
                 wrapped = signed_auth_items({"offline": [
                     dict(TEST_ITEM),
