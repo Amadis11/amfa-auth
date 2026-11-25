@@ -761,6 +761,7 @@ class PasskeyAPITest(PasskeyAPITestBase):
                  return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])):
             data = {"serial": serial, "refilltoken": refill_token, "pass": ""}
             with self.app.test_request_context('/validate/offlinerefill', method='POST',
+                                               environ_base={'REMOTE_ADDR': '10.0.0.17'},
                                                data=data, headers=headers):
                 res = self.app.full_dispatch_request()
                 self._assert_result_value_true(res.json)
