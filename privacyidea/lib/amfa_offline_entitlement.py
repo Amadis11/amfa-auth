@@ -25,7 +25,11 @@ def _policy_allows(user, grant: str, info: dict, token) -> bool:
     from privacyidea.lib.config import get_privacyidea_node
     from privacyidea.lib.policies.actions import PolicyAction
 
-    action = PolicyAction.AMFA_OFFLINE_HOTP if grant == "hotp" else PolicyAction.AMFA_OFFLINE_FIDO2
+    action = {
+        "hotp": PolicyAction.AMFA_OFFLINE_HOTP,
+        "fido2": PolicyAction.AMFA_OFFLINE_FIDO2,
+        "key_only": PolicyAction.AMFA_KEY_ONLY_LOGIN,
+    }[grant]
     # No request context must not accidentally satisfy a client-scoped rule.
     if not has_request_context() or not g.get("client_ip"):
         return False
@@ -51,10 +55,19 @@ def offline_grant_for_token(token) -> str:
     grant = "hotp" if kind == "hotp" else ("fido2" if kind in ("webauthn", "passkey") else "")
     if not grant:
         raise OfflineEntitlementError("token kind cannot be used offline")
+    require_owner_policy(token, grant)
+    LOG.debug("AMFA offline %s issuance: owner policy allowed", grant)
+    return grant
+
+
+def require_owner_policy(token, grant: str, *, expected_sid: str | None = None) -> None:
+    """Evaluate an explicit allow for the actual token owner, never the supplied login."""
     try:
         user = token.user
         if user is None or not user.resolver or not user.uid or not user.realm or not user.login:
             raise OfflineEntitlementError("token has no resolved owner")
+        if expected_sid is not None and str(user.uid).casefold() != expected_sid.casefold():
+            raise OfflineEntitlementError("token owner SID mismatch")
         resolver = get_resolver_object(user.resolver)
         if resolver is None:
             raise OfflineEntitlementError("offline issuance resolver is unavailable")
@@ -67,5 +80,4 @@ def offline_grant_for_token(token) -> str:
         raise
     except Exception as error:
         raise OfflineEntitlementError("offline issuance policy or resolver failed") from error
-    LOG.debug("AMFA offline %s issuance: owner policy allowed", grant)
-    return grant
+
