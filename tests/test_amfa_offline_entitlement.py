@@ -3,7 +3,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from privacyidea.lib.amfa_offline_entitlement import OfflineEntitlementError, offline_grant_for_token
+from privacyidea.lib.amfa_offline_entitlement import OfflineEntitlementError, offline_grant_for_token, require_owner_policy
 
 
 class TestOfflineEntitlement(unittest.TestCase):
@@ -61,3 +61,14 @@ class TestOfflineEntitlement(unittest.TestCase):
         self.hotp.type = "totp"
         with self.assertRaises(OfflineEntitlementError):
             offline_grant_for_token(self.hotp)
+
+    def test_key_only_policy_is_independent_of_fido2_offline(self):
+        self.policy.side_effect = lambda user, grant, info, token: grant == "key_only"
+        require_owner_policy(self.fido, "key_only", expected_sid=self.user.uid)
+        with self.assertRaises(OfflineEntitlementError):
+            offline_grant_for_token(self.fido)
+
+    def test_key_only_cannot_use_another_account_sid(self):
+        with self.assertRaises(OfflineEntitlementError):
+            require_owner_policy(self.fido, "key_only", expected_sid="S-1-5-21-999")
+        self.policy.assert_not_called()
