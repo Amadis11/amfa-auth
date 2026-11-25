@@ -758,7 +758,10 @@ class PasskeyAPITest(PasskeyAPITestBase):
             "privacyidea.lib.amfa_offline_signatures._load_key",
             return_value=Ed25519PrivateKey.generate(),
         ), patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                 return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])):
+                 return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])), patch(
+                     "privacyidea.lib.amfa_offline_subject.offline_subject",
+                     side_effect=lambda user, resolver: {"account_sid": "S-1-5-21-1-2-3-1001",
+                                                         "realm": user.realm}):
             data = {"serial": serial, "refilltoken": refill_token, "pass": ""}
             with self.app.test_request_context('/validate/offlinerefill', method='POST',
                                                environ_base={'REMOTE_ADDR': '10.0.0.17'},
@@ -770,9 +773,11 @@ class PasskeyAPITest(PasskeyAPITestBase):
                 signed_item = json.loads(base64.b64decode(envelope["signed_payload"], validate=True))
                 self.assertEqual(signed_item["serial"], serial)
                 # The refill is signed only with the grant the online entitlement
-                # check attached, in the v2 signed format (#1605).
+                # check attached, in the v3 signed format (#228).
                 self.assertEqual(signed_item["offline_grant"], "fido2")
-                self.assertEqual(signed_item["format_version"], 2)
+                self.assertEqual(signed_item["format_version"], 3)
+                self.assertEqual(signed_item["account_sid"], "S-1-5-21-1-2-3-1001")
+                self.assertTrue(signed_item["realm"])
                 self.assertEqual(signed_item["response"]["userVerification"], "discouraged")
                 self.assertEqual(signed_item["response"]["rpId"], self.rp_id)
                 self.assertIn("pubKey", signed_item["response"])
@@ -2686,6 +2691,6 @@ def _directory_with_groups(groups):
     return SimpleNamespace(
         group_attribute_mapping_key="groups",
         get_available_info_keys=lambda: ["groups"],
-        get_user_info=lambda _uid, attributes=None: {"groups": list(groups)},
+        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": "cornelius"},
     )
 

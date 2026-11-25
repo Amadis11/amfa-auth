@@ -77,7 +77,7 @@ def _directory_with_groups(groups):
     return SimpleNamespace(
         group_attribute_mapping_key="groups",
         get_available_info_keys=lambda: ["groups"],
-        get_user_info=lambda _uid, attributes=None: {"groups": list(groups)},
+        get_user_info_uncached=lambda _uid: {"groups": list(groups), "username": "cornelius"},
     )
 
 
@@ -555,7 +555,10 @@ class AValidateOfflineTestCase(MyApiTestCase):
                     "privacyidea.lib.amfa_offline_signatures._load_key",
                     return_value=Ed25519PrivateKey.generate()), mock.patch(
                     "privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                    return_value=_directory_with_groups([HOTP_OFFLINE_GROUP])):
+                    return_value=_directory_with_groups([HOTP_OFFLINE_GROUP])), mock.patch(
+                    "privacyidea.lib.amfa_offline_subject.offline_subject",
+                    side_effect=lambda user, resolver: {"account_sid": "S-1-5-21-1-2-3-1001",
+                                                        "realm": user.realm}):
                 token = get_tokens(serial=serial)[0]
                 success, _reason, values = token.get_multi_otp(count=1)
                 self.assertTrue(success)
@@ -568,7 +571,9 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 envelope = online.json["auth_items"]["offline"][0]
                 signed_item = json.loads(base64.b64decode(envelope["signed_payload"], validate=True))
                 self.assertEqual("hotp", signed_item["offline_grant"])
-                self.assertEqual(2, signed_item["format_version"])
+                self.assertEqual(3, signed_item["format_version"])
+                self.assertEqual("S-1-5-21-1-2-3-1001", signed_item["account_sid"])
+                self.assertEqual(self.realm1, signed_item["realm"])
                 refilltoken = signed_item["refilltoken"]
                 db.session.expire_all()
                 before = get_tokens(serial=serial)[0]

@@ -14,6 +14,7 @@ import base64
 import json
 import logging
 import os
+import re
 import time
 
 from cryptography.hazmat.primitives import serialization
@@ -22,6 +23,16 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 LOG = logging.getLogger(__name__)
 SIGNING_CONTEXT = b"AMFA-OFFLINE-BATCH-v1\x00"
 ALG = "Ed25519"
+_AD_SID = re.compile(r"S-1-5-21-(?:[0-9]{1,10}-){3}[0-9]{1,10}", re.ASCII)
+
+
+def validate_subject(sid, realm) -> None:
+    if (not isinstance(sid, str) or not _AD_SID.fullmatch(sid)
+            or not isinstance(realm, str) or not realm or realm != realm.strip()):
+        raise ValueError("offline issuance requires a resolved AD SID and realm")
+    parts = sid.split("-")[4:]
+    if any(str(int(part)) != part or int(part) > 0xffffffff for part in parts):
+        raise ValueError("offline issuance requires a canonical AD SID")
 
 
 class OfflineSigningError(RuntimeError):
@@ -53,19 +64,28 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str) -> dict:
     validity = int(os.environ.get("AMFA_OFFLINE_ED25519_TTL_SECONDS", "2592000"))
     if not 60 <= validity <= 30 * 24 * 3600:
         raise OfflineSigningError("signed offline TTL must be between 60 seconds and 30 days")
-    # v2 ties offline entitlement to this issuer-signed batch.
+    # v3 binds entitlement and immutable AD subject to the signed batch.
     grant = item.get("offline_grant")
     response = item.get("response", {})
     expected = "fido2" if ("credentialId" in response or "pubKey" in response) else "hotp"
     if grant != expected:
         raise OfflineSigningError("offline batch has no authenticated issuance grant")
     item = dict(item)
+    # v3: the signed subject (AD SID + realm + canonical account name) is part of
+    # the batch, so it must be canonical BEFORE the signature is computed. The
+    # workstation verifies these bytes verbatim; it never re-derives them.
+    try:
+        validate_subject(item.get("account_sid"), item.get("realm"))
+    except ValueError as error:
+        raise OfflineSigningError(str(error)) from error
+    if not isinstance(item.get("username"), str) or not item["username"]:
+        raise OfflineSigningError("offline batch missing canonical account name")
     # One server clock sample binds the issuance order and the signed expiry.
     # Never accept an issuance timestamp supplied by the caller.
     issued_at_us = time.time_ns() // 1000
     item["issued_at_us"] = issued_at_us
     item["expiration"] = issued_at_us // 1_000_000 + validity
-    item["format_version"] = 2
+    item["format_version"] = 3
     payload = canonical_item(item)
     signature = private_key.sign(SIGNING_CONTEXT + payload)
     return {

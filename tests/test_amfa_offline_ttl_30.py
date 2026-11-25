@@ -30,6 +30,7 @@ class SignedOfflineTTL30Days(unittest.TestCase):
             # directly; a missing or mismatched grant is pinned in
             # tests/test_amfa_offline_ed25519_batches.py.
             "offline_grant": "fido2",
+            "username": "alice", "realm": "a.test", "account_sid": "S-1-5-21-1-2-3-1001",
         }
 
     def sign_with_ttl(self, ttl):
@@ -54,8 +55,8 @@ class SignedOfflineTTL30Days(unittest.TestCase):
     def test_exact_maximum_is_allowed(self):
         signed, item = self.sign_with_ttl(THIRTY_DAYS)
         self.assertEqual(item["expiration"], NOW + THIRTY_DAYS)
-        # The 30-day release contract is signed in the v2 envelope.
-        self.assertEqual(item["format_version"], 2)
+        # The 30-day release contract is signed in the v3 envelope.
+        self.assertEqual(item["format_version"], 3)
         self.assertEqual(signed["alg"], "Ed25519")
 
     def test_exceeding_maximum_is_rejected(self):
