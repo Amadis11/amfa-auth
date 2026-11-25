@@ -2834,6 +2834,11 @@ def get_static_policy_definitions(scope=None):
                 'value': ['allow', 'deny'],
                 'desc': _('Allow or deny issuing signed FIDO2 offline data to the resolved token owner.')
             },
+            PolicyAction.AMFA_KEY_ONLY_LOGIN: {
+                'type': 'str',
+                'value': ['allow', 'deny'],
+                'desc': _('Allow or deny key-only password vault access for the resolved FIDO2 token owner.')
+            },
             PolicyAction.AMFA_OFFLINE_HOTP: {
                 'type': 'str',
                 'value': ['allow', 'deny'],
