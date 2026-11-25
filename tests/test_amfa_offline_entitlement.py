@@ -46,6 +46,24 @@ class TestOfflineEntitlement(unittest.TestCase):
         with self.assertRaises(OfflineEntitlementError):
             offline_grant_for_token(self.fido)
 
+    def test_cached_ldap_allow_does_not_mint_a_new_grant(self):
+        self.resolver.get_user_info = lambda *_: self.fail("cached lookup must not be used")
+        self.resolver.get_user_info_uncached = lambda *_: {"username": "operator", "groups": []}
+        self.policy.side_effect = lambda _user, _grant, info, _token: "offline" in info["groups"]
+        with self.assertRaises(OfflineEntitlementError):
+            offline_grant_for_token(self.fido)
+        self.policy.assert_called_once_with(
+            self.user, "fido2", {"username": "operator", "groups": []}, self.fido)
+
+    def test_failed_fresh_lookup_does_not_fall_back_to_cache(self):
+        self.resolver.get_user_info = lambda *_: self.fail("cached lookup must not be used")
+        def unavailable(*_):
+            raise RuntimeError("LDAP unavailable")
+        self.resolver.get_user_info_uncached = unavailable
+        with self.assertRaises(OfflineEntitlementError):
+            offline_grant_for_token(self.fido)
+        self.policy.assert_not_called()
+
     def test_owner_deleted(self):
         self.resolver.get_user_info = lambda *_: {}
         with self.assertRaises(OfflineEntitlementError):
