@@ -747,13 +747,16 @@ class PasskeyAPITest(PasskeyAPITestBase):
         # online before signing (#1605). The gate and its fail-closed cases are
         # pinned in tests/test_amfa_offline_entitlement.py; here only the
         # directory lookup is stubbed, so the real entitlement code runs.
+        self.set_policy_with_cleanup("amfa-test-offline-fido2", scope=SCOPE.AUTH,
+                                     realm=self.user.realm, user=self.user.login,
+                                     action="amfa_offline_fido2=allow")
         entitlement_dir = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, entitlement_dir, ignore_errors=True)
         environment = {
             "AMFA_OFFLINE_ED25519_ENABLED": "1",
             "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
             "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
-            **_signed_offline_issuance_env(entitlement_dir, [OFFLINE_FIDO2_GROUP]),
+            **_signed_offline_issuance_env(entitlement_dir),
         }
         with patch.dict(os.environ, environment), patch(
             "privacyidea.lib.amfa_offline_signatures._load_key",
@@ -2685,7 +2688,7 @@ OFFLINE_FIDO2_GROUP = "AMFA-haslo-fido"
 OFFLINE_FLAGS_KEY_ID = "api-test-issuer"
 
 
-def _signed_offline_issuance_env(directory, fido2_groups):
+def _signed_offline_issuance_env(directory):
     """Provision the signed offline issuance policy used by the API tests.
 
     Offline material is signed only for a route that the signed deployment-flags
@@ -2699,7 +2702,7 @@ def _signed_offline_issuance_env(directory, fido2_groups):
         "format_version": 1,
         "type": "deployment-flags",
         "valid_until": (datetime.now(timezone.utc).date() + timedelta(days=7)).isoformat(),
-        "flags": {"offline_fido2_groups": list(fido2_groups), "offline_hotp_groups": []},
+        "flags": {"offline_fido2_allowed": True},
     }
     payload = json.dumps(document, sort_keys=True, separators=(",", ":"),
                          ensure_ascii=False).encode("utf-8")
