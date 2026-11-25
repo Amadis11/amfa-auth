@@ -79,6 +79,19 @@ class SignedOfflineBatchTests(unittest.TestCase):
         self.assertEqual(envelope["signature"],
             "t94EvyT0n8YghZrzFSHp9A/5+Jf5h5e7yihfRFz/IioNvRNeM7/j0UdfLN5zjHpOD7T6M17sgu8vXgcGosAAAw==")
 
+    def test_issuer_time_is_signed_and_not_caller_controlled(self):
+        now_ns = 1_800_000_000_123_456_000
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "2592000"}), \
+                patch.object(_module.time, "time_ns", return_value=now_ns):
+            signed = sign_item(dict(TEST_ITEM, issued_at_us=1, expiration=2),
+                               TEST_KEY, "test-only")
+        blob = base64.b64decode(signed["signed_payload"], validate=True)
+        TEST_PUBLIC.verify(base64.b64decode(signed["signature"]), SIGNING_CONTEXT + blob)
+        decoded = __import__("json").loads(blob)
+        self.assertEqual(decoded["issued_at_us"], now_ns // 1000)
+        self.assertEqual(decoded["expiration"] - decoded["issued_at_us"] // 1_000_000,
+                         30 * 24 * 3600)
+
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         blob = base64.b64decode(signed["signed_payload"])
