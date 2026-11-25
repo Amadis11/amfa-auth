@@ -27,7 +27,6 @@ from testfixtures import Replace, test_datetime
 from testfixtures import log_capture
 
 from privacyidea.lib import _
-from privacyidea.lib.amfa_offline_entitlement import EXPECTED_KID, POLICY_FILE, PUBLIC_KEY_FILE
 from privacyidea.lib.applications.offline import REFILLTOKEN_LENGTH
 from privacyidea.lib.authcache import _hash_password
 from privacyidea.lib.challenge import get_challenges
@@ -79,43 +78,6 @@ from .api_validate_common import LDAPDirectory, OTPs, HOSTSFILE, DICT_FILE, setu
 REFILL_USER_AGENT = "privacyidea-cp/1.1.1"
 
 HOTP_OFFLINE_GROUP = "AMFA-hotp"
-OFFLINE_FLAGS_KEY_ID = "offline-test-issuer"
-
-
-def _signed_offline_flags_env(directory, hotp_groups, hotp_allowed=True):
-    """Provision the signed deployment-flags document a deployment publishes.
-
-    Offline issuance is authorised against this document (#1605), so any test
-    switching the signer on has to publish it next to the pinned public half.
-    """
-    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    document = {
-        "format_version": 1,
-        "type": "deployment-flags",
-        "valid_until": (datetime.datetime.now(timezone.utc).date()
-                        + datetime.timedelta(days=7)).isoformat(),
-        "flags": {"offline_hotp_allowed": bool(hotp_allowed),
-                  "offline_hotp_groups": list(hotp_groups)},
-    }
-    payload = json.dumps(document, sort_keys=True, separators=(",", ":"),
-                         ensure_ascii=False).encode("utf-8")
-    directory = Path(directory)
-    (directory / "flags.json").write_text(json.dumps({
-        "document": document,
-        "signature": {
-            "algorithm": "rsa-sha256",
-            "key_id": OFFLINE_FLAGS_KEY_ID,
-            "value": base64.b64encode(
-                key.sign(payload, padding.PKCS1v15(), hashes.SHA256())).decode("ascii"),
-        },
-    }), encoding="utf-8")
-    (directory / "public.pem").write_bytes(key.public_key().public_bytes(
-        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
-    return {POLICY_FILE: str(directory / "flags.json"),
-            PUBLIC_KEY_FILE: str(directory / "public.pem"),
-            EXPECTED_KID: OFFLINE_FLAGS_KEY_ID}
-
-
 def _directory_with_groups(groups):
     """Stand-in for the AD resolver; only the reported membership matters."""
     return SimpleNamespace(
@@ -671,15 +633,13 @@ class AValidateOfflineTestCase(MyApiTestCase):
 
 
     def test_05_refill_without_entitlement_is_a_defined_refusal(self):
-        """A refill is a NEW offline issuance, so it re-checks the published allowlist.
+        """A refill is a NEW offline issuance, so it re-checks the live AUTH policy.
 
-        With the signer enabled and the signed deployment-flags document withdrawn or
-        not yet published, the station has to receive a defined refusal (not an HTTP
+        With the signer enabled and the AUTH allow policy withdrawn, the station has to receive a defined refusal (not an HTTP
         500), the token must stay untouched, and online authentication must keep
         working (#1605).
         """
         serial = "AMFA-REFILL-UNENTITLED"
-        flags_directory = tempfile.mkdtemp()
         try:
             init_token({"serial": serial, "otpkey": self.otpkey, "type": "hotp", "pin": "pin"},
                        user=User("cornelius", self.realm1))
@@ -689,9 +649,10 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
                 "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
-                **_signed_offline_flags_env(flags_directory, [HOTP_OFFLINE_GROUP]),
             }
-            # The allowlist is published and the owner is inside it: the online
+            set_policy("amfa-test-offline-hotp", scope=SCOPE.AUTH, realm=self.realm1,
+                       user="cornelius", action="amfa_offline_hotp=allow")
+            # The owner policy permits issuance: the online
             # authentication hands out a signed HOTP batch with a refilltoken.
             with mock.patch.dict(os.environ, environment), mock.patch(
                     "privacyidea.lib.amfa_offline_signatures._load_key",
@@ -717,12 +678,9 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 counter_before = before.token.count
                 self.assertEqual(refilltoken, before.get_tokeninfo("refilltoken"))
 
-            # The published document is withdrawn (or never published yet) while the
-            # signer stays on: the stored refilltoken now meets the gate.
-            withdrawn = dict(environment, **{POLICY_FILE: "",
-                                            PUBLIC_KEY_FILE: "",
-                                            EXPECTED_KID: ""})
-            with mock.patch.dict(os.environ, withdrawn), mock.patch(
+            # Withdraw the AUTH entitlement itself; no file or station change.
+            delete_policy("amfa-test-offline-hotp")
+            with mock.patch.dict(os.environ, environment), mock.patch(
                     "privacyidea.lib.amfa_offline_signatures._load_key",
                     return_value=Ed25519PrivateKey.generate()):
                 with self.app.test_request_context("/validate/offlinerefill", method="POST",
@@ -746,7 +704,7 @@ class AValidateOfflineTestCase(MyApiTestCase):
                                  "refused refill consumed offline counters")
                 self.assertEqual(refilltoken, after.get_tokeninfo("refilltoken"),
                                  "refused refill rotated the refill credential")
-                # Online authentication is unaffected by the missing allowlist.
+                # Online authentication is unaffected by the missing allow policy.
                 success, _reason, values = after.get_multi_otp(count=1)
                 self.assertTrue(success)
                 password = "pin" + next(iter(values["otp"].values()))
@@ -758,5 +716,6 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 self.assertNotIn("auth_items", online_after.json)
         finally:
             remove_token(serial)
-            shutil.rmtree(flags_directory, ignore_errors=True)
+            if any(p.name == "amfa-test-offline-hotp" for p in Policy.query.all()):
+                delete_policy("amfa-test-offline-hotp")
 

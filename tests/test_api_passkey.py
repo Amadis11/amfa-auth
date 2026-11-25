@@ -36,7 +36,6 @@ from types import SimpleNamespace
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
-from privacyidea.lib.amfa_offline_entitlement import EXPECTED_KID, POLICY_FILE, PUBLIC_KEY_FILE
 
 from webauthn.helpers.structs import AttestationConveyancePreference
 
@@ -770,17 +769,17 @@ class PasskeyAPITest(PasskeyAPITestBase):
         # user/realm UV policy. Do not force "required" for a user whose
         # policy explicitly says "discouraged" (#80).
         # A signed refill is a NEW offline issuance, so the server re-reads the
-        # signed deployment-flags allowlist and the owner's directory group
+        # native authentication policy and the owner's resolver information
         # online before signing (#1605). The gate and its fail-closed cases are
         # pinned in tests/test_amfa_offline_entitlement.py; here only the
         # directory lookup is stubbed, so the real entitlement code runs.
-        entitlement_dir = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, entitlement_dir, ignore_errors=True)
+        self.set_policy_with_cleanup("amfa-test-offline-fido2", scope=SCOPE.AUTH,
+                                     realm=self.user.realm, user=self.user.login,
+                                     action="amfa_offline_fido2=allow")
         environment = {
             "AMFA_OFFLINE_ED25519_ENABLED": "1",
             "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
             "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
-            **_signed_offline_issuance_env(entitlement_dir, [OFFLINE_FIDO2_GROUP]),
         }
         with patch.dict(os.environ, environment), patch(
             "privacyidea.lib.amfa_offline_signatures._load_key",
@@ -789,6 +788,7 @@ class PasskeyAPITest(PasskeyAPITestBase):
                  return_value=_directory_with_groups([OFFLINE_FIDO2_GROUP])):
             data = {"serial": serial, "refilltoken": refill_token, "pass": ""}
             with self.app.test_request_context('/validate/offlinerefill', method='POST',
+                                               environ_base={'REMOTE_ADDR': '10.0.0.17'},
                                                data=data, headers=headers):
                 res = self.app.full_dispatch_request()
                 self._assert_result_value_true(res.json)
@@ -996,11 +996,11 @@ class PasskeyAPITest(PasskeyAPITestBase):
     def test_09b_offline_enrollment_without_entitlement_stays_online_only(self):
         """Switching the signer on must not break the enrollment of a passkey (#1605).
 
-        Offline material is signed only for an account inside the published allowlist.
-        Without that document the enrollment itself still has to succeed: the passkey
+        Offline material is signed only for an account allowed by AUTH policy.
+        Without that policy the enrollment itself still has to succeed: the passkey
         stays enrolled and usable online, no offline bag is handed out, and the machine
         keeps the offline attachment so a later online login can carry the bag once the
-        allowlist is published.
+        allow policy is added.
         """
         spass_token = init_token({"type": "spass", "pin": "1"}, self.user)
         self.set_policy_with_cleanup("enroll_passkey_b", scope=SCOPE.AUTH,
@@ -1009,11 +1009,10 @@ class PasskeyAPITest(PasskeyAPITestBase):
         self.set_policy_with_cleanup("enroll_passkey_offline_b", scope=SCOPE.AUTH,
                                      action=f"{PolicyAction.ENROLL_VIA_MULTICHALLENGE_PASSKEY_OFFLINE}=true")
         self.pk_headers.update({"User-Agent": "privacyidea-cp/1.1.1 Windows/Laptop-1231312"})
-        # The signer is on, but the signed deployment-flags document is not published.
+        # The signer is on, but no native offline allow policy exists.
         unentitled = {"AMFA_OFFLINE_ED25519_ENABLED": "1",
                       "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
-                      "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
-                      POLICY_FILE: "", PUBLIC_KEY_FILE: "", EXPECTED_KID: ""}
+                      "AMFA_OFFLINE_ED25519_KEY_ID": "test-only"}
         with patch.dict(os.environ, unentitled), patch(
                 "privacyidea.lib.amfa_offline_signatures._load_key",
                 return_value=Ed25519PrivateKey.generate()):
@@ -3554,44 +3553,6 @@ class PasskeyFailureClassificationTest(PasskeyAPITestBase):
 
 
 OFFLINE_FIDO2_GROUP = "AMFA-haslo-fido"
-OFFLINE_FLAGS_KEY_ID = "api-test-issuer"
-
-
-def _signed_offline_issuance_env(directory, fido2_groups):
-    """Provision the signed offline issuance policy used by the API tests.
-
-    Offline material is signed only for a route that the signed deployment-flags
-    document allows (#1605), so any test switching the signer on has to
-    provision that document. It is signed here with a throwaway RSA key whose
-    public half is pinned through the environment, the same way a deployment
-    does it.
-    """
-    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    document = {
-        "format_version": 1,
-        "type": "deployment-flags",
-        "valid_until": (datetime.now(timezone.utc).date() + timedelta(days=7)).isoformat(),
-        "flags": {"offline_fido2_groups": list(fido2_groups), "offline_hotp_groups": []},
-    }
-    payload = json.dumps(document, sort_keys=True, separators=(",", ":"),
-                         ensure_ascii=False).encode("utf-8")
-    directory = Path(directory)
-    (directory / "flags.json").write_text(json.dumps({
-        "document": document,
-        "signature": {
-            "algorithm": "rsa-sha256",
-            "key_id": OFFLINE_FLAGS_KEY_ID,
-            "value": base64.b64encode(
-                key.sign(payload, padding.PKCS1v15(), hashes.SHA256())).decode("ascii"),
-        },
-    }), encoding="utf-8")
-    (directory / "public.pem").write_bytes(key.public_key().public_bytes(
-        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
-    return {POLICY_FILE: str(directory / "flags.json"),
-            PUBLIC_KEY_FILE: str(directory / "public.pem"),
-            EXPECTED_KID: OFFLINE_FLAGS_KEY_ID}
-
-
 def _directory_with_groups(groups):
     """Stand-in for the AD resolver; only the reported group membership matters."""
     return SimpleNamespace(
