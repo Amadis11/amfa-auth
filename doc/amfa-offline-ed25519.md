@@ -1,5 +1,8 @@
 # AMFA offline: signed Ed25519 batches (issue #1156, Z12)
 
+**Universal MSI / ROOT → installation leaf (target architecture, not yet integrated):** see the [canonical issuance and deployment procedure](https://github.com/Amadis11/amitronic-amfa/blob/master/docs/deployment/kotwica-offline-ed25519.md). The build-time installation-key pin described below is the current implementation, not the intended commercial rollout. The final design pins only the AMITRONIC product ROOT in CP, signs each installation's public key and identity once, and requires no offline-anchor certificate import on Windows. Do not treat the target workflow as released until AUTH, CP, release tooling and native acceptance are aligned.
+
+
 ## Status and safety boundary
 
 Signed v2 batches are the required offline authentication contract. The signing key exists
