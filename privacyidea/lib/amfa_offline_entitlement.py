@@ -205,6 +205,7 @@ def _load_authorised_selectors(path: str) -> tuple[list[str], list[tuple[str, ..
     if not isinstance(raw_rules, list) or len(raw_rules) > 32:
         raise OfflineEntitlementError("malformed offline rule allowlist")
     rules = []
+    seen = set()
     for entry in raw_rules:
         if not isinstance(entry, str) or not entry or len(entry.encode("utf-8")) > 255:
             raise OfflineEntitlementError("malformed offline selector")
@@ -215,6 +216,10 @@ def _load_authorised_selectors(path: str) -> tuple[list[str], list[tuple[str, ..
                 or any(not part or part != part.strip() for part in parts)
                 or any(ord(ch) < 32 or ord(ch) == 127 for ch in entry)):
             raise OfflineEntitlementError("malformed offline selector")
+        folded = entry.lower()
+        if folded in seen:
+            raise OfflineEntitlementError("duplicate offline selector")
+        seen.add(folded)
         rules.append((source, *parts))
     if path == "hotp" and flags.get("offline_hotp_allowed") is not True:
         return [], []
@@ -266,9 +271,9 @@ def offline_grant_for_token(token) -> str:
     if direct:
         LOG.debug("AMFA offline %s issuance: explicit owner or realm entitlement", grant)
         return grant
-    allowed = allowed + [rule[3] for rule in scoped
-                         if rule[0] == "group" and rule[2] == user.resolver]
-    if not allowed:
+    scoped_groups = [rule[3] for rule in scoped
+                     if rule[0] == "group" and rule[2] == user.resolver]
+    if not allowed and not scoped_groups:
         raise OfflineEntitlementError("token owner is outside offline allowlist")
     group_key = getattr(resolver, "group_attribute_mapping_key", None) or "groups"
     if group_key not in resolver.get_available_info_keys():
@@ -278,8 +283,11 @@ def offline_grant_for_token(token) -> str:
         raise OfflineEntitlementError("directory did not return a complete group list")
     if not all(isinstance(x, str) for x in members):
         raise OfflineEntitlementError("malformed directory group membership")
-    if not any(_same_group(member, allowed_group)
-               for member in members for allowed_group in allowed):
+    # Legacy AD groups retain their existing comparison; scoped groups are
+    # exact resolver values (DNs, case-sensitive directory names, etc.).
+    if not (any(_same_group(member, allowed_group)
+                for member in members for allowed_group in allowed)
+            or any(member in scoped_groups for member in members)):
         raise OfflineEntitlementError("token owner is outside offline allowlist")
     LOG.debug("AMFA offline %s issuance: resolver group entitlement checked", grant)
     return grant
