@@ -5,7 +5,7 @@ against the token's actual owner at online issuance and every refill. Explicit
 allow is required; absence, deny, policy conflict or resolver failure refuses
 new material, without blocking regular online login. A local SQL/passwd
 resolver needs no AD membership. Group conditions use fresh resolver data.
-No signed deployment-flags document is needed for FIDO2 or HOTP.
+The Ed25519 public key is the offline trust anchor; X.509 trust is relevant only to the TLS transport.
 
 The offline Ed25519 signing key remains required, outside the repository,
 identical on signing HA nodes. CP must pin the corresponding public key and
@@ -18,4 +18,4 @@ revocations and may use valid previously issued data until expiry.
 
 Tests: native policy absence/deny, distinct method grants, local resolver without
 groups, resolver failure, signed issuance/refill, and real air-gapped Windows
-logon/unlock. Key-only vault authorization is a separate path.
+logon/unlock. Key-only vault authorization is a separate native AUTH policy `amfa_key_only_login`, checked by Gateway for the actual credential owner/SID. The server checks its licence; this online path is independent of offline FIDO2/HOTP.
