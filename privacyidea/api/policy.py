@@ -550,6 +550,31 @@ def check_policy_api():
     return send_result(res)
 
 
+@policy_blueprint.route('/amfa-key-only', methods=['GET'])
+@log_with(log)
+@prepolicy(check_base_action, request, PolicyAction.POLICYREAD)
+def amfa_key_only_policy_api():
+    """Read the live key-only decision for a registered credential and its real owner."""
+    from privacyidea.lib.amfa_offline_entitlement import OfflineEntitlementError, require_owner_policy
+    from privacyidea.lib.fido2.util import get_fido2_token_by_credential_id
+
+    params = getLowerParams(request.all_data)
+    sid = get_required(params, "sid")
+    credential_id = get_required(params, "credential_id")
+    allowed = False
+    if isinstance(sid, str) and sid.startswith("S-1-") and len(sid) <= 256 and isinstance(credential_id, str):
+        try:
+            token = get_fido2_token_by_credential_id(credential_id) if 8 <= len(credential_id) <= 4096 else None
+            if token and token.type in ("webauthn", "passkey") and token.is_active():
+                if not token.is_revoked() and not token.is_locked():
+                    require_owner_policy(token, "key_only", expected_sid=sid)
+                    allowed = True
+        except (OfflineEntitlementError, ValueError, TypeError):
+            allowed = False
+    g.audit_object.log({"success": allowed, "action_detail": "AMFA key-only authorization"})
+    return send_result({"allowed": allowed})
+
+
 @policy_blueprint.route('/defs', methods=['GET'])
 @policy_blueprint.route('/defs/<scope>', methods=['GET'])
 @log_with(log)

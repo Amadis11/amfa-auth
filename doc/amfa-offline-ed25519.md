@@ -2,7 +2,7 @@
 
 ## Status and safety boundary
 
-This is an **opt-in, coordinated protocol upgrade**. The signing key exists
+Signed v2 batches are the required offline authentication contract. The signing key exists
 **only** on the privacyIDEA backend. Windows receives a pinned **public** key
 in the compiled Credential Provider. The local Windows SYSTEM account cannot
 forge a new offline code, token identity, refill token or expiry by editing
@@ -45,11 +45,8 @@ document on Windows: verify the **original signed bytes**.
 `format_version: 2` is the current format. The signer only signs a batch that
 carries the issuance grant the online entitlement check attached: `fido2` for a
 response carrying `pubKey`/`credentialId`, `hotp` otherwise — any other
-combination fails signing. `format_version: 1` snapshots issued earlier are
-still parsed for migration, but they carry no grant and therefore never open an
-offline login; the client replaces them on the next online issuance or refill.
-Prerequisites and the fail-closed cases of the issue-time entitlement (which
-consumes the signed deployment flags published to the stations) are described in
+combination fails signing. Only v2 carries the entitlement required for offline login.
+The issuer evaluates the native AUTH policy of the resolved token owner at issuance and refill. Prerequisites are described in
 `docs/amfa-offline-v2-issue-time-entitlement.md`.
 
 An online refill produces a **new complete signed snapshot**. The client
@@ -93,10 +90,7 @@ A signing error **does not produce an unsigned offline payload**: the online
 login remains available but no new offline batch is issued. Inspect server
 ERROR logs before enabling at scale.
 
-Default: `AMFA_OFFLINE_ED25519_ENABLED` unset/0 — legacy server behavior,
-for the upgrade window only. **Once clients require signatures, do not revert
-the backend to emitting unsigned batches.** The client must be built with a
-nonempty pinned public key and matching key ID before enabling signatures.
+Enable signing on all AUTH nodes before accepting offline logon. The client must have the matching pinned public key and key ID. Unsigned batches cannot authorize offline authentication.
 
 ## Checks and test scope
 
@@ -121,11 +115,7 @@ Required before production acceptance:
    visibly alarmed on the server.
 7. Windows build, TOKEN2 PIN/UV handling, GPO deployment, failover, rollback,
    server key permissions and correct signing on each HA node.
-8. Issue-time entitlement: offline data is signed only for a token owner whose
-   directory group is in the signed deployment flags. An unprovisioned policy,
-   unknown issuer, expired document, missing group mapping or unreachable
-   directory issues **no** offline data (online login unaffected) —
-   `tests/test_amfa_offline_entitlement.py`.
+8. Issue-time entitlement: explicit native AUTH `amfa_offline_fido2` or `amfa_offline_hotp` allow for the resolved owner; absent allow, deny, conflicting policy or unreachable resolver issues **no** new offline data (online login unaffected). Verify both AD and local resolvers.
 9. Issue-time entitlement never degrades an online path: an authentication and a
    passkey enrollment whose owner may not receive offline material still succeed
    (no `auth_items`), while a refill is refused with a defined answer — HTTP 400,
@@ -145,6 +135,4 @@ before switching the server. If unsupported multi-key transition would strand
 offline clients, plan controlled re-enrollment/online refresh. Do not attempt
 an unplanned key rotation or emergency switch to unsigned responses.
 
-The old unsigned DPAPI store is **not trusted** by a public-key-pinned build.
-Users must first perform an online login to receive new signed offline data;
-deploy a pilot and retain an authorized recovery login route.
+Users perform an online logon to obtain the first signed offline data. Pilot the exact release and retain an authorized recovery login route.

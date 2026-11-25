@@ -2829,6 +2829,21 @@ def get_static_policy_definitions(scope=None):
                 'desc': _('If enabled, the user can choose to skip enrollment of the token during authentication. '
                           'If disabled, the user must enroll a token. This is also the default behavior.'),
             },
+            PolicyAction.AMFA_OFFLINE_FIDO2: {
+                'type': 'str',
+                'value': ['allow', 'deny'],
+                'desc': _('Allow or deny issuing signed FIDO2 offline data to the resolved token owner.')
+            },
+            PolicyAction.AMFA_KEY_ONLY_LOGIN: {
+                'type': 'str',
+                'value': ['allow', 'deny'],
+                'desc': _('Allow or deny key-only password vault access for the resolved FIDO2 token owner.')
+            },
+            PolicyAction.AMFA_OFFLINE_HOTP: {
+                'type': 'str',
+                'value': ['allow', 'deny'],
+                'desc': _('Allow or deny issuing signed HOTP offline data to the resolved token owner.')
+            },
             PolicyAction.ENROLL_VIA_MULTICHALLENGE_PASSKEY_OFFLINE: {
                 'type': 'bool',
                 'desc': _('If enabled, a successful registration with the enroll_via_multichallenge action for '
