@@ -76,7 +76,7 @@ HOTP_OFFLINE_GROUP = "AMFA-hotp"
 OFFLINE_FLAGS_KEY_ID = "offline-test-issuer"
 
 
-def _signed_offline_flags_env(directory, hotp_groups, hotp_allowed=True):
+def _signed_offline_flags_env(directory, hotp_allowed=True):
     """Provision the signed deployment-flags document a deployment publishes.
 
     Offline issuance is authorised against this document (#1605), so any test
@@ -586,9 +586,12 @@ class AValidateOfflineTestCase(MyApiTestCase):
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": "/test-only/ed25519.pem",
                 "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
-                **_signed_offline_flags_env(flags_directory, [HOTP_OFFLINE_GROUP]),
+                **_signed_offline_flags_env(flags_directory),
             }
-            # The allowlist is published and the owner is inside it: the online
+            set_policy("amfa-test-offline-hotp", scope=SCOPE.AUTH, realm=self.realm1,
+                       user="cornelius", action="amfa_offline_hotp=allow")
+            self.addCleanup(delete_policy, "amfa-test-offline-hotp")
+            # The deployment switch and the owner policy are enabled: the online
             # authentication hands out a signed HOTP batch with a refilltoken.
             with mock.patch.dict(os.environ, environment), mock.patch(
                     "privacyidea.lib.amfa_offline_signatures._load_key",
