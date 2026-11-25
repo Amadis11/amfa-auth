@@ -194,7 +194,8 @@ def _require_enabled_path(path: str) -> None:
     else:
         _verify_pinned_signature(signature, canonical)
     flags = document.get("flags")
-    if (not isinstance(flags, dict) or set(flags) - {"offline_fido2_allowed", "offline_hotp_allowed", "key_only_login_allowed"}
+    if (not isinstance(flags, dict)
+            or set(flags) - {"offline_fido2_allowed", "offline_hotp_allowed", "key_only_login_allowed"}
             or any(type(value) is not bool for value in flags.values())):
         raise OfflineEntitlementError("invalid deployment flag object")
     if flags.get("offline_" + path + "_allowed") is not True:
