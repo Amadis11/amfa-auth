@@ -1,10 +1,6 @@
 # #1605 — Signed offline issue-time entitlement (v2)
 
-An offline login on Windows must never query AD or AMFA. Eligibility is
-evaluated by the AUTH **server** during initial signed issuance and on every
-signed refill, using the current group membership of the **token owner**
-obtained directly from the configured LDAP/AD resolver (not a user-supplied
-account string or a cached group decision).
+An offline login on Windows must never query AD or AMFA. Eligibility is checked by AUTH on every issue/refill using the signed installation switch and an explicit native authentication policy for the resolved token owner.
 
 ## Deployment prerequisites
 
@@ -12,9 +8,7 @@ Configure the policy file plus **one** of the two accepted signature forms:
 
 - `AMFA_OFFLINE_DEPLOYMENT_FLAGS_FILE` (required): absolute path to the **exact
   signed deployment-flags envelope** published to the stations by the
-  gateway/panel. This is JSON with `document.flags.offline_fido2_groups`
-  and `document.flags.offline_hotp_groups`, NOT a second manually maintained
-  list of groups. Mount it as an operator-owned read-only file and sync every
+  gateway/panel. This is JSON with `document.flags.offline_fido2_allowed` and `document.flags.offline_hotp_allowed`, both false by default. No subject lists. Mount it as an operator-owned read-only file and sync every
   signed revision to all AUTH/HA nodes.
 - **Issuer key form** — `AMFA_OFFLINE_DEPLOYMENT_FLAGS_PUBLIC_KEY_FILE`
   (absolute path to the pinned trusted RSA public key) together with
@@ -53,13 +47,7 @@ non-matching signature all raise the same error class instead of an unexpected
 server error. Never treat an unverified or customer-supplied group list as
 authoritative.
 
-The LDAP resolver must expose the group attribute as a list (normally
-`groups`, with recursive_group_search configured for nested membership).
-The server reads current membership from the resolver on each issuance.
-Unknown group membership or unreachable directory = deny new issuance.
-Short group names work; domain-qualified allowlist entries require the
-resolver to return the correspondingly qualified group name. Never
-synthesize the domain prefix from a username.
+Use native policies `amfa_offline_fido2` and `amfa_offline_hotp` with value `allow` or `deny`; scope by user, resolver, realm or a userinfo groups condition. A fresh resolver read is required; absent membership does not prevent explicit user or realm rules. No matching allow, conflicting priority or lookup failure denies issuance.
 
 ## Wire contract
 
