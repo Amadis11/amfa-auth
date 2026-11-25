@@ -120,6 +120,61 @@ class TestOfflineEntitlement(unittest.TestCase):
             with self.assertRaises(OfflineEntitlementError):
                 offline_grant_for_token(self.fido)
 
+    def test_resolver_neutral_selectors(self):
+        self.user.realm = "local"
+        self.user.resolver = "sql"
+        self.resolver.get_available_info_keys = lambda: ["username"]
+        self.resolver.get_user_info = lambda *_: {"username": "operator"}
+        self.flags["offline_fido2_groups"] = []
+        self.flags["offline_hotp_groups"] = []
+        for rule, expected in [
+            ("user:local/sql/user-42", True),
+            ("user:local/other/user-42", False),
+            ("user:other/sql/user-42", False),
+            ("user:local/sql/User-42", False),
+            ("realm:local", True),
+            ("realm:other", False),
+            ("group:local/sql/operators", False),
+            ("user:local/sql", False),
+        ]:
+            with self.subTest(rule=rule):
+                self.flags["offline_fido2_rules"] = [rule]
+                self.save_policy()
+                with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+                           return_value=self.resolver):
+                    if expected:
+                        self.assertEqual("fido2", offline_grant_for_token(self.fido))
+                    else:
+                        with self.assertRaises(OfflineEntitlementError):
+                            offline_grant_for_token(self.fido)
+
+    def test_scoped_groups_and_hotp_switch(self):
+        self.user.realm = "local"
+        self.flags["offline_hotp_groups"] = []
+        self.flags["offline_hotp_rules"] = ["group:local/ad/AMFA-haslo-fido"]
+        for enabled in (True, False):
+            self.flags["offline_hotp_allowed"] = enabled
+            self.save_policy()
+            with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+                       return_value=self.resolver):
+                if enabled:
+                    self.assertEqual("hotp", offline_grant_for_token(self.hotp))
+                else:
+                    with self.assertRaises(OfflineEntitlementError):
+                        offline_grant_for_token(self.hotp)
+
+    def test_direct_rule_requires_live_resolver_owner(self):
+        self.user.realm = "local"
+        self.flags["offline_fido2_groups"] = []
+        self.flags["offline_fido2_rules"] = ["realm:local"]
+        self.save_policy()
+        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
+                   return_value=self.resolver):
+            for unavailable in ({}, None):
+                self.resolver.get_user_info = lambda *_: unavailable
+                with self.assertRaises(OfflineEntitlementError):
+                    offline_grant_for_token(self.fido)
+
 
 class TestOfflineEntitlementCustomerCA(unittest.TestCase):
     """#1550 form: the envelope carries a leaf certificate issued by the customer CA.
