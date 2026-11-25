@@ -31,10 +31,8 @@ class TestOfflineEntitlement(unittest.TestCase):
         self.addCleanup(self.tempdir.cleanup)
         self.key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         self.dir = Path(self.tempdir.name)
-        self.flags = {"offline_fido2_groups": ["AMFA-haslo-fido"],
-                      "offline_hotp_groups": ["AMFA-hotp"],
-                      "offline_hotp_allowed": True}
-        self.user = SimpleNamespace(resolver="ad", uid="user-42")
+        self.flags = {"offline_fido2_allowed": True, "offline_hotp_allowed": True}
+        self.user = SimpleNamespace(resolver="ad", uid="user-42", realm="local", login="operator")
         self.fido = SimpleNamespace(type="webauthn", user=self.user)
         self.hotp = SimpleNamespace(type="hotp", user=self.user)
         self.resolver = SimpleNamespace(
@@ -43,6 +41,9 @@ class TestOfflineEntitlement(unittest.TestCase):
             get_user_info=lambda _uid, attributes=None: {"groups": ["AMFA-haslo-fido"]},
         )
         self.save_policy()
+        self.policy = patch("privacyidea.lib.amfa_offline_entitlement._policy_allows", return_value=True)
+        self.policy_mock = self.policy.start()
+        self.addCleanup(self.policy.stop)
         self.patcher = patch.dict(os.environ, {
             POLICY_FILE: str(self.dir / "flags.json"),
             PUBLIC_KEY_FILE: str(self.dir / "public.pem"),
@@ -72,108 +73,58 @@ class TestOfflineEntitlement(unittest.TestCase):
             serialization.Encoding.PEM,
             serialization.PublicFormat.SubjectPublicKeyInfo))
 
-    def test_fido_issue_allowed_by_group(self):
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            self.assertEqual("fido2", offline_grant_for_token(self.fido))
+    def _issue(self, token=None):
+        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object", return_value=self.resolver):
+            return offline_grant_for_token(token or self.fido)
 
-    def test_hotp_group_must_be_independently_allowed(self):
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            with self.assertRaises(OfflineEntitlementError):
-                offline_grant_for_token(self.hotp)
+    def test_explicit_policy_without_groups(self):
+        self.resolver.get_user_info = lambda *_: {"username": "operator"}
+        self.assertEqual("fido2", self._issue())
+        self.policy_mock.assert_called_once()
 
-    def test_group_removed_prevents_next_issue(self):
-        self.resolver.get_user_info = lambda *_args, **_kwargs: {"groups": []}
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            with self.assertRaises(OfflineEntitlementError):
-                offline_grant_for_token(self.fido)
+    def test_denied_policy_does_not_issue(self):
+        self.policy_mock.return_value = False
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue()
 
-    def test_missing_group_data_fails_closed(self):
-        self.resolver.get_user_info = lambda *_args, **_kwargs: {}
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            with self.assertRaises(OfflineEntitlementError):
-                offline_grant_for_token(self.fido)
+    def test_hotp_switch_independent(self):
+        self.flags["offline_hotp_allowed"] = False
+        self.save_policy()
+        self.assertEqual("fido2", self._issue())
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue(self.hotp)
+
+    def test_disabled_fido2_never_issues(self):
+        self.flags["offline_fido2_allowed"] = False
+        self.save_policy()
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue()
+
+    def test_missing_owner_fails_closed(self):
+        self.resolver.get_user_info = lambda *_: {}
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue()
 
     def test_tampered_policy_rejected(self):
         self.save_policy(bad_signature=True)
-        with self.assertRaises(Exception):
-            offline_grant_for_token(self.fido)
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue()
 
     def test_expired_policy_rejected(self):
         self.save_policy(expired=True)
         with self.assertRaises(OfflineEntitlementError):
-            offline_grant_for_token(self.fido)
+            self._issue()
 
     def test_missing_policy_rejected(self):
         with patch.dict(os.environ, {POLICY_FILE: ""}):
             with self.assertRaises(OfflineEntitlementError):
-                offline_grant_for_token(self.fido)
+                self._issue()
 
-    def test_qualified_group_never_matches_short_name(self):
-        self.flags["offline_fido2_groups"] = ["DOMAIN\\AMFA-haslo-fido"]
+    def test_removed_group_fields_rejected(self):
+        self.flags["offline_fido2_groups"] = ["obsolete"]
         self.save_policy()
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            with self.assertRaises(OfflineEntitlementError):
-                offline_grant_for_token(self.fido)
-
-    def test_resolver_neutral_selectors(self):
-        self.user.realm = "local"
-        self.user.resolver = "sql"
-        self.resolver.get_available_info_keys = lambda: ["username"]
-        self.resolver.get_user_info = lambda *_: {"username": "operator"}
-        self.flags["offline_fido2_groups"] = []
-        self.flags["offline_hotp_groups"] = []
-        for rule, expected in [
-            ("user:local/sql/user-42", True),
-            ("user:local/other/user-42", False),
-            ("user:other/sql/user-42", False),
-            ("user:local/sql/User-42", False),
-            ("realm:local", True),
-            ("realm:other", False),
-            ("group:local/sql/operators", False),
-            ("user:local/sql", False),
-        ]:
-            with self.subTest(rule=rule):
-                self.flags["offline_fido2_rules"] = [rule]
-                self.save_policy()
-                with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                           return_value=self.resolver):
-                    if expected:
-                        self.assertEqual("fido2", offline_grant_for_token(self.fido))
-                    else:
-                        with self.assertRaises(OfflineEntitlementError):
-                            offline_grant_for_token(self.fido)
-
-    def test_scoped_groups_and_hotp_switch(self):
-        self.user.realm = "local"
-        self.flags["offline_hotp_groups"] = []
-        self.flags["offline_hotp_rules"] = ["group:local/ad/AMFA-haslo-fido"]
-        for enabled in (True, False):
-            self.flags["offline_hotp_allowed"] = enabled
-            self.save_policy()
-            with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                       return_value=self.resolver):
-                if enabled:
-                    self.assertEqual("hotp", offline_grant_for_token(self.hotp))
-                else:
-                    with self.assertRaises(OfflineEntitlementError):
-                        offline_grant_for_token(self.hotp)
-
-    def test_direct_rule_requires_live_resolver_owner(self):
-        self.user.realm = "local"
-        self.flags["offline_fido2_groups"] = []
-        self.flags["offline_fido2_rules"] = ["realm:local"]
-        self.save_policy()
-        with patch("privacyidea.lib.amfa_offline_entitlement.get_resolver_object",
-                   return_value=self.resolver):
-            for unavailable in ({}, None):
-                self.resolver.get_user_info = lambda *_: unavailable
-                with self.assertRaises(OfflineEntitlementError):
-                    offline_grant_for_token(self.fido)
+        with self.assertRaises(OfflineEntitlementError):
+            self._issue()
 
 
 class TestOfflineEntitlementCustomerCA(unittest.TestCase):
@@ -201,16 +152,17 @@ class TestOfflineEntitlementCustomerCA(unittest.TestCase):
             self.leaf_key, subject="AMFA-Flagi-2026", issuer_key=self.ca_key, ca=False,
             not_before=datetime.datetime(2026, 1, 1, tzinfo=self.utc),
             not_after=datetime.datetime(2031, 1, 1, tzinfo=self.utc))
-        self.flags = {"offline_fido2_groups": ["AMFA-haslo-fido"],
-                      "offline_hotp_groups": ["AMFA-hotp"],
-                      "offline_hotp_allowed": True}
-        self.user = SimpleNamespace(resolver="ad", uid="user-42")
+        self.flags = {"offline_fido2_allowed": True, "offline_hotp_allowed": True}
+        self.user = SimpleNamespace(resolver="ad", uid="user-42", realm="local", login="operator")
         self.fido = SimpleNamespace(type="webauthn", user=self.user)
         self.resolver = SimpleNamespace(
             group_attribute_mapping_key="groups",
             get_available_info_keys=lambda: ["groups"],
             get_user_info=lambda _uid, attributes=None: {"groups": ["AMFA-haslo-fido"]},
         )
+        self.policy = patch("privacyidea.lib.amfa_offline_entitlement._policy_allows", return_value=True)
+        self.policy.start()
+        self.addCleanup(self.policy.stop)
         self.patcher = patch.dict(os.environ, {
             POLICY_FILE: str(self.dir / "flags.json"),
             CA_FILE: str(self.dir / "ca.pem"),
