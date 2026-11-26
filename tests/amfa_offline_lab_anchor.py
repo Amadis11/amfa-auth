@@ -19,7 +19,8 @@ ANCHOR_CONTEXT = b"AMFA-OFFLINE-ANCHOR-v1\x00"
 
 #: Stub anchor for tests that already patch the installation key loader. Such a
 #: test cannot present a real anchor: a real one must name the key it signs for.
-LAB_ANCHOR = {"anchor": "a290LWtvdHdpY2EtbGFidQ==", "anchor_signature": "cG9kcGlzLXJvb3QtbGFidQ=="}
+LAB_INSTALLATION_ID = "11223344-1122-4122-8122-112233445566"
+LAB_ANCHOR = {"installation_id": LAB_INSTALLATION_ID, "anchor": "a290LWtvdHdpY2EtbGFidQ==", "anchor_signature": "cG9kcGlzLXJvb3QtbGFidQ=="}
 STUB_ANCHOR = LAB_ANCHOR
 
 
@@ -40,13 +41,14 @@ def anchor_environment(directory: str, private_key: Ed25519PrivateKey, key_id: s
     needs (and never gets) the product root private key.
     """
     root_key = root_key or Ed25519PrivateKey.generate()
-    anchor_doc = json.dumps({"key_id": key_id, "public_key_b64": public_key_b64(private_key)},
+    anchor_doc = json.dumps({"installation_id": LAB_INSTALLATION_ID, "key_id": key_id, "public_key_b64": public_key_b64(private_key)},
                             sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
     path = os.path.join(directory, "offline-anchor.json")
     with open(path, "w", encoding="ascii") as handle:
         json.dump({"anchor": _b64(anchor_doc),
                    "anchor_signature": _b64(root_key.sign(ANCHOR_CONTEXT + anchor_doc))}, handle)
     return {
+        "AMFA_OFFLINE_INSTALLATION_ID": LAB_INSTALLATION_ID,
         "AMFA_OFFLINE_ED25519_ANCHOR_FILE": path,
         "AMFA_OFFLINE_ROOT_PUBLIC_KEY_B64": public_key_b64(root_key),
     }
