@@ -22,6 +22,7 @@ import json
 import logging
 import os
 import re
+import stat
 import time
 
 from cryptography.hazmat.primitives import serialization
@@ -133,6 +134,16 @@ def _load_anchor(path: str, private_key: Ed25519PrivateKey, key_id: str) -> dict
 
 def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
               anchor: dict | None = None) -> dict:
+    # The Windows client demands these exact identity fields. Never emit a
+    # cryptographically valid but unusable snapshot (e.g. a batch without
+    # username): the issuer must fail atomically, not make the client guess.
+    if not isinstance(item, dict):
+        raise OfflineSigningError("offline item must be an object")
+    for name, limit in (("serial", 128), ("username", 256), ("refilltoken", 1024)):
+        value = item.get(name)
+        if (not isinstance(value, str) or not value.strip() or len(value) > limit
+                or any(ord(c) < 32 for c in value)):
+            raise OfflineSigningError(f"offline batch has invalid {name}")
     if not key_id or len(key_id) > 128 or not all(
             (c.isascii() and (c.isalnum() or c in "._-")) for c in key_id):
         raise OfflineSigningError("invalid signing key identifier")
@@ -169,6 +180,10 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
     item["expiration"] = issued_at_us // 1_000_000 + validity
     item["format_version"] = 3
     payload = canonical_item(item)
+    # OfflineSignedBatch::kMaxPayload in CP is 256 KiB; a signer must not
+    # return a payload that the pinned release will inevitably reject.
+    if len(payload) > 256 * 1024:
+        raise OfflineSigningError("signed offline payload exceeds Windows CP limit")
     signature = private_key.sign(SIGNING_CONTEXT + payload)
     envelope = {
         "alg": ALG,
@@ -183,15 +198,44 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
 
 
 def _load_key(path: str) -> Ed25519PrivateKey:
+    """Read the private signing key only from a regular owner-private file.
+
+    The signing key is a server secret, unlike the PUBLIC release anchor.
+    A readable-for-everyone volume mount or a symlink must not silently turn
+    offline issuance into a compromised signer. Check the OPEN file descriptor
+    (not a racy os.stat(path) before opening it). This daemon runs on Linux.
+    """
     if not os.path.isabs(path):
         raise OfflineSigningError("private key path must be absolute")
-    # The key must be provisioned outside the repository, protected by OS ACL
-    # (root/service account only), and identical on all signing HA nodes.
-    with open(path, "rb") as fh:
-        pem = fh.read(8192)
-        if len(pem) >= 8192:
-            raise OfflineSigningError("offline signing PEM is unexpectedly large")
-    key = serialization.load_pem_private_key(pem, password=None)
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "geteuid"):
+        raise OfflineSigningError("secure offline signing key access requires Linux")
+    flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise OfflineSigningError("cannot securely open offline signing key") from exc
+    try:
+        with os.fdopen(fd, "rb") as fh:
+            info = os.fstat(fh.fileno())
+            if (not stat.S_ISREG(info.st_mode)
+                    or info.st_uid not in (0, os.geteuid())
+                    or info.st_mode & 0o077
+                    or not info.st_mode & stat.S_IRUSR):
+                raise OfflineSigningError(
+                    "offline signing key must be a regular owner-readable file,"
+                    " owned by root/service, without group/other permissions"
+                )
+            if info.st_size <= 0 or info.st_size >= 8192:
+                raise OfflineSigningError("offline signing PEM size is invalid")
+            pem = fh.read(8192)
+            if len(pem) != info.st_size:
+                raise OfflineSigningError("offline signing PEM changed while being read")
+    except OSError as exc:
+        raise OfflineSigningError("cannot securely read offline signing key") from exc
+    try:
+        key = serialization.load_pem_private_key(pem, password=None)
+    except (ValueError, TypeError) as exc:
+        raise OfflineSigningError("offline signing PEM is invalid") from exc
     if not isinstance(key, Ed25519PrivateKey):
         raise OfflineSigningError("offline signing PEM does not contain Ed25519")
     return key

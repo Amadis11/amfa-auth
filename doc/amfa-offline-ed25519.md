@@ -36,6 +36,17 @@ element becomes an envelope:
 }
 ```
 
+Signed offline v1 now also includes `issued_at_us` (UTC Unix microseconds).
+Its signature prevents a previous, correctly signed refill from being replayed to
+restore used HOTP codes. Windows compares this signed issuance timestamp instead
+of `expiration`: two new snapshots can have the same expiration second.
+Older already-issued signed v1 payloads without `issued_at_us` remain verifiable
+for a one-time upgrade, but must not downgrade a timestamped snapshot.
+If HA node clocks move backwards, the workstation refuses the older timestamp
+(fail-closed); NTP synchronization on all signers is required. Physical rollback
+of the entire DPAPI disk image still requires TPM monotonic state or an online
+revalidation, and is NOT solved by the signed timestamp.
+
 The exact bytes signed are:
 `ASCII("AMFA-OFFLINE-BATCH-v1") || NUL || signed_payload_decoded_bytes`.
 
@@ -66,6 +77,10 @@ python3 tools/amfa_offline_ed25519_keygen.py \
   --private-key-file /etc/amfa/offline-signing/ed25519-2026-01.pem \
   --key-id amfa-offline-2026-01
 stat -c '%a %U %n' /etc/amfa/offline-signing/ed25519-2026-01.pem
+# MUSI być zwykłym plikiem (bez symlinków), z prawami właściciela
+# np. 0600/0400 i właścicielem root lub UID procesu privacyIDEA.
+# Tryby 0640/0644/0666 oraz dowiązania symboliczne są odrzucane
+# przez _load_key na podstawie fstat otwartego deskryptora (fail-closed).
 ```
 
 The script creates the file using `O_EXCL` with mode `0600`, refuses to
