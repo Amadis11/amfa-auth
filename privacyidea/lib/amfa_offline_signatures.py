@@ -24,6 +24,7 @@ import os
 import re
 import stat
 import time
+import uuid
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
@@ -32,8 +33,8 @@ LOG = logging.getLogger(__name__)
 SIGNING_CONTEXT = b"AMFA-OFFLINE-BATCH-v1\x00"
 ANCHOR_CONTEXT = b"AMFA-OFFLINE-ANCHOR-v1\x00"
 ALG = "Ed25519"
-#: Anchor JSON is canonical (sorted keys, compact) and carries exactly these two fields.
-ANCHOR_FIELDS = ("key_id", "public_key_b64")
+#: Canonical root-signed anchor binds the leaf to one stable installation UUID.
+ANCHOR_FIELDS = ("installation_id", "key_id", "public_key_b64")
 MAX_ANCHOR_BYTES = 512
 
 #: Signed batches name the AD account they were issued for. The regex is ASCII-only
@@ -73,11 +74,21 @@ def public_key_b64(private_key: Ed25519PrivateKey) -> str:
     return base64.b64encode(raw).decode("ascii")
 
 
-def anchor_bytes(key_id: str, public_key: str) -> bytes:
+def validate_installation_id(value: str) -> str:
+    try:
+        if not isinstance(value, str) or str(uuid.UUID(value)) != value or uuid.UUID(value).int == 0:
+            raise ValueError("noncanonical installation UUID")
+    except (ValueError, AttributeError, TypeError) as exc:
+        raise OfflineSigningError("invalid installation UUID") from exc
+    return value
+
+
+def anchor_bytes(key_id: str, public_key: str, installation_id: str) -> bytes:
     """Canonical anchor document - exactly what the root key signs."""
     if not isinstance(key_id, str) or not key_id or len(key_id) > 128:
         raise OfflineSigningError("invalid anchor key identifier")
-    payload = {"key_id": key_id, "public_key_b64": public_key}
+    payload = {"installation_id": validate_installation_id(installation_id),
+               "key_id": key_id, "public_key_b64": public_key}
     return json.dumps(payload, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=True).encode("ascii")
 
@@ -107,8 +118,11 @@ def _load_anchor(path: str, private_key: Ed25519PrivateKey, key_id: str) -> dict
         raise OfflineSigningError("anchor file is not a signed anchor document")
     if sorted(signed) != sorted(ANCHOR_FIELDS):
         raise OfflineSigningError("anchor carries unexpected fields")
-    if anchor_bytes(signed["key_id"], signed["public_key_b64"]) != anchor_doc:
+    if anchor_bytes(signed["key_id"], signed["public_key_b64"], signed["installation_id"]) != anchor_doc:
         raise OfflineSigningError("anchor is not canonical JSON")
+    expected_installation = validate_installation_id(os.environ.get("AMFA_OFFLINE_INSTALLATION_ID", ""))
+    if signed["installation_id"] != expected_installation:
+        raise OfflineSigningError("anchor belongs to another installation")
     if signed["key_id"] != key_id:
         raise OfflineSigningError("anchor names another installation key")
     if signed["public_key_b64"] != public_key_b64(private_key):
@@ -129,7 +143,8 @@ def _load_anchor(path: str, private_key: Ed25519PrivateKey, key_id: str) -> dict
                         ANCHOR_CONTEXT + anchor_doc)
         except Exception as exc:
             raise OfflineSigningError("anchor is not signed by the configured root key") from exc
-    return {"anchor": anchor_b64, "anchor_signature": anchor_signature}
+    return {"anchor": anchor_b64, "anchor_signature": anchor_signature,
+            "installation_id": expected_installation}
 
 
 def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
@@ -179,6 +194,12 @@ def sign_item(item: dict, private_key: Ed25519PrivateKey, key_id: str,
     item["issued_at_us"] = issued_at_us
     item["expiration"] = issued_at_us // 1_000_000 + validity
     item["format_version"] = 3
+    # Production issuance always supplies a validated anchor. Bind the grant itself
+    # to its installation as well; caller-provided identity is never authoritative.
+    if anchor is not None:
+        item["installation_id"] = validate_installation_id(anchor.get("installation_id"))
+    else:
+        item.pop("installation_id", None)  # low-level unanchored test vectors only
     payload = canonical_item(item)
     # OfflineSignedBatch::kMaxPayload in CP is 256 KiB; a signer must not
     # return a payload that the pinned release will inevitably reject.
