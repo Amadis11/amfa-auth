@@ -276,5 +276,24 @@ class SignedOfflineBatchTests(unittest.TestCase):
                     signed_auth_items({"offline": [dict(TEST_ITEM), {"serial": "BAD"}]})
 
 
+class InstallationBindingTests(unittest.TestCase):
+    def test_signed_grant_names_validated_installation_and_refuses_foreign_anchor(self):
+        import json
+        import os
+        import tempfile
+        from unittest.mock import patch
+        from amfa_offline_lab_anchor import LAB_INSTALLATION_ID
+        with tempfile.TemporaryDirectory() as tmp:
+            env = anchor_environment(tmp, TEST_KEY, "test-only")
+            with patch.dict(os.environ, env, clear=False):
+                anchor = _module._load_anchor(env["AMFA_OFFLINE_ED25519_ANCHOR_FILE"], TEST_KEY, "test-only")
+                envelope = sign_item(dict(TEST_ITEM, installation_id="attacker-input"), TEST_KEY, "test-only", anchor)
+                payload = json.loads(base64.b64decode(envelope["signed_payload"]))
+                self.assertEqual(payload["installation_id"], LAB_INSTALLATION_ID)
+            with patch.dict(os.environ, dict(env, AMFA_OFFLINE_INSTALLATION_ID="99887766-9988-4988-8988-998877665544"), clear=False):
+                with self.assertRaises(_module.OfflineSigningError):
+                    _module._load_anchor(env["AMFA_OFFLINE_ED25519_ANCHOR_FILE"], TEST_KEY, "test-only")
+
+
 if __name__ == "__main__":
     unittest.main()
