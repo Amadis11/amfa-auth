@@ -1,15 +1,14 @@
-# Offline v2: native AUTH authorization
+# Offline: native AUTH authorization
 
 AUTH evaluates `amfa_offline_fido2` and `amfa_offline_hotp` (authentication scope)
 against the token's actual owner at online issuance and every refill. Explicit
 allow is required; absence, deny, policy conflict or resolver failure refuses
 new material, without blocking regular online login. A local SQL/passwd
 resolver needs no AD membership. Group conditions use fresh resolver data.
-The Ed25519 public key is the offline trust anchor; X.509 trust is relevant only to the TLS transport.
+The embedded AMITRONIC ROOT verifies the installation leaf anchor; X.509 trust is independent and applies to HTTPS.
 
 The offline Ed25519 signing key remains required, outside the repository,
-identical on signing HA nodes. CP must pin the corresponding public key and
-verify the immutable signed batch, type-specific grant, account and expiration.
+identical on signing HA nodes. CP verifies the ROOT-signed leaf anchor, v3 grant, installation UUID, method, account SID/realm and expiration. See [issuance and rotation](https://github.com/Amadis11/amitronic-amfa/blob/master/docs/deployment/kotwica-offline-ed25519.md).
 Unsigned batches do not authorize offline login. The default validity is
 30 days; offline use does not renew it. An authoritative refusal at refill
 must not rotate the secret or consume counters; CP handles the refusal using
