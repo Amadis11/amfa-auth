@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import os
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -14,6 +15,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 # which imports Flask/SQLAlchemy dependencies irrelevant to this crypto test.
 import importlib.util
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from amfa_offline_lab_anchor import anchor_environment  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location(
     "amfa_offline_signatures",
@@ -34,6 +38,7 @@ TEST_PUBLIC = TEST_KEY.public_key()
 TEST_ITEM = {
     "serial": "TEST1", "username": "alice", "refilltoken": "refill-test",
     "response": {"0": "hash0", "1": "hash1"}, "offline_grant": "hotp",
+    "realm": "a.test", "account_sid": "S-1-5-21-1-2-3-1001",
 }
 
 
@@ -54,20 +59,20 @@ class SignedOfflineBatchTests(unittest.TestCase):
         decoded = __import__("json").loads(blob)
         self.assertEqual(decoded["serial"], "TEST1")
         self.assertGreater(decoded["expiration"], __import__("time").time())
-        self.assertEqual(decoded["format_version"], 2)
+        self.assertEqual(decoded["format_version"], 3)
         self.assertEqual(decoded["offline_grant"], "hotp")
         with self.assertRaises(Exception):
             TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"hash0", b"evil0"))
 
     def test_cpp_cross_language_fixture(self):
-        # Exact v2 bytes verified by the Windows and portable CP harnesses.
+        # Exact v3 bytes (signed AD subject) verified by the Windows and portable CP harnesses.
         with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
             with patch.object(_module.time, "time_ns", return_value=1799996400 * 1_000_000_000):
                 envelope = sign_item(TEST_ITEM, TEST_KEY, "test-only")
         self.assertEqual(envelope["signed_payload"],
-                         "eyJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MiwiaXNzdWVkX2F0X3VzIjoxNzk5OTk2NDAwMDAwMDAwLCJvZmZsaW5lX2dyYW50IjoiaG90cCIsInJlZmlsbHRva2VuIjoicmVmaWxsLXRlc3QiLCJyZXNwb25zZSI6eyIwIjoiaGFzaDAiLCIxIjoiaGFzaDEifSwic2VyaWFsIjoiVEVTVDEiLCJ1c2VybmFtZSI6ImFsaWNlIn0=")
+                         "eyJhY2NvdW50X3NpZCI6IlMtMS01LTIxLTEtMi0zLTEwMDEiLCJleHBpcmF0aW9uIjoxODAwMDAwMDAwLCJmb3JtYXRfdmVyc2lvbiI6MywiaXNzdWVkX2F0X3VzIjoxNzk5OTk2NDAwMDAwMDAwLCJvZmZsaW5lX2dyYW50IjoiaG90cCIsInJlYWxtIjoiYS50ZXN0IiwicmVmaWxsdG9rZW4iOiJyZWZpbGwtdGVzdCIsInJlc3BvbnNlIjp7IjAiOiJoYXNoMCIsIjEiOiJoYXNoMSJ9LCJzZXJpYWwiOiJURVNUMSIsInVzZXJuYW1lIjoiYWxpY2UifQ==")
         self.assertEqual(envelope["signature"],
-                         "7R2MrYym4TVB2Aw6XhfEG8k6RaRRC4hovosg+ZUttMi8xVT9vQ3i9eM+BDyaFpdFXKIsTIU77pT25Jhi90UjCw==")
+                         "6gjBtXREKbuhBxsR326Bh90vFqV0BO3cpZ2OeOoVVMw30RUUokDDB/VTSZm1mYAdjO7M9irI8i7nXnQcXaaaCg==")
 
     def test_issuer_time_is_signed_and_not_caller_controlled(self):
         now_ns = 1_800_000_000_123_456_000
@@ -81,6 +86,32 @@ class SignedOfflineBatchTests(unittest.TestCase):
         self.assertEqual(decoded["issued_at_us"], now_ns // 1000)
         self.assertEqual(decoded["expiration"] - decoded["issued_at_us"] // 1_000_000,
                          30 * 24 * 3600)
+
+    def test_signed_batch_carries_the_ad_subject(self):
+        with patch.dict(os.environ, {"AMFA_OFFLINE_ED25519_TTL_SECONDS": "3600"}):
+            signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+        decoded = __import__("json").loads(base64.b64decode(signed["signed_payload"], validate=True))
+        self.assertEqual(decoded["format_version"], 3)
+        self.assertEqual(decoded["account_sid"], TEST_ITEM["account_sid"])
+        self.assertEqual(decoded["realm"], TEST_ITEM["realm"])
+        self.assertEqual(decoded["username"], TEST_ITEM["username"])
+
+    def test_missing_or_wrong_subject_denied(self):
+        for field in ("realm", "account_sid", "username"):
+            item = dict(TEST_ITEM)
+            item.pop(field)
+            with self.subTest(field=field), self.assertRaises(OfflineSigningError):
+                sign_item(item, TEST_KEY, "test-only")
+        for bad_sid in ("S-1-5-18", "S-1-5-21-1-2-3-4294967296"):
+            with self.subTest(sid=bad_sid), self.assertRaises(OfflineSigningError):
+                sign_item(dict(TEST_ITEM, account_sid=bad_sid), TEST_KEY, "test-only")
+        signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
+        blob = base64.b64decode(signed["signed_payload"])
+        sig = base64.b64decode(signed["signature"])
+        with self.assertRaises(Exception):
+            TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"a.test", b"b.test"))
+        with self.assertRaises(Exception):
+            TEST_PUBLIC.verify(sig, SIGNING_CONTEXT + blob.replace(b"1-2-3-1001", b"4-5-6-1001"))
 
     def test_no_cross_protocol_reuse(self):
         signed = sign_item(TEST_ITEM, TEST_KEY, "test-only")
@@ -128,11 +159,14 @@ class SignedOfflineBatchTests(unittest.TestCase):
                     serialization.PrivateFormat.PKCS8,
                     serialization.NoEncryption(),
                 ))
+            # #1692: podpisywanie wlacza sie tylko z kotwica podpisana kluczem root.
+            # Test mieli wlasna pare root i podpisuje nia kotwice dla swojego klucza.
             environment = {
                 "AMFA_OFFLINE_ED25519_ENABLED": "1",
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
                 "AMFA_OFFLINE_ED25519_KEY_ID": "test-only",
             }
+            environment.update(anchor_environment(tmp, TEST_KEY, "test-only"))
             with patch.dict(os.environ, environment):
                 wrapped = signed_auth_items({"offline": [
                     dict(TEST_ITEM),
