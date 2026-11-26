@@ -49,19 +49,43 @@ def _policy_allows(user, grant: str, info: dict, token) -> bool:
     return set(values) == {"allow"}
 
 
-def offline_grant_for_token(token) -> str:
-    """Authorize issuance from the live owner policy."""
+def offline_claims_for_token(token) -> dict:
+    """Authorize issuance and return the signed subject of the token owner.
+
+    The AD subject (SID, realm, canonical account name) is bound into the signed
+    batch, so it must come from a FRESH directory read of the token owner - never
+    from a cached membership verdict and never from a workstation-supplied name.
+    """
     kind = str(getattr(token, "type", "")).lower()
     grant = "hotp" if kind == "hotp" else ("fido2" if kind in ("webauthn", "passkey") else "")
     if not grant:
         raise OfflineEntitlementError("token kind cannot be used offline")
-    require_owner_policy(token, grant)
+    info = require_owner_policy(token, grant)
+    user = token.user
+    resolver = get_resolver_object(user.resolver)
+    from privacyidea.lib.amfa_offline_subject import offline_subject
+    try:
+        subject = offline_subject(user, resolver)
+    except ValueError as error:
+        raise OfflineEntitlementError(str(error)) from error
+    username = info.get("username") if isinstance(info, dict) else None
+    if not isinstance(username, str) or not username:
+        raise OfflineEntitlementError("directory did not return the account name")
     LOG.debug("AMFA offline %s issuance: owner policy allowed", grant)
-    return grant
+    return dict(subject, offline_grant=grant, username=username)
 
 
-def require_owner_policy(token, grant: str, *, expected_sid: str | None = None) -> None:
-    """Evaluate an explicit allow for the actual token owner, never the supplied login."""
+def offline_grant_for_token(token) -> str:
+    """Authorize issuance from the live owner policy."""
+    return offline_claims_for_token(token)["offline_grant"]
+
+
+def require_owner_policy(token, grant: str, *, expected_sid: str | None = None) -> dict:
+    """Evaluate an explicit allow for the actual token owner, never the supplied login.
+
+    Returns the fresh directory record used for the verdict, so callers that also
+    need the canonical account name do not read the directory twice.
+    """
     try:
         user = token.user
         if user is None or not user.resolver or not user.uid or not user.realm or not user.login:
@@ -80,8 +104,8 @@ def require_owner_policy(token, grant: str, *, expected_sid: str | None = None) 
             raise OfflineEntitlementError("offline issuance owner could not be read")
         if not _policy_allows(user, grant, info, token):
             raise OfflineEntitlementError("offline issuance denied by owner policy")
+        return info
     except OfflineEntitlementError:
         raise
     except Exception as error:
         raise OfflineEntitlementError("offline issuance policy or resolver failed") from error
-

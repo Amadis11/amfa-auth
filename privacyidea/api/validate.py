@@ -367,12 +367,12 @@ def offlinerefill():
         # Every successful refill is a NEW issuance: check membership in AD
         # BEFORE reserving counters or rotating any refill credential.
         from privacyidea.lib.amfa_offline_signatures import signing_enabled
-        offline_grant = None
+        offline_claims = None
         if signing_enabled():
             from privacyidea.lib.amfa_offline_entitlement import (OfflineEntitlementError,
-                                                                 offline_grant_for_token)
+                                                                 offline_claims_for_token)
             try:
-                offline_grant = offline_grant_for_token(token)
+                offline_claims = offline_claims_for_token(token)
             except OfflineEntitlementError as ex:
                 # Fail closed, but as a DEFINED refusal: the station has to tell
                 # "this account may not receive offline material" from "the server
@@ -459,8 +459,8 @@ def offlinerefill():
                                             "username": token.user.login if token.user else ""})
                     response = send_result(True)
                     content = response.json
-                    if offline_grant:
-                        refill_item["offline_grant"] = offline_grant
+                    if offline_claims:
+                        refill_item.update(offline_claims)
                     content["auth_items"] = signed_auth_items({"offline": [refill_item]})
                     response.set_data(json.dumps(content))
                     # Signing may fail (bad key / unavailable key); do not commit a consumed counter or

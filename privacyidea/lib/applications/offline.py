@@ -441,13 +441,13 @@ class MachineApplication(MachineApplicationBase):
             # Issue signed offline material only after ONLINE AD entitlement.
             from privacyidea.lib.amfa_offline_signatures import signing_enabled
             if signing_enabled():
-                from privacyidea.lib.amfa_offline_entitlement import offline_grant_for_token
-                ret["offline_grant"] = offline_grant_for_token(token)
+                from privacyidea.lib.amfa_offline_entitlement import offline_claims_for_token
+                ret.update(offline_claims_for_token(token))
             user = token.user
             if user:
                 user_info = user.get_specific_info(["username", FIDO2TokenInfo.USER_ID])
                 if "username" in user_info:
-                    ret["user"] = ret["username"] = user_info.get("username")
+                    ret["user"] = ret.setdefault("username", user_info.get("username"))
                 if token_type in ["webauthn", "passkey"] and FIDO2TokenInfo.USER_ID in user_info:
                     ret["response"].update({"userId": user_info[FIDO2TokenInfo.USER_ID]})
 
