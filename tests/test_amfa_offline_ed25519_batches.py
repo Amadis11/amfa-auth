@@ -203,6 +203,9 @@ class SignedOfflineBatchTests(unittest.TestCase):
                 "AMFA_OFFLINE_ED25519_PRIVATE_KEY_FILE": keypath,
                 "AMFA_OFFLINE_ED25519_KEY_ID": "installation-2026",
             }
+            # #1692: signing turns on only with a root-signed anchor, so the
+            # control group needs one too (a throwaway root, never the product's).
+            vars.update(anchor_environment(tmp, TEST_KEY, "installation-2026"))
             with patch.dict(os.environ, vars):
                 # Positive control: true private file signs normally.
                 self.assertEqual(len(signed_auth_items(
