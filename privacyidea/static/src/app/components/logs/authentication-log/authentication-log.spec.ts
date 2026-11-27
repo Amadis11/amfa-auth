@@ -810,7 +810,7 @@ describe("AuthenticationLog", () => {
   });
 
   it("derives client-label options from the integration catalog, label -> policy_value", () => {
-    expect(component.clientLabelOptions()).toContainEqual({ label: "Keycloak", value: "privacyIDEA-Keycloak" });
+    expect(component.clientLabelOptions()).toContainEqual({ label: "Keycloak", value: "AMFA-Keycloak" });
     expect(component.clientLabelOptions()).toContainEqual({
       label: "Windows Credential Provider",
       value: "privacyidea-cp"
