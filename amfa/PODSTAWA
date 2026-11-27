@@ -1,4 +1,4 @@
 # Wersja podstawy, na ktorej stoi nasza linia.
 # Aktualizuje automat wydan (amfa/aktualizacja-podstawy.py) — nie edytowac recznie.
-commit 93c7011369f1
+commit 93c7011369f157376d253128fbef3c1b59eea27c
 tag v3.14.1
