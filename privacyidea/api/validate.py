@@ -468,6 +468,7 @@ def offlinerefill():
                     db.session.commit()
                     log_authentication(AuthEventType.OFFLINE_REFILL_SUCCESS, request, serial=serial)
                     return response
+        reason = AuthEventReason.REFILLTOKEN_MISMATCH if token_attachments else AuthEventReason.NOT_AN_OFFLINE_TOKEN
         raise ParameterError(_("Token is not an offline token or refill token is incorrect"))
 
     except Exception as e:
