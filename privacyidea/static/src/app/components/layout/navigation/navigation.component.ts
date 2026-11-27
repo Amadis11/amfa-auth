@@ -251,7 +251,7 @@ export class NavigationComponent implements AfterViewInit, OnDestroy {
     if (supportMail) {
       window.open(supportMail, "_self");
     } else {
-      window.open("https://netknights.it/support_link_admin", "_blank");
+      window.open("https://amitronic.pl/", "_blank");
     }
   }
 

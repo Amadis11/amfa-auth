@@ -40,7 +40,7 @@ export const COPY_ATTEMPTS = 3;
 /**
  * A system with a subscription has support, so the email with the documentation is addressed to the support.
  */
-export const SUPPORT_EMAIL_ADDRESS = "support@netknights.it";
+export const SUPPORT_EMAIL_ADDRESS = "support@amitronic.pl";
 
 /**
  * Names the file after the server and the day, so that the documentation of several installations can be told apart.
@@ -70,7 +70,7 @@ export class SystemDocumentationDialogComponent
   private readonly server = window.location.hostname;
   private readonly date = formatDate(new Date(), "yyyy-MM-dd", "en-US");
   readonly fileName = systemDocumentationFileName(this.server, this.date);
-  private readonly emailSubject = $localize`:@@systemConfig.documentationEmailSubject:privacyIDEA system documentation of ${this.server}:server: from ${this.date}:date:`;
+  private readonly emailSubject = $localize`:@@systemConfig.documentationEmailSubject:AMFA system documentation of ${this.server}:server: from ${this.date}:date:`;
 
   /**
    * The share dialog of the operating system passes the file on, e.g. to the email program as an attachment. Chrome
@@ -212,6 +212,6 @@ export class SystemDocumentationDialogComponent
   }
 
   private emailBody(fileName: string): string {
-    return $localize`:@@systemConfig.documentationEmailBody:The system documentation of privacyIDEA is attached as ${fileName}:fileName:.`;
+    return $localize`:@@systemConfig.documentationEmailBody:The system documentation of AMFA is attached as ${fileName}:fileName:.`;
   }
 }

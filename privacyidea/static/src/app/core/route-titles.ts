@@ -58,7 +58,7 @@ export const PAGE_NAMES = {
   smtp: $localize`:@@common.smtpServers:SMTP Servers`,
   radius: $localize`:@@common.radiusServers:RADIUS Servers`,
   sms: $localize`:@@common.smsGateways:SMS Gateways`,
-  privacyideaServers: $localize`:@@common.privacyideaServers:privacyIDEA Servers`,
+  privacyideaServers: $localize`:@@common.privacyideaServers:AMFA Servers`,
   caConnectors: $localize`:@@common.caConnectors:CA Connectors`,
   tokengroups: $localize`:@@common.tokengroups:Token Groups`,
   serviceIds: $localize`:@@common.serviceIds:Service IDs`

@@ -95,7 +95,7 @@ export class CaConnectorsComponent {
   });
   readonly emptyHint = computed(() =>
     this.authService.actionAllowed("caconnectorwrite")
-      ? $localize`:@@caConnector.createCAConnector:Create a CA connector to issue and manage certificates from privacyIDEA.`
+      ? $localize`:@@caConnector.createCAConnector:Create a CA connector to issue and manage certificates from AMFA.`
       : ""
   );
 

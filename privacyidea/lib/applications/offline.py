@@ -255,6 +255,10 @@ class MachineApplication(MachineApplicationBase):
             lock and commit the whole batch (counter, refill token, response material) in one transaction
         :return: dictionary
         """
+        # Legacy standalone callers use zero as an explicit empty request.
+        # It must neither generate an OTP nor advance the HOTP counter.
+        if type(amount) is int and amount == 0:
+            return {}
         otps = MachineApplication._hash_offline_otps(token, otppin, amount, rounds)
         # We do not disable the token, so if all offline OTP values
         # are used, the token can be used to authenticate online again.

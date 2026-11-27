@@ -9,9 +9,14 @@ rownolegle kroki), trzymal refilltoken, ktorym nie mogl dociagnac zapasu (`ERR90
 zadnego sygnalu, ze jest martwy.
 
 Poprawka: refilltoken powstaje **raz** (`existing_or_new_refilltoken`), a odnawia go **wylacznie**
-udany refill (`generate_new_refilltoken` w `offlinerefill`). Ten plik pilnuje obu stron tej umowy:
-gdyby ktos wrocil do rotacji przy logowaniu albo usunal rotacje przy refillu, jeden z przypadkow
-czerwienieje.
+udany refill. Ten plik pilnuje obu stron tej umowy: gdyby ktos wrocil do rotacji przy logowaniu
+albo usunal rotacje przy refillu, jeden z przypadkow czerwienieje.
+
+**Zmiana po nalozeniu podstawy v3.14.1:** rotacja przeniosla sie z `offlinerefill` do
+`MachineApplication.refill()` — podstawa przejela nasze utwardzenie i wykonuje porownanie
+refilltokenu, wydanie partii i rotacje pod jednym zamkiem wiersza. `offlinerefill` wola wiec
+`MachineApplication.refill(...)`, a sam zapis nowego refilltokenu (`geturandom(REFILLTOKEN_LENGTH`)
+siedzi w `offline.py`. Straznik pilnuje obu koncow tej drogi.
 
 **Granica:** to straznik ksztaltu zrodla (kto wola co i w jakiej kolejnosci), nie pomiar zachowania
 na zywym silniku.
@@ -29,6 +34,10 @@ VALIDATE = ROOT / "privacyidea" / "api" / "validate.py"
 ROTATE = "generate_new_refilltoken("
 STABLE = "existing_or_new_refilltoken("
 REUSE_FIRST = "existing_refilltoken("
+# Jedno wejscie refillu po nalozeniu podstawy: porownanie, wydanie partii i rotacja pod zamkiem.
+REFILL_ENTRY = "MachineApplication.refill("
+# Zapis nowego refilltokenu wewnatrz `refill` (podstawa) — bez niego zapas przestalby sie odnawiac.
+ROTACJA_W_REFILL = "geturandom(REFILLTOKEN_LENGTH"
 
 
 def cialo_funkcji(text: str, nazwa: str) -> str:
@@ -65,9 +74,15 @@ def problemy(offline_text: str, validate_text: str) -> list[str]:
         if i_reuse >= 0 and i_rotate >= 0 and i_rotate < i_reuse:
             wynik.append("zalozenie tokenu stoi PRZED odczytem zapisanego — kolejnosc jest istota poprawki")
     try:
+        cialo_refillu = cialo_funkcji(offline_text, "refill")
+        if ROTACJA_W_REFILL not in cialo_refillu:
+            wynik.append("`refill` nie zapisuje nowego refilltokenu — zapas przestalby sie odnawiac")
+    except ValueError:
+        wynik.append("brak `refill` w `offline.py` — nie ma gdzie rotowac refilltokenu")
+    try:
         refill = cialo_funkcji(validate_text, "offlinerefill")
-        if ROTATE not in refill:
-            wynik.append("`offlinerefill` nie rotuje refilltokenu — zapas przestalby sie odnawiac")
+        if REFILL_ENTRY not in refill:
+            wynik.append("`offlinerefill` nie wola `MachineApplication.refill` — refill nie rotowalby refilltokenu")
     except ValueError:
         wynik.append("brak `offlinerefill` w `validate.py`")
     return wynik
@@ -105,17 +120,28 @@ class StableRefillTokenTests(unittest.TestCase):
         self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie bez odczytu zapisanego")
 
     def test_negative_control_when_refill_stops_rotating(self) -> None:
-        # W PR #85 nowy token jest zapisywany w jednej transakcji, wiec
-        # wywolanie ma argument commit_db_session=False i moze byc wieloliniowe.
-        # Kontrola negatywna musi naprawde dokonac mutacji, inaczej jest
-        # pozornie zielona i nie chroni przed usunieciem rotacji.
+        # Podstawa wykonuje rotacje wewnatrz `MachineApplication.refill`; kontrola negatywna
+        # podmienia to wejscie na wydanie kodow bez rotacji, wiec zapas przestalby sie odnawiac.
         zlamane, replacements = re.subn(
-            r"(refilltoken_new\s*=\s*MachineApplication\.)generate_new_refilltoken\s*\(",
-            r"\1existing_refilltoken(",
+            r"MachineApplication\.refill\(",
+            "MachineApplication.get_offline_otps(",
             self.validate,
         )
-        self.assertEqual(replacements, 1, "nie znaleziono wywolania rotacji do celowej mutacji")
+        self.assertEqual(replacements, 1, "nie znaleziono wywolania refillu do celowej mutacji")
         self.assertNotEqual(problemy(self.offline, zlamane), [], "regula musi zapalic sie bez rotacji przy refillu")
+
+    def test_negative_control_when_refill_writes_no_new_token(self) -> None:
+        # Druga strona umowy: samo wejscie zostaje, ale `refill` przestaje zapisywac nowy token.
+        cialo = cialo_funkcji(self.offline, "refill")
+        zlamane_cialo, replacements = re.subn(
+            re.escape("new_refilltoken = geturandom(REFILLTOKEN_LENGTH, hex=True)"),
+            "new_refilltoken = stored",
+            cialo,
+        )
+        self.assertEqual(replacements, 1, "nie znaleziono zapisu nowego refilltokenu do celowej mutacji")
+        zlamane = self.offline.replace(cialo, zlamane_cialo, 1)
+        self.assertNotEqual(zlamane, self.offline, "mutacja musi trafic w cialo `refill`")
+        self.assertNotEqual(problemy(zlamane, self.validate), [], "regula musi zapalic sie bez zapisu nowego tokenu")
 
 
 if __name__ == "__main__":

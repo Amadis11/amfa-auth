@@ -22,7 +22,7 @@ import { MatOption, MatSelect } from "@angular/material/select";
 import { ClearButtonComponent } from "@components/shared/clear-button/clear-button.component";
 
 /**
- * A "-" entry in the realmdropdown policy is the privacyIDEA "no realm" sentinel: it is offered as a selectable option
+ * A "-" entry in the realmdropdown policy is the AMFA "no realm" sentinel: it is offered as a selectable option
  * but must not be sent as a realm parameter.
  */
 export const NO_REALM_SENTINEL = "-";

@@ -101,8 +101,11 @@ def test_okna_licencyjne_nie_wrocily() -> None:
     i panel uzytkownika. Usuniete sa okna, nie cala obsluga subskrypcji; szerokie usuniecie
     katalogu uslug wysypalo build panelu.
     """
+    # `free-tier-dialog` przyszedl z v3.14.1 i wolal go wylacznie usuniety juz
+    # `welcome-dialog.service` — okno reklamowalo wydanie, ktorego nie sprzedajemy.
     for wzgledna in ("privacyidea/static/src/app/components/shared/welcome-dialog",
                      "privacyidea/static/src/app/components/shared/subscription-expiry-dialog",
+                     "privacyidea/static/src/app/components/shared/free-tier-dialog",
                      "privacyidea/static/src/app/services/welcome"):
         assert not (KORZEN / wzgledna).exists(), f"wrocilo {wzgledna}"
     # Definicje uslug moga zostac w katalogu services/subscription (korzysta z nich pulpit),
@@ -132,10 +135,16 @@ def test_testy_podstawy_o_brandzie_sa_zgodne_z_naszymi() -> None:
     # Logo idzie inna droga niz tytul: endpoint konfiguracji dla panelu nie wstrzykuje znaku
     # (`PI_LOGO` domyslnie pusty), a panel podstawia nasz zasob `assets/amfa.svg`. Sprawdzamy oba konce,
     # bo podmiana jednego z nich cofa brand albo wstrzykuje znak podstawy do konfiguracji.
+    # Od 3.14.1 ekran logowania rysuje znak komponentem `app-login-logo`, wiec to jego plik
+    # decyduje o tym, co widzi czlowiek; `login.component.html` zostaje sprawdzony jako zapas.
     login = (KORZEN / "privacyidea" / "webui" / "login.py").read_text(encoding="utf-8")
     assert 'PI_LOGO", ""' in login, "endpoint konfiguracji panelu wstrzykuje logo z konfiguracji"
-    panel_login = (PANEL / "src" / "app" / "components" / "login" / "login.component.html").read_text(encoding="utf-8")
-    assert "assets/amfa.svg" in panel_login, "ekran logowania panelu nie uzywa naszego znaku"
+    panel_login = (PANEL / "src" / "app" / "components" / "shared" / "login-logo"
+                   / "login-logo.component.html")
+    if not panel_login.is_file():
+        panel_login = PANEL / "src" / "app" / "components" / "login" / "login.component.html"
+    assert "assets/amfa.svg" in panel_login.read_text(encoding="utf-8"), \
+        "ekran logowania panelu nie uzywa naszego znaku"
 
 
 def test_panel_nie_mowi_o_podstawie() -> None:

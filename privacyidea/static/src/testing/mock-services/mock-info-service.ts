@@ -32,7 +32,7 @@ export class MockInfoService implements InfoServiceInterface {
         summary: "<p>New features and fixes.</p>"
       }
     ],
-    "NetKnights News": [
+    "AMITRONIC News": [
       {
         title: "Training dates 2026",
         link: "https://example.com/training",
@@ -52,7 +52,7 @@ export class MockInfoService implements InfoServiceInterface {
     {
       title: "Training dates 2026",
       link: "https://example.com/training",
-      channel: "NetKnights News",
+      channel: "AMITRONIC News",
       summary: "<p>Register now.</p>",
       date: new Date("2026-07-22T08:00:00Z")
     },

@@ -68,11 +68,12 @@ def test_endpointy_uzywaja_sprawdzenia_zawezonego() -> None:
     blok_usuwania = zrodlo.split("def delete_policy_api(", 1)[0].rsplit("@policy_blueprint.route", 1)[-1]
     assert "check_scoped_policy_delete" in blok_usuwania, "usuwanie nie uzywa sprawdzenia zawezonego"
     # Import przenosi polityki dowolnych zakresow, wiec zostaje na pelnym prawie — tego nie zwieramy.
-    # Od 3.14 pelnym prawem na takiej sciezce jest `check_global_config_action` (obiekt bez realmu
-    # wymaga prawa niezawezonego do realmu, resolvera ani uzytkownika) — nasze sprawdzenie tam nie
-    # wchodzi, bo zawęziłoby granice zamiast jej pilnowac.
+    # Od 3.14.1 pelnym prawem na takiej sciezce jest `check_base_action(request, PolicyAction.POLICYWRITE)`
+    # (wczesniej `check_global_config_action`, ktore nowa podstawa wycofala z tej sciezki) — nasze
+    # sprawdzenie tam nie wchodzi, bo zawęziłoby granice zamiast jej pilnowac.
     blok_importu = zrodlo.split("def import_policy_api(", 1)[0].rsplit("@policy_blueprint.route", 1)[-1]
-    assert "check_global_config_action" in blok_importu, "import polityk zgubil pelne sprawdzenie"
+    assert ("check_base_action" in blok_importu or "check_global_config_action" in blok_importu), \
+        "import polityk zgubil pelne sprawdzenie"
     assert "check_scoped_policy_write" not in blok_importu, "import polityk zawezony — to otwiera obejscie granicy"
 
 

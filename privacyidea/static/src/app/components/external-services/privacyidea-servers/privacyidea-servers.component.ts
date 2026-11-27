@@ -97,7 +97,7 @@ export class PrivacyideaServersComponent {
   });
   readonly emptyHint = computed(() =>
     this.authService.actionAllowed("privacyideaserver_write")
-      ? $localize`:@@piServer.createPrivacyIDEAServer:Create a privacyIDEA server to forward authentication requests to another instance.`
+      ? $localize`:@@piServer.createPrivacyIDEAServer:Create a AMFA server to forward authentication requests to another instance.`
       : ""
   );
 
