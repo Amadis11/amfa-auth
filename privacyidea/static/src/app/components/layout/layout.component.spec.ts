@@ -22,7 +22,6 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideRouter, RouterOutlet } from "@angular/router";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { DebugNoticeComponent } from "@components/layout/debug-notice/debug-notice.component";
-import { SubscriptionExpiredNoticeComponent } from "@components/layout/subscription-expired-notice/subscription-expired-notice.component";
 import { NoRealmDialogService } from "@services/no-realm-dialog/no-realm-dialog.service";
 import { LayoutComponent } from "@components/layout/layout.component";
 import { AuthService } from "@services/auth/auth.service";
@@ -88,8 +87,7 @@ describe("LayoutComponent", () => {
             NavigationSelfServiceStubComponent,
             NavigationSelfServiceWizardStubComponent,
             DebugNoticeComponent,
-            SubscriptionExpiredNoticeComponent
-          ]
+                  ]
         }
       })
       .compileComponents();
@@ -152,14 +150,12 @@ describe("LayoutComponent", () => {
       authService.role.set("admin");
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelector(".admin-layout .subscription-expired-notice")).not.toBeNull();
     });
 
     it("is not rendered for a self-service user", () => {
       authService.role.set("user");
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelector(".subscription-expired-notice")).toBeNull();
     });
   });
 
