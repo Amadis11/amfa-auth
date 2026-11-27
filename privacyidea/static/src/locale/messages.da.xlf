@@ -3775,8 +3775,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tokenTypeConfig.authenticationRequestHandled" datatype="html">
-        <source>The authentication request can be handled by the default AMFA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://amitronic.pl/&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> but can also be handled by the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://amitronic.pl/&quot; target=&quot;_blank&quot; &gt;"/>Yubico Validation Protocol. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
-        <target state="new">The authentication request can be handled by the default AMFA <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://amitronic.pl/&quot; target=&quot;_blank&quot; &gt;"/>validate API <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> but can also be handled by the <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://amitronic.pl/&quot; target=&quot;_blank&quot; &gt;"/>Yubico Validation Protocol. <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
+        <source>The authentication request can be handled by the default AMFA validate API but can also be handled by the Yubico Validation Protocol.</source>
+        <target state="new">The authentication request can be handled by the default AMFAvalidate API but can also be handled by theYubico Validation Protocol.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/configuration/token-type-config/token-types/yubikey-config/yubikey-config.component.html</context>
           <context context-type="linenumber">29</context>
